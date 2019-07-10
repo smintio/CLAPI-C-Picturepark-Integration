@@ -98,6 +98,8 @@ namespace Client.Providers.Impl
             {
                 if (await TransferExistsAsync(transferIdentifier))
                 {
+                    // TODO handle update of metadata if transfer already exists
+
                     _logger.LogInformation($"Transfer {transferIdentifier} already exists. Skipping import");
 
                     return;

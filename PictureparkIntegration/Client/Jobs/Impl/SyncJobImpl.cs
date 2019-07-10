@@ -169,7 +169,7 @@ namespace Client.Jobs.Impl
 
                 string fileName = $"{folderName}/{smintAsset.LPTUuid}.{ExtractFileExtension(smintAsset.DownloadUrl)}";
 
-                var transferIdentifier = $"SMINTIO_{smintAsset.CartPTUuid}";
+                var transferIdentifier = $"SMINTIO_LPT_{smintAsset.LPTUuid}";
 
                 var ppAsset = new PictureparkAsset()
                 {
