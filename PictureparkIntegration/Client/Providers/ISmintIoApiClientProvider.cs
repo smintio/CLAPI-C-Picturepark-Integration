@@ -7,6 +7,6 @@ namespace Client.Providers
 {
     public interface ISmintIoApiClientProvider
     {
-        Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate, int offset);
+        Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate);
     }
 }

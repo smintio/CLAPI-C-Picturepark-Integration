@@ -52,14 +52,12 @@ namespace Client.Jobs.Impl
             var syncDatabaseModel = _syncDatabaseProvider.GetSyncDatabaseModel();
 
             DateTimeOffset? minDate = null;
-            int offset = 0;
 
             if (syncDatabaseModel != null)
             {
                 // get last committed state
 
                 minDate = syncDatabaseModel.NextMinDate;
-                offset = syncDatabaseModel.NextOffset;
             }
 
             var originalMinDate = minDate;
@@ -70,7 +68,7 @@ namespace Client.Jobs.Impl
 
                 do
                 {
-                    assets = await _smintIoClient.GetAssetsAsync(minDate, offset);
+                    assets = await _smintIoClient.GetAssetsAsync(minDate);
 
                     if (assets != null && assets.Any())
                     {
@@ -83,24 +81,11 @@ namespace Client.Jobs.Impl
                         await _pictureparkClient.ImportAssetsAsync(transformedAssets);
                     }
 
-                    if (minDate == originalMinDate)
-                    {
-                        // in this page we have a full page with same dates
-                        // which is very unlikely but can happen
-
-                        offset += assets.Count();
-                    }
-                    else
-                    {
-                        offset = 0;
-                    }
-
                     // store committed data
 
                     _syncDatabaseProvider.SetSyncDatabaseModel(new SyncDatabaseModel()
                     {
-                        NextMinDate = minDate,
-                        NextOffset = offset
+                        NextMinDate = minDate
                     });
 
                     _logger.LogInformation($"Synchronized {assets.Count()} Smint.io assets");

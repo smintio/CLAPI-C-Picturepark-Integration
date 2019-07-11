@@ -52,11 +52,11 @@ namespace Client.Providers.Impl
             _retryPolicy = GetRetryStrategy();
         }
 
-        public async Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate, int offset)
+        public async Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate)
         {
             _logger.LogInformation($"Receiving assets from SmintIo...");
 
-            var result = await LoadAssetsAsync(minDate, offset);
+            var result = await LoadAssetsAsync(minDate);
             
             _logger.LogInformation($"Received {result.Count()} assets from Smint.io");
 
@@ -91,7 +91,7 @@ namespace Client.Providers.Impl
         }
 
 
-        private async Task<IEnumerable<SmintIoAsset>> LoadAssetsAsync(DateTimeOffset? minDate, int offset)
+        private async Task<IEnumerable<SmintIoAsset>> LoadAssetsAsync(DateTimeOffset? minDate)
         {
             var cptClient = new CLAPICOpenApiClient(_http);
 
@@ -105,7 +105,7 @@ namespace Client.Providers.Impl
             {
                 return await cptClient.GetLicensePurchaseTransactionsForSyncAsync(
                     lastUpdatedAtFrom: minDate,
-                    offset: offset);
+                    limit: 10);
             });
 
             if (syncLptQueryResult.Count == 0)
