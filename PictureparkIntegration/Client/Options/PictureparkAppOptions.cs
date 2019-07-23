@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Client.Options
+﻿namespace Client.Options
 {
     public class PictureparkAppOptions
     {
@@ -11,8 +9,7 @@ namespace Client.Options
         public string CustomerAlias { get; set; }
 
         public string[] PictureparkFileTypes { get; set; }
-
-        public Dictionary<string, string> ContentLayerNames { get; set; }
-        public Dictionary<string, string> LicenseLayerNames { get; set; }
+        
+        public bool UpdateSchemaOnStart { get; set; }
     }
 }

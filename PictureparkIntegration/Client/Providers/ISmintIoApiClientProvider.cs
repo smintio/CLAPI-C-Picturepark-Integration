@@ -7,6 +7,8 @@ namespace Client.Providers
 {
     public interface ISmintIoApiClientProvider
     {
+        Task<SmintIoGenericMetadata> GetGenericMetadataAsync();
+
         Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate);
     }
 }

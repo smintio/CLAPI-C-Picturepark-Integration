@@ -53,7 +53,9 @@ namespace Client.Services
 
         private async void DoWorkAsync(object state)
         {
-            await _syncJob.SynchronizeAssetsAsync();
+            // sync generic metadata, because this is our regular, lazy job
+
+            await _syncJob.SynchronizeAsync(synchronizeGenericMetadata: true);
         }
     }
 }

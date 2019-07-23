@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Client.Jobs;
 using Client.Jobs.Impl;
@@ -17,70 +18,77 @@ namespace Client
     {
         static async Task Main(string[] args)
         {
-            var host = new HostBuilder()
-                .ConfigureHostConfiguration(configHost =>
-                {
-                    configHost.SetBasePath(Directory.GetCurrentDirectory());
-                    configHost.AddJsonFile("hostsettings.json", optional: true);
-
-                    if (args != null)
+            try
+            {
+                var host = new HostBuilder()
+                    .ConfigureHostConfiguration(configHost =>
                     {
-                        configHost.AddCommandLine(args);
-                    }
-                })
-                .ConfigureAppConfiguration((hostContext, configApp) =>
-                {
-                    configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile("appsettings.json", optional: false);
-                    configApp.AddJsonFile("appsettings.local.json", optional: true);
+                        configHost.SetBasePath(Directory.GetCurrentDirectory());
+                        configHost.AddJsonFile("hostsettings.json", optional: true);
 
-                    if (args != null)
+                        if (args != null)
+                        {
+                            configHost.AddCommandLine(args);
+                        }
+                    })
+                    .ConfigureAppConfiguration((hostContext, configApp) =>
                     {
-                        configApp.AddCommandLine(args);
-                    }
-                })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddOptions();
+                        configApp.SetBasePath(Directory.GetCurrentDirectory());
+                        configApp.AddJsonFile("appsettings.json", optional: false);
+                        configApp.AddJsonFile("appsettings.local.json", optional: true);
 
-                    var smintIoSection = hostContext.Configuration.GetSection("SmintIo");
-                    var ppSection = hostContext.Configuration.GetSection("Picturepark");
+                        if (args != null)
+                        {
+                            configApp.AddCommandLine(args);
+                        }
+                    })
+                    .ConfigureServices((hostContext, services) =>
+                    {
+                        services.AddOptions();
 
-                    services.Configure<SmintIoAppOptions>(smintIoSection.GetSection("App"));
-                    services.Configure<PictureparkAppOptions>(ppSection.GetSection("App"));
+                        var smintIoSection = hostContext.Configuration.GetSection("SmintIo");
+                        var ppSection = hostContext.Configuration.GetSection("Picturepark");
 
-                    services.Configure<SmintIoAuthOptions>(smintIoSection.GetSection("Auth"));
-                    services.Configure<PictureparkAuthOptions>(ppSection.GetSection("Auth"));
-                    
-                    services.AddSingleton<ISmintIoApiClientProvider, SmintIoApiClientProviderImpl>();
-                    services.AddSingleton<ISyncJob, SyncJobImpl>();
-                    services.AddSingleton<IPictureparkApiClientProvider, PictureparkApiClientProviderImpl>();
-                    services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
-                    services.AddSingleton<IAuthDataProvider, AuthDataProviderImpl>();
-                    services.AddSingleton<IAuthenticator, AuthenticatorImpl>();
+                        services.Configure<SmintIoAppOptions>(smintIoSection.GetSection("App"));
+                        services.Configure<PictureparkAppOptions>(ppSection.GetSection("App"));
 
-                    services.AddHostedService<TimedSynchronizerService>();
-                    services.AddHostedService<PusherService>();
-                })
-                .ConfigureLogging((hostContext, configLogging) =>
-                {
-                    configLogging.AddConsole();
-                    configLogging.AddDebug();
-                })
-                .UseConsoleLifetime()
-                .Build();
+                        services.Configure<SmintIoAuthOptions>(smintIoSection.GetSection("Auth"));
+                        services.Configure<PictureparkAuthOptions>(ppSection.GetSection("Auth"));
 
-            IAuthDataProvider authData = host.Services.GetService<IAuthDataProvider>();
-            IAuthenticator auth = host.Services.GetService<IAuthenticator>();
+                        services.AddSingleton<ISmintIoApiClientProvider, SmintIoApiClientProviderImpl>();
+                        services.AddSingleton<ISyncJob, SyncJobImpl>();
+                        services.AddSingleton<IPictureparkApiClientProvider, PictureparkApiClientProviderImpl>();
+                        services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
+                        services.AddSingleton<IAuthDataProvider, AuthDataProviderImpl>();
+                        services.AddSingleton<IAuthenticator, AuthenticatorImpl>();
 
-            authData.SmintIo = await auth.AuthenticateSmintIoAsync();
-            authData.Picturepark = auth.AuthenticatePicturepark();
+                        services.AddHostedService<TimedSynchronizerService>();
+                        services.AddHostedService<PusherService>();
+                    })
+                    .ConfigureLogging((hostContext, configLogging) =>
+                    {
+                        configLogging.AddConsole();
+                        configLogging.AddDebug();
+                    })
+                    .UseConsoleLifetime()
+                    .Build();
 
-            IPictureparkApiClientProvider pictureparkApiClientProvider = host.Services.GetService<IPictureparkApiClientProvider>();
+                IAuthDataProvider authData = host.Services.GetService<IAuthDataProvider>();
+                IAuthenticator auth = host.Services.GetService<IAuthenticator>();
 
-            await pictureparkApiClientProvider.InitSchemasAsync();
+                authData.SmintIo = await auth.AuthenticateSmintIoAsync();
+                authData.Picturepark = auth.AuthenticatePicturepark();
 
-            await host.RunAsync();
+                IPictureparkApiClientProvider pictureparkApiClientProvider = host.Services.GetService<IPictureparkApiClientProvider>();
+
+                await pictureparkApiClientProvider.InitSchemasAsync();
+                
+                await host.RunAsync();
+            } 
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error occured: {e}");
+            }
         }
     }
 }

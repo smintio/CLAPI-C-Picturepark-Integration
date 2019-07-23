@@ -11,11 +11,14 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Client.Contracts;
 using System.IO;
+using System.Globalization;
 
 namespace Client.Providers.Impl
 {
     public sealed class SmintIoApiClientProviderImpl: IDisposable, ISmintIoApiClientProvider
     {
+        private const string ENGLISH_CULTURE_CODE = "en";
+
         private const int MaxRetryAttempts = 5;
 
         private readonly SmintIoAppOptions _options;
@@ -30,6 +33,8 @@ namespace Client.Providers.Impl
         private bool _disposed;
 
         private readonly ILogger _logger;
+
+        private readonly CLAPICOpenApiClient _clapicOpenApiClient;
 
         public SmintIoApiClientProviderImpl(
             IOptionsMonitor<SmintIoAppOptions> optionsAccessor,
@@ -50,11 +55,113 @@ namespace Client.Providers.Impl
             _logger = logger;
 
             _retryPolicy = GetRetryStrategy();
+
+            _clapicOpenApiClient = new CLAPICOpenApiClient(_http);
+
+            _clapicOpenApiClient.BaseUrl = $"https://{_options.TenantId}-clapi.smint.io/consumer/v1";
+        }
+
+        public async Task<SmintIoGenericMetadata> GetGenericMetadataAsync()
+        {
+            _logger.LogInformation("Receiving generic metadata from Smint.io...");
+
+            _clapicOpenApiClient.AccessToken = _authDataProvider.SmintIo.AccessToken;
+
+            var englishGenericMetadata = await _retryPolicy.ExecuteAsync(async () =>
+                await _clapicOpenApiClient.GetGenericMetadataAsync(ENGLISH_CULTURE_CODE));
+
+            var cultureCount = englishGenericMetadata?.Cultures.Count ?? 0;
+
+            if (cultureCount == 0)
+                throw new Exception("No Smint.io cultures found");            
+
+            var multiCultureGenericMetadata = new Dictionary<string, GenericMetadata>();
+
+            multiCultureGenericMetadata.Add(ENGLISH_CULTURE_CODE, englishGenericMetadata);
+
+            foreach (var culture in englishGenericMetadata.Cultures)
+            {
+                string cultureKey = culture.Key;
+
+                if (string.Equals(cultureKey, ENGLISH_CULTURE_CODE))
+                    continue;
+
+                if (!_options.ImportLanguages.Contains(cultureKey))
+                    continue;
+
+                var cultureGenericMetadata = await _retryPolicy.ExecuteAsync(async () =>
+                    await _clapicOpenApiClient.GetGenericMetadataAsync(cultureKey));
+
+                multiCultureGenericMetadata.Add(cultureKey, cultureGenericMetadata);
+            }
+
+            var smintIoGenericMetadata = new SmintIoGenericMetadata();
+
+            smintIoGenericMetadata.ContentProviders = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.Providers);
+            smintIoGenericMetadata.ContentCategories = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.Content_categories);
+
+            smintIoGenericMetadata.LicenseTypes = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_types);
+            smintIoGenericMetadata.ReleaseStates = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.Release_states);
+
+            smintIoGenericMetadata.LicenseUsages = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_usages);
+            smintIoGenericMetadata.LicenseSizes = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_sizes);
+            smintIoGenericMetadata.LicensePlacements = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_placements);
+            smintIoGenericMetadata.LicenseDistributions = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_distributions);
+            smintIoGenericMetadata.LicenseGeographies = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_geographies);
+            smintIoGenericMetadata.LicenseVerticals = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_verticals);
+
+            _logger.LogInformation("Received generic metadata from Smint.io");
+
+            return smintIoGenericMetadata;
+        }
+
+        private IList<SmintIoMetadataElement> GetGenericMetadataForImportLanguages(GenericMetadata englishGenericMetadata, IDictionary<string, GenericMetadata> multiCultureGenericMetadata, Func<GenericMetadata, ICollection<MetadataElement>> genericMetadataElementsFunc)
+        {
+            var result = new List<SmintIoMetadataElement>();
+
+            var englishGenericMetadataElements = genericMetadataElementsFunc.Invoke(englishGenericMetadata);
+
+            if (englishGenericMetadataElements == null || !englishGenericMetadataElements.Any())
+                return result;
+
+            foreach (var englishGenericMetadataElement in englishGenericMetadataElements)
+            {
+                var key = englishGenericMetadataElement.Key;
+                var values = new Dictionary<string, string>();
+
+                foreach (var culture in multiCultureGenericMetadata.Keys)
+                {
+                    if (!_options.ImportLanguages.Contains(culture))
+                        continue;
+
+                    var cultureGenericMetadata = multiCultureGenericMetadata[culture];
+
+                    var cultureGenericMetadataElements = genericMetadataElementsFunc.Invoke(cultureGenericMetadata);
+
+                    var cultureGenericMetadataElement = cultureGenericMetadataElements.FirstOrDefault(
+                        cultureGenericMetadataElementInner => string.Equals(cultureGenericMetadataElementInner.Key, key));
+
+                    if (cultureGenericMetadataElement != null)
+                    {
+                        values.Add(culture, cultureGenericMetadataElement.Name);
+                    }
+                }
+
+                var smintIoMetadataElement = new SmintIoMetadataElement()
+                {
+                    Key = key,
+                    Values = values
+                };
+
+                result.Add(smintIoMetadataElement);
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate)
         {
-            _logger.LogInformation($"Receiving assets from SmintIo...");
+            _logger.LogInformation("Receiving assets from Smint.io...");
 
             var result = await LoadAssetsAsync(minDate);
             
@@ -90,20 +197,15 @@ namespace Client.Providers.Impl
                     });
         }
 
-
         private async Task<IEnumerable<SmintIoAsset>> LoadAssetsAsync(DateTimeOffset? minDate)
         {
-            var cptClient = new CLAPICOpenApiClient(_http);
-
-            cptClient.BaseUrl = $"https://{_options.TenantId}-clapi.smint.io/consumer/v1";
-
-            cptClient.AccessToken = _authDataProvider.SmintIo.AccessToken;
+            _clapicOpenApiClient.AccessToken = _authDataProvider.SmintIo.AccessToken;
 
             IList<SmintIoAsset> assets = new List<SmintIoAsset>();
 
             SyncLicensePurchaseTransactionQueryResult syncLptQueryResult = await _retryPolicy.ExecuteAsync(async () =>
             {
-                return await cptClient.GetLicensePurchaseTransactionsForSyncAsync(
+                return await _clapicOpenApiClient.GetLicensePurchaseTransactionsForSyncAsync(
                     lastUpdatedAtFrom: minDate,
                     limit: 10);
             });
@@ -115,11 +217,29 @@ namespace Client.Providers.Impl
 
             foreach (var lpt in syncLptQueryResult.License_purchase_transactions)
             {
-                var licenseUsageRestrictions = lpt.License_usage_restrictions
-                    .Select(lur => lur.Effective_is_editorial_use ?? false)
-                    .ToList();
+                bool? isEditorialUse = null;
 
-                bool isEditorialUse = licenseUsageRestrictions.Contains(true);
+                foreach (var license_usage_constraint in lpt.License_usage_constraints)
+                {
+                    // make sure we do not store editorial use information if no information is there!
+
+                    if (license_usage_constraint.Effective_is_editorial_use != null)
+                    {
+                        if (license_usage_constraint.Effective_is_editorial_use == true)
+                        {
+                            // if we have a restrictions, always indicate
+
+                            isEditorialUse = true;
+                        }
+                        else if (license_usage_constraint.Effective_is_editorial_use == false)
+                        {
+                            // if we have no restriction, only store, if we have no other restriction
+
+                            if (isEditorialUse == null)
+                                isEditorialUse = false;
+                        }
+                    }
+                }
 
                 string url = $"https://{_options.TenantId}.smint.io/project/{lpt.Project_uuid}/content-element/{lpt.Content_element.Uuid}";
 
@@ -127,11 +247,12 @@ namespace Client.Providers.Impl
                 {
                     LPTUuid = lpt.Uuid,
                     CartPTUuid = lpt.Cart_purchase_transaction_uuid,
+                    State = lpt.State,
                     Provider = lpt.Content_element.Provider,
                     Name = GetValuesForImportLanguages(lpt.Content_element.Name),
                     Description = GetValuesForImportLanguages(lpt.Content_element.Description),
                     Keywords = GetGroupedValuesForImportLanguages(lpt.Content_element.Keywords),
-                    Categories = GetGroupedValuesForImportLanguages(lpt.Content_element.Categories),
+                    Category = lpt.Content_element.Content_category,
                     ReleaseDetail = GetReleaseDetails(lpt),
                     CopyrightNotices = GetValuesForImportLanguages(lpt.Content_element.Copyright_notices),
                     ProjectUuid = lpt.Project_uuid,
@@ -141,11 +262,12 @@ namespace Client.Providers.Impl
                     LicenseeUuid = lpt.Licensee_uuid,
                     LicenseeName = lpt.Licensee_name,
                     LicenseType = lpt.Offering.License_type,
+                    LicenseText = GetValuesForImportLanguages(lpt.Offering.License_text.Effective_text),
                     LicenseOptions = GetLicenseOptions(lpt),
-                    UsageRestrictions = GetUsageRestrictions(lpt),
-                    DownloadRestrictions = GetDownloadRestrictions(lpt),
+                    UsageConstraints = GetUsageConstraints(lpt),
+                    DownloadConstraints = GetDownloadConstraints(lpt),
                     EffectiveIsEditorialUse = isEditorialUse,
-                    SmintIoUrl = url,                    
+                    SmintIoUrl = url,
                     PurchasedAt = lpt.Purchased_at,
                     CreatedAt = lpt.Created_at,
                     LptLastUpdatedAt = lpt.Last_updated_at ?? lpt.Created_at ?? DateTimeOffset.Now,
@@ -154,7 +276,7 @@ namespace Client.Providers.Impl
                 if (lpt.Can_be_synced ?? false)
                 {
                     var downloadUrl =
-                        await cptClient.GetRawDownloadLicensePurchaseTransactionUrlAsync(asset.CartPTUuid,
+                        await _clapicOpenApiClient.GetRawDownloadLicensePurchaseTransactionUrlAsync(asset.CartPTUuid,
                             asset.LPTUuid);
 
                     asset.DownloadUrl = downloadUrl;
@@ -187,42 +309,54 @@ namespace Client.Providers.Impl
             return options;
         }
 
-        private List<SmintIoUsageRestrictions> GetUsageRestrictions(SyncLicensePurchaseTransaction lpt)
+        private List<SmintIoUsageConstraints> GetUsageConstraints(SyncLicensePurchaseTransaction lpt)
         {
-            if (lpt.License_usage_restrictions == null || lpt.License_usage_restrictions.Count == 0)
+            if (lpt.License_usage_constraints == null || lpt.License_usage_constraints.Count == 0)
             {
                 return null;
             }
 
-            List<SmintIoUsageRestrictions> restrictions = new List<SmintIoUsageRestrictions>();
+            List<SmintIoUsageConstraints> constraints = new List<SmintIoUsageConstraints>();
 
-            foreach (var restriction in lpt.License_usage_restrictions)
+            foreach (var constraint in lpt.License_usage_constraints)
             {
-                restrictions.Add(new SmintIoUsageRestrictions()
+                constraints.Add(new SmintIoUsageConstraints()
                 {
-                    EffectiveAllowedGeographies = restriction.Effective_allowed_geographies != null ? String.Join(",", restriction.Effective_allowed_geographies) : null,
-                    EffectiveRestrictedGeographies = restriction.Effective_allowed_geographies != null ? String.Join(",", restriction.Effective_restricted_geographies) : null,
-                    EffectiveToBeUsedUntil = restriction.Effective_to_be_used_until,
-                    EffectiveValidFrom = restriction.Effective_valid_from,
-                    EffectiveValidUntil =  restriction.Effective_valid_until                  
+                    EffectiveIsExclusive = constraint.Effective_is_exclusive,
+                    EffectiveAllowedUsages = constraint.Effective_allowed_usages,
+                    EffectiveRestrictedUsages = constraint.Effective_restricted_usages,
+                    EffectiveAllowedSizes = constraint.Effective_allowed_sizes,
+                    EffectiveRestrictedSizes = constraint.Effective_restricted_sizes,
+                    EffectiveAllowedPlacements = constraint.Effective_allowed_placements,
+                    EffectiveRestrictedPlacements = constraint.Effective_restricted_placements,
+                    EffectiveAllowedDistributions = constraint.Effective_allowed_distributions,
+                    EffectiveRestrictedDistributions = constraint.Effective_restricted_distributions,
+                    EffectiveAllowedGeographies = constraint.Effective_allowed_geographies,
+                    EffectiveRestrictedGeographies = constraint.Effective_restricted_geographies,
+                    EffectiveAllowedVerticals = constraint.Effective_allowed_verticals,
+                    EffectiveRestrictedVerticals = constraint.Effective_restricted_verticals,
+                    EffectiveToBeUsedUntil = constraint.Effective_to_be_used_until,
+                    EffectiveValidFrom = constraint.Effective_valid_from,
+                    EffectiveValidUntil = constraint.Effective_valid_until,
+                    EffectiveIsEditorialUse = constraint.Effective_is_editorial_use
                 });
             }
 
-            return restrictions;
+            return constraints;
         }
 
-        private SmintIoDownloadRestrictions GetDownloadRestrictions(SyncLicensePurchaseTransaction lpt)
+        private SmintIoDownloadConstraints GetDownloadConstraints(SyncLicensePurchaseTransaction lpt)
         {
-            if (lpt.License_download_restrictions == null)
+            if (lpt.License_download_constraints == null)
             {
                 return null;
             }
 
-            return new SmintIoDownloadRestrictions()
+            return new SmintIoDownloadConstraints()
             {
-                EffectiveMaxUsers = lpt.License_download_restrictions.Effective_max_usages,
-                EffectiveMaxUsages = lpt.License_download_restrictions.Effective_max_usages,
-                EffectiveMaxDownloads = lpt.License_download_restrictions.Effective_max_downloads
+                EffectiveMaxDownloads = lpt.License_download_constraints.Effective_max_downloads,
+                EffectiveMaxUsers = lpt.License_download_constraints.Effective_max_users,
+                EffectiveMaxReuses = lpt.License_download_constraints.Effective_max_reuses
             };
         }
 
@@ -239,7 +373,7 @@ namespace Client.Providers.Impl
                 PropertyReleaseState = lpt.Content_element.Release_details.Property_release_state,
                 ProviderAllowedUseComment = GetValuesForImportLanguages(lpt.Content_element.Release_details.Provider_allowed_use_comment),
                 ProviderReleaseComment = GetValuesForImportLanguages(lpt.Content_element.Release_details.Provider_release_comment),
-                ProviderUsageRestrictions = GetValuesForImportLanguages(lpt.Content_element.Release_details.Provider_usage_restrictions)
+                ProviderUsageConstraints = GetValuesForImportLanguages(lpt.Content_element.Release_details.Provider_usage_constraints)
             };
         }
 

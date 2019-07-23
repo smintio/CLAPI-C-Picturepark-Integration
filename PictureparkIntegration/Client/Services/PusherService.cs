@@ -100,7 +100,9 @@ namespace Client.Services
             {
                 _logger.LogInformation("Received Pusher event");
 
-                await _syncJob.SynchronizeAssetsAsync();
+                // do not sync generic metadata, because we need to be fast here
+
+                await _syncJob.SynchronizeAsync(synchronizeGenericMetadata: false);
             });
         }
 

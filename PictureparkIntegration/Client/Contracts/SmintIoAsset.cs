@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Picturepark.SDK.V1.Contract.Attributes;
+using SmintIo.CLAPI.Consumer.Client.Generated;
 
 namespace Client.Contracts
 {
@@ -9,13 +10,16 @@ namespace Client.Contracts
         public string LPTUuid { get; set; }
         public string CartPTUuid { get; set; }
 
+        public LicensePurchaseTransactionStateEnum? State { get; set; }
+
         public string Provider { get; set; }
 
         public IDictionary<string, string> Name { get; set; }
         public IDictionary<string, string> Description { get; set; }
 
         public IDictionary<string, string[]> Keywords { get; set; }
-        public IDictionary<string, string[]> Categories { get; set; }
+
+        public string Category { get; set; }
 
         public SmintIoReleaseDetail ReleaseDetail { get; set; }
 
@@ -31,12 +35,14 @@ namespace Client.Contracts
         public string LicenseeName { get; set; }
 
         public string LicenseType { get; set; }
+
+        public IDictionary<string, string> LicenseText { get; set; }
         public IList<SmintIoLicenseOptions> LicenseOptions { get; set; }
 
-        public IList<SmintIoUsageRestrictions> UsageRestrictions { get; set; }
-        public SmintIoDownloadRestrictions DownloadRestrictions { get; set; }
+        public IList<SmintIoUsageConstraints> UsageConstraints { get; set; }
+        public SmintIoDownloadConstraints DownloadConstraints { get; set; }
 
-        public bool EffectiveIsEditorialUse { get; set; }
+        public bool? EffectiveIsEditorialUse { get; set; }
 
         public string DownloadUrl { get; set; }
         public string SmintIoUrl { get; set; }

@@ -32,6 +32,19 @@ namespace Client.Providers.Impl
 
         private bool _disposed;
 
+        private IEnumerable<PictureparkListItem> _contentProviderCache;
+        private IEnumerable<PictureparkListItem> _contentCategoryCache;
+
+        private IEnumerable<PictureparkListItem> _licenseTypeCache;
+        private IEnumerable<PictureparkListItem> _releaseStateCache;
+
+        private IEnumerable<PictureparkListItem> _licenseUsageCache;
+        private IEnumerable<PictureparkListItem> _licenseSizeCache;
+        private IEnumerable<PictureparkListItem> _licensePlacementCache;
+        private IEnumerable<PictureparkListItem> _licenseDistributionCache;
+        private IEnumerable<PictureparkListItem> _licenseGeographyCache;
+        private IEnumerable<PictureparkListItem> _licenseVerticalCache;
+
         private readonly ILogger _logger;
 
         public PictureparkApiClientProviderImpl(
@@ -41,6 +54,7 @@ namespace Client.Providers.Impl
         {
             _options = optionsAccessor.CurrentValue;
             _authDataProvider = authDataProvider;
+
             _disposed = false;
 
             _httpClient = new HttpClient(new PictureparkRetryHandler()) {
@@ -72,6 +86,295 @@ namespace Client.Providers.Impl
                     {
                         _logger.LogError(ex, "Error communicating to Picturepark");
                     });
+        }
+
+        public void ClearCache()
+        {
+            _contentProviderCache = null;
+            _contentCategoryCache = null;
+
+            _licenseTypeCache = null;
+            _releaseStateCache = null;
+
+            _licenseUsageCache = null;
+            _licenseSizeCache = null;
+            _licensePlacementCache = null;
+            _licenseDistributionCache = null;
+            _licenseGeographyCache = null;
+            _licenseVerticalCache = null;
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetContentProvidersAsync()
+        {
+            if (_contentProviderCache != null)
+                return _contentProviderCache;
+
+            _contentProviderCache = await GetListItemsAsync(nameof(ContentProvider));
+
+            return _contentProviderCache;
+        }
+        
+        public async Task ImportContentProvidersAsync(IEnumerable<PictureparkListItem> contentProviders)
+        {
+            _logger.LogInformation("Importing content providers to Picturepark...");
+
+            await ImportListItemsAsync(nameof(ContentProvider), contentProviders);
+
+            _logger.LogInformation($"Imported {contentProviders.Count()} content providers to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetContentCategoriesAsync()
+        {
+            if (_contentCategoryCache != null)
+                return _contentCategoryCache;
+
+            _contentCategoryCache = await GetListItemsAsync(nameof(ContentCategory));
+
+            return _contentCategoryCache;
+        }
+
+        public async Task ImportContentCategoriesAsync(IEnumerable<PictureparkListItem> contentCategories)
+        {
+            _logger.LogInformation("Importing content categories to Picturepark...");
+
+            await ImportListItemsAsync(nameof(ContentCategory), contentCategories);
+
+            _logger.LogInformation($"Imported {contentCategories.Count()} content categories to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetLicenseTypesAsync()
+        {
+            if (_licenseTypeCache != null)
+                return _licenseTypeCache;
+
+            _licenseTypeCache = await GetListItemsAsync(nameof(LicenseType));
+
+            return _licenseTypeCache;
+        }
+
+        public async Task ImportLicenseTypesAsync(IEnumerable<PictureparkListItem> licenseTypes)
+        {
+            _logger.LogInformation("Importing license types to Picturepark...");
+
+            await ImportListItemsAsync(nameof(LicenseType), licenseTypes);
+
+            _logger.LogInformation($"Imported {licenseTypes.Count()} license types to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetReleaseStatesAsync()
+        {
+            if (_releaseStateCache != null)
+                return _releaseStateCache;
+
+            _releaseStateCache = await GetListItemsAsync(nameof(ReleaseState));
+
+            return _releaseStateCache;
+        }
+
+        public async Task ImportReleaseStatesAsync(IEnumerable<PictureparkListItem> releaseStates)
+        {
+            _logger.LogInformation("Importing release states to Picturepark...");
+
+            await ImportListItemsAsync(nameof(ReleaseState), releaseStates);
+
+            _logger.LogInformation($"Imported {releaseStates.Count()} release states to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetLicenseUsagesAsync()
+        {
+            if (_licenseUsageCache != null)
+                return _licenseUsageCache;
+
+            _licenseUsageCache = await GetListItemsAsync(nameof(LicenseUsage));
+
+            return _licenseUsageCache;
+        }
+
+        public async Task ImportLicenseUsagesAsync(IEnumerable<PictureparkListItem> licenseUsages)
+        {
+            _logger.LogInformation("Importing license usages to Picturepark...");
+
+            await ImportListItemsAsync(nameof(LicenseUsage), licenseUsages);
+
+            _logger.LogInformation($"Imported {licenseUsages.Count()} license usages to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetLicenseSizesAsync()
+        {
+            if (_licenseSizeCache != null)
+                return _licenseSizeCache;
+
+            _licenseSizeCache = await GetListItemsAsync(nameof(LicenseSize));
+
+            return _licenseSizeCache;
+        }
+
+        public async Task ImportLicenseSizesAsync(IEnumerable<PictureparkListItem> licenseSizes)
+        {
+            _logger.LogInformation("Importing license sizes to Picturepark...");
+
+            await ImportListItemsAsync(nameof(LicenseSize), licenseSizes);
+
+            _logger.LogInformation($"Imported {licenseSizes.Count()} license sizes to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetLicensePlacementsAsync()
+        {
+            if (_licensePlacementCache != null)
+                return _licensePlacementCache;
+
+            _licensePlacementCache = await GetListItemsAsync(nameof(LicensePlacement));
+
+            return _licensePlacementCache;
+        }
+
+        public async Task ImportLicensePlacementsAsync(IEnumerable<PictureparkListItem> licensePlacements)
+        {
+            _logger.LogInformation("Importing license placements to Picturepark...");
+
+            await ImportListItemsAsync(nameof(LicensePlacement), licensePlacements);
+
+            _logger.LogInformation($"Imported {licensePlacements.Count()} license placements to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetLicenseDistributionsAsync()
+        {
+            if (_licenseDistributionCache != null)
+                return _licenseDistributionCache;
+
+            _licenseDistributionCache = await GetListItemsAsync(nameof(LicenseDistribution));
+
+            return _licenseDistributionCache;
+        }
+
+        public async Task ImportLicenseDistributionsAsync(IEnumerable<PictureparkListItem> licenseDistributions)
+        {
+            _logger.LogInformation("Importing license distributions to Picturepark...");
+
+            await ImportListItemsAsync(nameof(LicenseDistribution), licenseDistributions);
+
+            _logger.LogInformation($"Imported {licenseDistributions.Count()} license distributions to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetLicenseGeographiesAsync()
+        {
+            if (_licenseGeographyCache != null)
+                return _licenseGeographyCache;
+
+            _licenseGeographyCache = await GetListItemsAsync(nameof(LicenseGeography));
+
+            return _licenseGeographyCache;
+        }
+
+        public async Task ImportLicenseGeographiesAsync(IEnumerable<PictureparkListItem> licenseGeographies)
+        {
+            _logger.LogInformation("Importing license geographies to Picturepark...");
+
+            await ImportListItemsAsync(nameof(LicenseGeography), licenseGeographies);
+
+            _logger.LogInformation($"Imported {licenseGeographies.Count()} license geographies to Picturepark");
+        }
+
+        public async Task<IEnumerable<PictureparkListItem>> GetLicenseVerticalsAsync()
+        {
+            if (_licenseVerticalCache != null)
+                return _licenseVerticalCache;
+
+            _licenseVerticalCache = await GetListItemsAsync(nameof(LicenseVertical));
+
+            return _licenseVerticalCache;
+        }
+
+        public async Task ImportLicenseVerticalsAsync(IEnumerable<PictureparkListItem> licenseVerticals)
+        {
+            _logger.LogInformation("Importing license verticals to Picturepark...");
+
+            await ImportListItemsAsync(nameof(LicenseVertical), licenseVerticals);
+
+            _logger.LogInformation($"Imported {licenseVerticals.Count()} license verticals to Picturepark");
+        }
+
+        private async Task<IEnumerable<PictureparkListItem>> GetListItemsAsync(string schemaId)
+        {
+            try
+            {
+                var schemaIds = new[] { schemaId };
+
+                var searchResult = await _client.ListItem.SearchAsync(new ListItemSearchRequest()
+                {
+                    SchemaIds = schemaIds,
+                    IncludeContentData = true
+                });
+
+                return searchResult.Results.Select(searchResultInner =>
+                {
+                    var dataDictionary = searchResultInner.ConvertTo<DataDictionary>();
+
+                    return new PictureparkListItem()
+                    {
+                        PictureparkListItemId = searchResultInner.Id,
+                        SmintIoKey = (string)dataDictionary["key"],
+                        Content = dataDictionary      
+                    };
+                });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting list items");
+
+                throw;
+            }
+        }
+
+        private async Task ImportListItemsAsync(string schemaId, IEnumerable<PictureparkListItem> listItems)
+        {
+            try
+            {
+                var existingListItems = await GetListItemsAsync(schemaId);
+
+                foreach (var listItem in listItems)
+                {                    
+                    var existingListItem = existingListItems.FirstOrDefault(existingListItemInner => 
+                        string.Equals(existingListItemInner.SmintIoKey, listItem.SmintIoKey));
+
+                    if (existingListItem != null)
+                    {
+                        var listItemUpdateRequest = new ListItemUpdateRequest()
+                        {
+                            Content = listItem.Content
+                        };
+
+                        await _client.ListItem.UpdateAsync(existingListItem.PictureparkListItemId, listItemUpdateRequest);
+                    }
+                    else
+                    {
+                        var listItemCreateRequest = new ListItemCreateRequest()
+                        {
+                            // TODO simplify by defining it ourselves - Picturepark is not ready yet
+                            // ListItemId = listItem.Id,
+                            Content = listItem.Content,
+                            ContentSchemaId = schemaId
+                        };
+
+                        await _client.ListItem.CreateAsync(listItemCreateRequest);
+                    }
+                }
+
+                var noMoreExistingListItems = existingListItems.Where(existingListItemInner =>
+                    !listItems.Any(listItem => string.Equals(existingListItemInner.SmintIoKey, listItem.SmintIoKey)));
+
+                foreach (var noMoreExistingListItem in noMoreExistingListItems)
+                {
+                    await _client.ListItem.DeleteAsync(noMoreExistingListItem.PictureparkListItemId);
+                }
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error importing list items");
+
+                throw;
+            }
         }
 
         public async Task ImportAssetsAsync(IEnumerable<PictureparkAsset> assets)
@@ -120,7 +423,7 @@ namespace Client.Providers.Impl
                     fileTransfers.Add(new FileTransferCreateItem
                     {
                         FileId = file.Id,
-                        LayerSchemaIds = new[] { nameof(SmintIoContentLayer), nameof(SmintIoLicenseLayer) },
+                        LayerSchemaIds = new[] { nameof(ContentLayer), nameof(LicenseLayer) },
                         Metadata = asset.Metadata
                     });
                 }
@@ -191,8 +494,30 @@ namespace Client.Providers.Impl
 
         public async Task InitSchemasAsync()
         {
-            await InitSchemaAsync(typeof(SmintIoContentLayer));
-            await InitSchemaAsync(typeof(SmintIoLicenseLayer));
+            bool updateSchemaOnStart = _options.UpdateSchemaOnStart;
+
+            if (!updateSchemaOnStart)
+            {
+                _logger.LogInformation("Updating the Picturepark schema on start has been turned off");
+
+                return;
+            }
+
+            _logger.LogInformation("Initializing Picturpark schemas...");
+
+            _logger.LogInformation("Initializing Picturepark content layer schema...");
+
+            await InitSchemaAsync(typeof(ContentLayer));
+
+            _logger.LogInformation("Initialized Picturepark content layer schema");
+
+            _logger.LogInformation("Initializing Picturepark license layer schema...");
+
+            await InitSchemaAsync(typeof(LicenseLayer));
+
+            _logger.LogInformation("Initialized Picturepark license layer schema");
+
+            _logger.LogInformation("Initialized Picturepark schemas");
         }
 
         private async Task InitSchemaAsync(Type type)
@@ -200,22 +525,17 @@ namespace Client.Providers.Impl
             var schemas = await _client.Schema.GenerateSchemasAsync(type).ConfigureAwait(false);
 
             var schemasToCreate = new List<SchemaDetail>();
+            var schemasToUpdate = new List<SchemaDetail>();
 
             foreach (var schema in schemas)
             {
                 if (!await _client.Schema.ExistsAsync(schema.Id).ConfigureAwait(false))
                 {
                     schemasToCreate.Add(schema);
-                    
-                    if(schema.Id == nameof(SmintIoContentLayer))
-                    {
-                        schema.Names = new TranslatedStringDictionary(_options.ContentLayerNames);
-                    }
-
-                    if (schema.Id == nameof(SmintIoLicenseLayer))
-                    {
-                        schema.Names = new TranslatedStringDictionary(_options.LicenseLayerNames);
-                    }
+                } 
+                else
+                {
+                    schemasToUpdate.Add(schema);
                 }
             }
 
@@ -225,8 +545,34 @@ namespace Client.Providers.Impl
 
                 await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
 
-                await AddSchemaToFileTypes(nameof(SmintIoContentLayer));
-                await AddSchemaToFileTypes(nameof(SmintIoLicenseLayer));
+                foreach (var schema in schemasToCreate)
+                {
+                    if (schema.Id == nameof(ContentLayer))
+                    {
+                        await AddSchemaToFileTypes(nameof(ContentLayer));
+                    }
+                    else if (schema.Id == nameof(LicenseLayer))
+                    {
+                        await AddSchemaToFileTypes(nameof(LicenseLayer));
+                    }
+                }
+            }
+
+            if (schemasToUpdate.Any())
+            {
+                foreach (var schema in schemasToUpdate)
+                {
+                    await _client.Schema.UpdateAsync(schema, false).ConfigureAwait(false);
+
+                    if (schema.Id == nameof(ContentLayer))
+                    {
+                        await AddSchemaToFileTypes(nameof(ContentLayer));
+                    }
+                    else if (schema.Id == nameof(LicenseLayer))
+                    {
+                        await AddSchemaToFileTypes(nameof(LicenseLayer));
+                    }
+                }
             }
         }
 
@@ -295,7 +641,7 @@ namespace Client.Providers.Impl
 
             var settings = new PictureparkServiceSettings(authClient);
 
-            _client = new PictureparkService(settings, _httpClient);            
+            _client = new PictureparkService(settings, _httpClient);
         }
 
         private void Dispose(bool disposing)
