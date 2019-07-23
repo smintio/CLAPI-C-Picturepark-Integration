@@ -320,7 +320,7 @@ namespace Client.Jobs.Impl
             if (string.IsNullOrEmpty(smintIoKey))
                 return null;
 
-            var licenseTypeListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var licenseTypeListItems = await _pictureparkClient.GetLicenseTypesAsync();
 
             return licenseTypeListItems.First(licenseTypeListItem => string.Equals(licenseTypeListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
         }
@@ -400,7 +400,7 @@ namespace Client.Jobs.Impl
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
 
-            var licenseUsagesListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var licenseUsagesListItems = await _pictureparkClient.GetLicenseUsagesAsync();
 
             return licenseUsagesListItems
                 .Where(licenseUsageListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseUsageListItem.SmintIoKey, smintIoKey)))
@@ -412,7 +412,7 @@ namespace Client.Jobs.Impl
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
 
-            var licenseSizesListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var licenseSizesListItems = await _pictureparkClient.GetLicenseSizesAsync();
 
             return licenseSizesListItems
                 .Where(licenseSizeListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseSizeListItem.SmintIoKey, smintIoKey)))
@@ -424,7 +424,7 @@ namespace Client.Jobs.Impl
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
 
-            var licensePlacementsListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var licensePlacementsListItems = await _pictureparkClient.GetLicensePlacementsAsync();
 
             return licensePlacementsListItems
                 .Where(licensePlacementListItem => smintIoKeys.Any(smintIoKey => string.Equals(licensePlacementListItem.SmintIoKey, smintIoKey)))
@@ -436,7 +436,7 @@ namespace Client.Jobs.Impl
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
 
-            var licenseDistributionsListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var licenseDistributionsListItems = await _pictureparkClient.GetLicenseDistributionsAsync();
 
             return licenseDistributionsListItems
                 .Where(licenseDistributionListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseDistributionListItem.SmintIoKey, smintIoKey)))
@@ -448,7 +448,7 @@ namespace Client.Jobs.Impl
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
 
-            var licenseGeographiesListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var licenseGeographiesListItems = await _pictureparkClient.GetLicenseGeographiesAsync();
 
             return licenseGeographiesListItems
                 .Where(licenseGeographyListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseGeographyListItem.SmintIoKey, smintIoKey)))
@@ -460,7 +460,7 @@ namespace Client.Jobs.Impl
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
 
-            var licenseVerticalsListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var licenseVerticalsListItems = await _pictureparkClient.GetLicenseVerticalsAsync();
 
             return licenseVerticalsListItems
                 .Where(licenseVerticalListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseVerticalListItem.SmintIoKey, smintIoKey)))
@@ -502,7 +502,7 @@ namespace Client.Jobs.Impl
             if (string.IsNullOrEmpty(smintIoKey))
                 return null;
 
-            var releaseStateListItems = await _pictureparkClient.GetContentCategoriesAsync();
+            var releaseStateListItems = await _pictureparkClient.GetReleaseStatesAsync();
 
             return releaseStateListItems.First(releaseStateListItem => string.Equals(releaseStateListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
         }
