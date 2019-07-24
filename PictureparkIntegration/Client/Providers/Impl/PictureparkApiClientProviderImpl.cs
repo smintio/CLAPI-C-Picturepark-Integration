@@ -434,7 +434,7 @@ namespace Client.Providers.Impl
 
                 foreach (FileTransfer file in files.Results)
                 {
-                    var asset = assets.FirstOrDefault(a => a.DownloadUrl.Contains(file.Name));
+                    var asset = assets.FirstOrDefault(assetInner => string.Equals(assetInner.Id, file.Identifier));
 
                     var fileTransferCreateItem = new FileTransferCreateItem
                     {
@@ -635,7 +635,7 @@ namespace Client.Providers.Impl
 
         private async Task<CreateTransferResult> CreateFileTransferAsync(string transferIdentifier, IEnumerable<PictureparkAsset> assets)
         {
-            var filePaths = assets.Select(asset => new FileLocations(asset.DownloadUrl)).ToList();
+            var filePaths = assets.Select(asset => new FileLocations(asset.DownloadUrl, asset.RecommendedFileName, asset.Id)).ToList();
 
             var request = new CreateTransferRequest
             {
