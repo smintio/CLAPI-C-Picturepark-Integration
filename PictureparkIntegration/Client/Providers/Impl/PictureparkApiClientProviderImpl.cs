@@ -436,7 +436,7 @@ namespace Client.Providers.Impl
                 {
                     var asset = assets.FirstOrDefault(a => a.DownloadUrl.Contains(file.Name));
 
-                    fileTransfers.Add(new FileTransferCreateItem
+                    var fileTransferCreateItem = new FileTransferCreateItem
                     {
                         FileId = file.Id,
                         LayerSchemaIds = new[] {
@@ -444,7 +444,9 @@ namespace Client.Providers.Impl
                             nameof(LicenseLayer)
                         },
                         Metadata = asset.Metadata
-                    });
+                    };
+
+                    fileTransfers.Add(fileTransferCreateItem);
                 }
 
                 var partialRequest = new ImportTransferPartialRequest()

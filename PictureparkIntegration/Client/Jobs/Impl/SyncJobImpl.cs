@@ -237,7 +237,7 @@ namespace Client.Jobs.Impl
                     Id = asset.LPTUuid
                 };
 
-                await DownloadFileAsync(new Uri(targetAsset.DownloadUrl), fileName);
+                await DownloadFileAsync(new Uri(asset.DownloadUrl), fileName);
 
                 targetAsset.Metadata = new DataDictionary()
                 {
@@ -262,34 +262,34 @@ namespace Client.Jobs.Impl
 
             var dataDictionary = new DataDictionary
             {
-                { "ContentLayer.contentProvider", new { _refId = contentProvider } },
-                { "ContentLayer.name", asset.Name },
-                { "ContentLayer.category", new { _refId = contentCategory } },
-                { "ContentLayer.smintIoUrl", asset.SmintIoUrl },
-                { "ContentLayer.purchasedAt", asset.PurchasedAt },
-                { "ContentLayer.createdAt", asset.CreatedAt }
+                { "contentProvider", new { _refId = contentProvider } },
+                { "name", asset.Name },
+                { "category", new { _refId = contentCategory } },
+                { "smintIoUrl", asset.SmintIoUrl },
+                { "purchasedAt", asset.PurchasedAt },
+                { "createdAt", asset.CreatedAt }
             };
 
             if (!string.IsNullOrEmpty(asset.ProjectUuid))
-                dataDictionary.Add("ContentLayer.projectUuid", asset.ProjectUuid);
+                dataDictionary.Add("projectUuid", asset.ProjectUuid);
 
             if (asset.ProjectName?.Count > 0)
-                dataDictionary.Add("ContentLayer.projectName", asset.ProjectName);
+                dataDictionary.Add("projectName", asset.ProjectName);
 
             if (!string.IsNullOrEmpty(asset.CollectionUuid))
-                dataDictionary.Add("ContentLayer.collectionUuid", asset.CollectionUuid);
+                dataDictionary.Add("collectionUuid", asset.CollectionUuid);
 
             if (asset.CollectionName?.Count > 0)
-                dataDictionary.Add("ContentLayer.collectionName", asset.CollectionName);
+                dataDictionary.Add("collectionName", asset.CollectionName);
 
             if (asset.Keywords?.Count > 0)
-                dataDictionary.Add("ContentLayer.keywords", keywords);
+                dataDictionary.Add("keywords", keywords);
 
             if (asset.Description?.Count > 0)
-                dataDictionary.Add("ContentLayer.description", asset.Description);
+                dataDictionary.Add("description", asset.Description);
 
             if (asset.CopyrightNotices?.Count > 0)
-                dataDictionary.Add("ContentLayer.copyrightNotices", asset.CopyrightNotices);
+                dataDictionary.Add("copyrightNotices", asset.CopyrightNotices);
 
             return dataDictionary;
         }
@@ -314,29 +314,29 @@ namespace Client.Jobs.Impl
 
             var dataDictionary = new DataDictionary
             {
-                { "LicenseLayer.licenseeName", asset.LicenseeName },
-                { "LicenseLayer.licenseeUuid", asset.LicenseeUuid },
-                { "LicenseLayer.licenseType", new { _refId = licenseType }},
-                { "LicenseLayer.hasBeenCancelled", asset.State == SmintIo.CLAPI.Consumer.Client.Generated.LicensePurchaseTransactionStateEnum.Cancelled }
+                { "licenseeName", asset.LicenseeName },
+                { "licenseeUuid", asset.LicenseeUuid },
+                { "licenseType", new { _refId = licenseType }},
+                { "hasBeenCancelled", asset.State == SmintIo.CLAPI.Consumer.Client.Generated.LicensePurchaseTransactionStateEnum.Cancelled }
             };
 
             if (asset.LicenseText?.Count > 0)
-                dataDictionary.Add("LicenseLayer.licenseText", asset.LicenseText);
+                dataDictionary.Add("licenseText", asset.LicenseText);
 
             if (asset.LicenseOptions?.Count > 0)
-                dataDictionary.Add("LicenseLayer.licenseOptions", GetLicenseOptions(asset.LicenseOptions));
+                dataDictionary.Add("licenseOptions", GetLicenseOptions(asset.LicenseOptions));
 
             if (asset.UsageConstraints?.Count > 0)
-                dataDictionary.Add("LicenseLayer.usageConstraints", await GetUsageConstraintsAsync(asset.UsageConstraints));
+                dataDictionary.Add("usageConstraints", await GetUsageConstraintsAsync(asset.UsageConstraints));
 
             if (asset.DownloadConstraints != null)
-                dataDictionary.Add("LicenseLayer.downloadConstraints", GetDownloadConstraints(asset.DownloadConstraints));
+                dataDictionary.Add("downloadConstraints", GetDownloadConstraints(asset.DownloadConstraints));
 
             if (asset.ReleaseDetails != null)
-                dataDictionary.Add("LicenseLayer.releaseDetails", await GetReleaseDetailsMetadataAsync(asset.ReleaseDetails));
+                dataDictionary.Add("releaseDetails", await GetReleaseDetailsMetadataAsync(asset.ReleaseDetails));
 
             if (asset.EffectiveIsEditorialUse != null)
-                dataDictionary.Add("LicenseLayer.effectiveIsEditorialUse", asset.EffectiveIsEditorialUse);
+                dataDictionary.Add("effectiveIsEditorialUse", asset.EffectiveIsEditorialUse);
 
             return dataDictionary;
         }
