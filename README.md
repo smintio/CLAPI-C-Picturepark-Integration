@@ -98,4 +98,6 @@ Have fun working with Smint.io! If there is any issues do not hesitate to drop u
 - Linda Gratzer, Dataformers GmbH
 - Reinhard Holzner, Smint.io Smarter Interfaces GmbH
 
-(c) 2019 Smint.io Smarter Interfaces GmbH
+© 2019 Smint.io Smarter Interfaces GmbH
+
+Licensed under the MIT License
