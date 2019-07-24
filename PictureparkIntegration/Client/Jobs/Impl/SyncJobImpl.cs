@@ -154,7 +154,9 @@ namespace Client.Jobs.Impl
 
                         minDate = assets.Max(asset => asset.LptLastUpdatedAt);
 
-                        var transformedAssets = await TransformAssetsAsync(assets, folderName);
+                        var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
+
+                        var transformedAssets = await TransformAssetsAsync(assets, folderName, transferIdentifier);
 
                         await _pictureparkClient.ImportAssetsAsync(transformedAssets);
                     }
@@ -217,7 +219,7 @@ namespace Client.Jobs.Impl
         } 
         */
 
-        private async Task<IEnumerable<PictureparkAsset>> TransformAssetsAsync(IEnumerable<SmintIoAsset> assets, string folderName)
+        private async Task<IEnumerable<PictureparkAsset>> TransformAssetsAsync(IEnumerable<SmintIoAsset> assets, string folderName, string transferIdentifier)
         {
             IList<PictureparkAsset> targetAssets = new List<PictureparkAsset>();
 
@@ -226,8 +228,6 @@ namespace Client.Jobs.Impl
                 _logger.LogInformation($"Transforming and downloading Smint.io LPT {asset.LPTUuid}...");
 
                 string fileName = $"{folderName}/{asset.LPTUuid}.{ExtractFileExtension(asset.DownloadUrl)}";
-
-                var transferIdentifier = Guid.NewGuid().ToString();
 
                 var targetAsset = new PictureparkAsset()
                 {

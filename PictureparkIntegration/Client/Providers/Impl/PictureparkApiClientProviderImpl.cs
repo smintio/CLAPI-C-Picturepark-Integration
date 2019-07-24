@@ -415,14 +415,7 @@ namespace Client.Providers.Impl
         {
             try
             {
-                if (await TransferExistsAsync(transferIdentifier))
-                {
-                    // TODO handle update of metadata if transfer already exists
-
-                    _logger.LogInformation($"Transfer {transferIdentifier} already exists. Skipping import");
-
-                    return;
-                }
+                // TODO handle update of metadata if target file already exists
 
                 _logger.LogInformation($"Starting import of transfer {transferIdentifier}...");
 
