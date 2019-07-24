@@ -59,7 +59,7 @@ Please look at `LoadAssetsAsync` in [SmintIoApiClientProviderImpl.cs](https://gi
 
 *Mapping data*
 
-Mapping data is then specific to your software system. In the example we map the data to Picturepark schemas.
+Mapping data is specific to your software system. In the example we map the data to Picturepark schemas.
 
 Find the Picturepark schema definitions [here](https://github.com/smintio/CLAPI-C-Picturepark-Integration/tree/master/PictureparkIntegration/Client/Contracts/Picturepark). 
 
@@ -75,11 +75,11 @@ The download of the raw binary file is very easy. Once you got the license purch
 
 **Warning:** Please note that we do not only support images, but also (*large*) videos, templates, texts and a lot of other file types. Be prepared to handle those!
 
-**Recommendation:** The raw binary file is stored on our systems with no user-friendly name. Please use the `recommended_file_name` that is being provided in the license purchase transcation to store the file on your side.
+**Recommendation:** The raw binary file is stored on our systems with no user-friendly name. Please use the `recommended_file_name` that is being provided in the license purchase transaction to store the file on your side.
 
 *Exponential backoff*
 
-As mentioned in the Smint.io Integration Guide, it is important to use an Exponential Backoff Strategy to consume foreign APIs. We use *Polly* to do that in our example. Please check out `GetRetryStrategy` in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs) to learn more about how this can be done.
+As mentioned in the Smint.io Integration Guide, it is important to use an Exponential Backoff Strategy when consuming foreign APIs. We use [Polly](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly) to do that in our example. Please check out `GetRetryStrategy` in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs) to learn more about how this can be done.
 
 *UI indicators*
 
@@ -87,7 +87,7 @@ The UI indicators that are **mandatory** as mentioned in the Smint.io Integratio
 
 *Study the Smint.io Integration Guide*
 
-Please also study the Smint.io Integration Guide which has been provided to you when you signed up as a Smint.io Solution Partner. It contains a lot of more details especially on the SDK in general, on authorization and on all the metadata that you need to process.
+Please also study the Smint.io Integration Guide which has been provided to you when you signed up as a Smint.io Solution Partner. It contains a lot of more details especially on the SDK in general, on Single Sign-On, authorization and on all the metadata that you need to process.
 
 **That's it!**
 
