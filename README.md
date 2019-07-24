@@ -7,6 +7,19 @@ If you want to integrate Smint.io to your software system, you should provide a 
 
 **Interesting topics**
 
+*Bugs*
+
+- When all assets are synced, there is an endless loop because the last asset for sync is being read over-and-over again
+
+*Still missing*
+
+Some things are still missing in the implementation and will come up soon:
+
+- Automatically parse keywords to Picturepark taxononmy
+- UI indicators
+- Update of already uploaded assets (updated license purchase transaction metadata)
+- Display generic metadata references with name instead of a GUID in Picturepark
+
 *Generic set-up*
 
 The example is set up in .NET Core, using [HostBuilder](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-2.2). This gives us all benefits of ASP.NET Core (like dependency injection), without all the web based overhead that we do not need.
