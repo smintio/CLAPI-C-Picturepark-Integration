@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Client.Contracts;
 using Client.Contracts.Picturepark;
+using System.Net;
 
 namespace Client.Providers.Impl
 {
@@ -85,6 +86,22 @@ namespace Client.Providers.Impl
                     (ex, timespan, context) =>
                     {
                         _logger.LogError(ex, "Error communicating to Picturepark");
+
+                        if (ex is ApiException apiEx)
+                        {
+                            if (apiEx.StatusCode == (int)HttpStatusCode.TooManyRequests)
+                            {
+                                // too many requests, backoff and try again
+
+                                return;
+                            }
+
+                            // expected error happened server side, most likely our problem, cancel
+
+                            throw ex;
+                        }
+
+                        // some server side or communication issue, backoff and try again
                     });
         }
 
@@ -350,8 +367,6 @@ namespace Client.Providers.Impl
                     {
                         var listItemCreateRequest = new ListItemCreateRequest()
                         {
-                            // TODO simplify by defining it ourselves - Picturepark is not ready yet
-                            // ListItemId = listItem.Id,
                             Content = listItem.Content,
                             ContentSchemaId = schemaId
                         };
@@ -618,7 +633,9 @@ namespace Client.Providers.Impl
             {
                 Name = transferIdentifier,
                 TransferType = TransferType.FileUpload,
-                Files = assets.Select(asset => new TransferUploadFile() { FileName = asset.Id }).ToList()
+                Files = assets.Select(asset => new TransferUploadFile() {
+                    FileName = asset.RecommendedFileName
+                }).ToList()
             };
 
             var uploadOptions = new UploadOptions
@@ -626,7 +643,8 @@ namespace Client.Providers.Impl
                 ChunkSize = 1024 * 1024,
                 ConcurrentUploads = 4,
                 SuccessDelegate = Console.WriteLine,
-                ErrorDelegate = Console.WriteLine
+                ErrorDelegate = Console.WriteLine,
+                WaitForTransferCompletion = true
             };
 
             return await _client.Transfer.UploadFilesAsync(transferIdentifier, filePaths, uploadOptions).ConfigureAwait(false);

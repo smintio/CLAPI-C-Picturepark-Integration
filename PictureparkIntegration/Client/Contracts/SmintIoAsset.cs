@@ -45,6 +45,9 @@ namespace Client.Contracts
         public bool? EffectiveIsEditorialUse { get; set; }
 
         public string DownloadUrl { get; set; }
+
+        public string RecommendedFileName { get; set; }
+
         public string SmintIoUrl { get; set; }
         
         [PictureparkDateTime]

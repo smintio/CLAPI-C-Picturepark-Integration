@@ -12,13 +12,12 @@ using System.Threading.Tasks;
 using Client.Contracts;
 using System.IO;
 using System.Globalization;
+using System.Net;
 
 namespace Client.Providers.Impl
 {
     public sealed class SmintIoApiClientProviderImpl: IDisposable, ISmintIoApiClientProvider
     {
-        private const string ENGLISH_CULTURE_CODE = "en";
-
         private const int MaxRetryAttempts = 5;
 
         private readonly SmintIoAppOptions _options;
@@ -67,96 +66,43 @@ namespace Client.Providers.Impl
 
             _clapicOpenApiClient.AccessToken = _authDataProvider.SmintIo.AccessToken;
 
-            var englishGenericMetadata = await _retryPolicy.ExecuteAsync(async () =>
-                await _clapicOpenApiClient.GetGenericMetadataAsync(ENGLISH_CULTURE_CODE));
-
-            var cultureCount = englishGenericMetadata?.Cultures.Count ?? 0;
-
-            if (cultureCount == 0)
-                throw new Exception("No Smint.io cultures found");            
-
-            var multiCultureGenericMetadata = new Dictionary<string, GenericMetadata>();
-
-            multiCultureGenericMetadata.Add(ENGLISH_CULTURE_CODE, englishGenericMetadata);
-
-            foreach (var culture in englishGenericMetadata.Cultures)
-            {
-                string cultureKey = culture.Key;
-
-                if (string.Equals(cultureKey, ENGLISH_CULTURE_CODE))
-                    continue;
-
-                if (!_options.ImportLanguages.Contains(cultureKey))
-                    continue;
-
-                var cultureGenericMetadata = await _retryPolicy.ExecuteAsync(async () =>
-                    await _clapicOpenApiClient.GetGenericMetadataAsync(cultureKey));
-
-                multiCultureGenericMetadata.Add(cultureKey, cultureGenericMetadata);
-            }
+            var syncGenericMetadata = await _retryPolicy.ExecuteAsync(async () =>
+                await _clapicOpenApiClient.GetGenericMetadataForSyncAsync());
 
             var smintIoGenericMetadata = new SmintIoGenericMetadata();
 
-            smintIoGenericMetadata.ContentProviders = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.Providers);
-            smintIoGenericMetadata.ContentCategories = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.Content_categories);
+            smintIoGenericMetadata.ContentProviders = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.Providers);
+            smintIoGenericMetadata.ContentCategories = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.Content_categories);
 
-            smintIoGenericMetadata.LicenseTypes = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_types);
-            smintIoGenericMetadata.ReleaseStates = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.Release_states);
+            smintIoGenericMetadata.LicenseTypes = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_types);
+            smintIoGenericMetadata.ReleaseStates = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.Release_states);
 
-            smintIoGenericMetadata.LicenseUsages = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_usages);
-            smintIoGenericMetadata.LicenseSizes = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_sizes);
-            smintIoGenericMetadata.LicensePlacements = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_placements);
-            smintIoGenericMetadata.LicenseDistributions = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_distributions);
-            smintIoGenericMetadata.LicenseGeographies = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_geographies);
-            smintIoGenericMetadata.LicenseVerticals = GetGenericMetadataForImportLanguages(englishGenericMetadata, multiCultureGenericMetadata, (genericMetadata) => genericMetadata.License_verticals);
+            smintIoGenericMetadata.LicenseUsages = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_usages);
+            smintIoGenericMetadata.LicenseSizes = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_sizes);
+            smintIoGenericMetadata.LicensePlacements = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_placements);
+            smintIoGenericMetadata.LicenseDistributions = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_distributions);
+            smintIoGenericMetadata.LicenseGeographies = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_geographies);
+            smintIoGenericMetadata.LicenseVerticals = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_verticals);
 
             _logger.LogInformation("Received generic metadata from Smint.io");
 
             return smintIoGenericMetadata;
         }
 
-        private IList<SmintIoMetadataElement> GetGenericMetadataForImportLanguages(GenericMetadata englishGenericMetadata, IDictionary<string, GenericMetadata> multiCultureGenericMetadata, Func<GenericMetadata, ICollection<MetadataElement>> genericMetadataElementsFunc)
+        private IList<SmintIoMetadataElement> GetGroupedMetadataElementsForImportLanguages(LocalizedMetadataElements localizedMetadataElements)
         {
-            var result = new List<SmintIoMetadataElement>();
-
-            var englishGenericMetadataElements = genericMetadataElementsFunc.Invoke(englishGenericMetadata);
-
-            if (englishGenericMetadataElements == null || !englishGenericMetadataElements.Any())
-                return result;
-
-            foreach (var englishGenericMetadataElement in englishGenericMetadataElements)
-            {
-                var key = englishGenericMetadataElement.Key;
-                var values = new Dictionary<string, string>();
-
-                foreach (var culture in multiCultureGenericMetadata.Keys)
+            return localizedMetadataElements
+                .Where(localizedMetadataElement => _options.ImportLanguages.Contains(localizedMetadataElement.Culture))
+                .GroupBy(localizedMetadataElement => localizedMetadataElement.Metadata_element.Key)
+                .Select((group) =>
                 {
-                    if (!_options.ImportLanguages.Contains(culture))
-                        continue;
-
-                    var cultureGenericMetadata = multiCultureGenericMetadata[culture];
-
-                    var cultureGenericMetadataElements = genericMetadataElementsFunc.Invoke(cultureGenericMetadata);
-
-                    var cultureGenericMetadataElement = cultureGenericMetadataElements.FirstOrDefault(
-                        cultureGenericMetadataElementInner => string.Equals(cultureGenericMetadataElementInner.Key, key));
-
-                    if (cultureGenericMetadataElement != null)
+                    return new SmintIoMetadataElement()
                     {
-                        values.Add(culture, cultureGenericMetadataElement.Name);
-                    }
-                }
-
-                var smintIoMetadataElement = new SmintIoMetadataElement()
-                {
-                    Key = key,
-                    Values = values
-                };
-
-                result.Add(smintIoMetadataElement);
-            }
-
-            return result;
+                        Key = group.Key,
+                        Values = group.ToDictionary(metadataElement => metadataElement.Culture, metadataElement => metadataElement.Metadata_element.Name)
+                    };
+                })
+                .ToList();
         }
 
         public async Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate)
@@ -190,10 +136,29 @@ namespace Client.Providers.Impl
 
                         if (ex is ApiException apiEx)
                         {
-                            var result = await _authenticator.RefreshSmintIoTokenAsync(_authDataProvider.SmintIo.RefreshToken);
+                            if (apiEx.StatusCode == (int)HttpStatusCode.Forbidden || apiEx.StatusCode == (int)HttpStatusCode.Unauthorized)
+                            {
+                                var result = await _authenticator.RefreshSmintIoTokenAsync(_authDataProvider.SmintIo.RefreshToken);
 
-                            _authDataProvider.SmintIo.AccessToken = result.AccessToken;
+                                _authDataProvider.SmintIo.AccessToken = result.AccessToken;
+
+                                // backoff and try again 
+
+                                return;
+                            }
+                            else if (apiEx.StatusCode == (int)HttpStatusCode.TooManyRequests)
+                            {
+                                // backoff and try again
+
+                                return;
+                            }
+
+                            // expected error happened server side, most likely our problem, cancel
+
+                            throw ex;
                         }
+
+                        // some server side or communication issue, backoff and try again
                     });
         }
 
@@ -267,6 +232,7 @@ namespace Client.Providers.Impl
                     UsageConstraints = GetUsageConstraints(lpt),
                     DownloadConstraints = GetDownloadConstraints(lpt),
                     EffectiveIsEditorialUse = isEditorialUse,
+                    RecommendedFileName = lpt.Recommended_file_name,
                     SmintIoUrl = url,
                     PurchasedAt = lpt.Purchased_at,
                     CreatedAt = lpt.Created_at,
@@ -377,17 +343,19 @@ namespace Client.Providers.Impl
             };
         }
 
-        private IDictionary<string, string[]> GetGroupedValuesForImportLanguages(LocalizedMetadataElements metadataElements)
+        private IDictionary<string, string[]> GetGroupedValuesForImportLanguages(LocalizedMetadataElements localizedMetadataElements)
         {
-            return metadataElements.Where(str => _options.ImportLanguages.Contains(str.Culture))
-                .GroupBy(str => str.Culture)
-                .ToDictionary(group => group.Key, group => group.Select(localStr => localStr.Metadata_element.Name).ToArray());
+            return localizedMetadataElements
+                .Where(localizedMetadataElement => _options.ImportLanguages.Contains(localizedMetadataElement.Culture))
+                .GroupBy(localizedMetadataElement => localizedMetadataElement.Culture)
+                .ToDictionary(group => group.Key, group => group.Select(localizedMetadataElement => localizedMetadataElement.Metadata_element.Name).ToArray());
         }
 
         private IDictionary<string, string> GetValuesForImportLanguages(LocalizedStrings localizedStrings)
         {
-            return localizedStrings.Where(str => _options.ImportLanguages.Contains(str.Culture))
-                .ToDictionary(str => str.Culture, str => str.Value);
+            return localizedStrings
+                .Where(localizedString => _options.ImportLanguages.Contains(localizedString.Culture))
+                .ToDictionary(localizedString => localizedString.Culture, localizedString => localizedString.Value);
         }
 
         private void Dispose(bool disposing)

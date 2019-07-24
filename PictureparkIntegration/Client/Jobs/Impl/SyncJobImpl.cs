@@ -226,11 +226,12 @@ namespace Client.Jobs.Impl
 
                 string fileName = $"{folderName}/{smintAsset.LPTUuid}.{ExtractFileExtension(smintAsset.DownloadUrl)}";
 
-                var transferIdentifier = $"SMINTIO_LPT_{smintAsset.LPTUuid}";
+                var transferIdentifier = Guid.NewGuid().ToString();
 
                 var ppAsset = new PictureparkAsset()
                 {
                     TransferId = transferIdentifier,
+                    RecommendedFileName = smintAsset.RecommendedFileName,
                     DownloadUrl = fileName,
                     Id = smintAsset.LPTUuid
                 };
@@ -258,22 +259,38 @@ namespace Client.Jobs.Impl
             var contentProvider = await GetContentProviderPictureparkKeyAsync(asset.Provider);
             var contentCategory = await GetContentCategoryPictureparkKeyAsync(asset.Category);
 
-            return new DataDictionary
+            var dataDictionary = new DataDictionary
             {
-                { "provider", contentProvider },
-                { "name", asset.Name?.Count > 0 ? asset.Name : null },
-                { "description", asset.Description?.Count > 0 ? asset.Description : null },
-                { "keywords", keywords?.Count > 0 ? keywords : null },
-                { "category", contentCategory },
-                { "copyrightNotices", asset.CopyrightNotices?.Count > 0 ? asset.CopyrightNotices : null },
-                { "projectUuid", asset.ProjectUuid },
-                { "projectName", asset.ProjectName },
-                { "collectionUuid", asset.CollectionUuid },
-                { "collectionName", asset.CollectionName },
-                { "smintIoUrl", asset.SmintIoUrl },
-                { "purchasedAt", asset.PurchasedAt },
-                { "createdAt", asset.CreatedAt }
+                { "ContentLayer.contentProvider", new { _refId = contentProvider } },
+                { "ContentLayer.name", asset.Name },
+                { "ContentLayer.category", new { _refId = contentCategory } },
+                { "ContentLayer.smintIoUrl", asset.SmintIoUrl },
+                { "ContentLayer.purchasedAt", asset.PurchasedAt },
+                { "ContentLayer.createdAt", asset.CreatedAt }
             };
+
+            if (asset.ProjectUuid != null)
+                dataDictionary.Add("ContentLayer.projectUuid", asset.ProjectUuid);
+
+            if (asset.ProjectName != null)
+                dataDictionary.Add("ContentLayer.projectName", asset.ProjectName);
+
+            if (asset.CollectionUuid != null)
+                dataDictionary.Add("ContentLayer.collectionUuid", asset.CollectionUuid);
+
+            if (asset.CollectionName != null)
+                dataDictionary.Add("ContentLayer.collectionName", asset.CollectionName);
+
+            if (asset.Keywords?.Count > 0)
+                dataDictionary.Add("ContentLayer.keywords", keywords);
+
+            if (asset.Description?.Count > 0)
+                dataDictionary.Add("ContentLayer.description", asset.Description);
+
+            if (asset.CopyrightNotices?.Count > 0)
+                dataDictionary.Add("ContentLayer.copyrightNotices", asset.CopyrightNotices);
+
+            return dataDictionary;
         }
 
         private async Task<string> GetContentProviderPictureparkKeyAsync(string smintIoKey)
