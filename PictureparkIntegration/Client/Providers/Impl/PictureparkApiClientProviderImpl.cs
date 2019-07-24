@@ -72,6 +72,7 @@ namespace Client.Providers.Impl
         public void Dispose()
         {
             Dispose(true);
+
             GC.SuppressFinalize(this);
         }
 
@@ -396,9 +397,9 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing assets to Picturepark...");
 
-            var assetsPerTransfer = assets.GroupBy(asset => asset.TransferId).ToDictionary(group => group.Key, group => group.ToList());
+            var assetsByTransfer = assets.GroupBy(asset => asset.TransferId).ToDictionary(group => group.Key, group => group.ToList());
 
-            foreach (var (key, value) in assetsPerTransfer)
+            foreach (var (key, value) in assetsByTransfer)
             {
                 await _retryPolicy.ExecuteAsync(async () =>
                 {
@@ -406,7 +407,7 @@ namespace Client.Providers.Impl
                 });
             }
 
-            _logger.LogInformation($"Imported {assetsPerTransfer.Count} assets to Picturepark");
+            _logger.LogInformation($"Imported {assets.Count()} assets to Picturepark");
         }
 
         #region PictureparkHelpers
@@ -427,9 +428,9 @@ namespace Client.Providers.Impl
 
                 var fileTransfers = new List<FileTransferCreateItem>();
 
-                var transferResult = await CreateFileTransferAsync(transferIdentifier, assets).ConfigureAwait(false);
+                var transferResult = await CreateFileTransferAsync(transferIdentifier, assets);
 
-                var files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id).ConfigureAwait(false);
+                var files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
 
                 foreach (FileTransfer file in files.Results)
                 {
@@ -438,7 +439,10 @@ namespace Client.Providers.Impl
                     fileTransfers.Add(new FileTransferCreateItem
                     {
                         FileId = file.Id,
-                        LayerSchemaIds = new[] { nameof(ContentLayer), nameof(LicenseLayer) },
+                        LayerSchemaIds = new[] {
+                            nameof(ContentLayer),
+                            nameof(LicenseLayer)
+                        },
                         Metadata = asset.Metadata
                     });
                 }
@@ -448,9 +452,9 @@ namespace Client.Providers.Impl
                     Items = fileTransfers
                 };
 
-                var importResult = await _client.Transfer.PartialImportAsync(transferResult.Transfer.Id, partialRequest).ConfigureAwait(false);
+                var importResult = await _client.Transfer.PartialImportAsync(transferResult.Transfer.Id, partialRequest);
 
-                await _client.BusinessProcess.WaitForCompletionAsync(importResult.BusinessProcessId).ConfigureAwait(false);
+                await _client.BusinessProcess.WaitForCompletionAsync(importResult.BusinessProcessId);
 
                 _logger.LogInformation($"Finished import of transfer {transferIdentifier}");
             }
@@ -497,11 +501,11 @@ namespace Client.Providers.Impl
             return result.Results.Count > 0;
         }
 
-        private async Task<TransferSearchResult> FindTransferByIdentifierAsync(string identifier)
+        private async Task<TransferSearchResult> FindTransferByIdentifierAsync(string transferIdentifier)
         {
             var searchRequest = new TransferSearchRequest()
             {
-                SearchString = identifier
+                SearchString = transferIdentifier
             };
 
             return await _client.Transfer.SearchAsync(searchRequest);
@@ -537,14 +541,14 @@ namespace Client.Providers.Impl
 
         private async Task InitSchemaAsync(Type type)
         {
-            var schemas = await _client.Schema.GenerateSchemasAsync(type).ConfigureAwait(false);
+            var schemas = await _client.Schema.GenerateSchemasAsync(type);
 
             var schemasToCreate = new List<SchemaDetail>();
             var schemasToUpdate = new List<SchemaDetail>();
 
             foreach (var schema in schemas)
             {
-                if (!await _client.Schema.ExistsAsync(schema.Id).ConfigureAwait(false))
+                if (!await _client.Schema.ExistsAsync(schema.Id))
                 {
                     schemasToCreate.Add(schema);
                 } 
@@ -556,7 +560,7 @@ namespace Client.Providers.Impl
 
             if (schemasToCreate.Any())
             {
-                var result = await _client.Schema.CreateManyAsync(schemasToCreate, false).ConfigureAwait(false);
+                var result = await _client.Schema.CreateManyAsync(schemasToCreate, false);
 
                 await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
 
@@ -577,7 +581,7 @@ namespace Client.Providers.Impl
             {
                 foreach (var schema in schemasToUpdate)
                 {
-                    await _client.Schema.UpdateAsync(schema, false).ConfigureAwait(false);
+                    await _client.Schema.UpdateAsync(schema, false);
 
                     if (schema.Id == nameof(ContentLayer))
                     {
@@ -595,7 +599,7 @@ namespace Client.Providers.Impl
         {
             foreach (var type in _options.PictureparkFileTypes)
             {
-                var typeData = await _client.Schema.GetAsync(type).ConfigureAwait(false);
+                var typeData = await _client.Schema.GetAsync(type);
 
                 if (typeData.LayerSchemaIds == null)
                 {
@@ -604,10 +608,11 @@ namespace Client.Providers.Impl
 
                 typeData.LayerSchemaIds.Add(schemaName);
 
-                await _client.Schema.UpdateAsync(typeData, false).ConfigureAwait(false);
+                await _client.Schema.UpdateAsync(typeData, false);
             }
         }
 
+        /*
         private async Task<CreateTransferResult> CreateWebTransferAsync(string transferIdentifier, IEnumerable<PictureparkAsset> assets)
         {
             var request = new CreateTransferRequest
@@ -622,8 +627,9 @@ namespace Client.Providers.Impl
                     Identifier = asset.Id
                 }).ToList()
             };
-            return await _client.Transfer.CreateAndWaitForCompletionAsync(request).ConfigureAwait(false);
+            return await _client.Transfer.CreateAndWaitForCompletionAsync(request);
         }
+        */
 
         private async Task<CreateTransferResult> CreateFileTransferAsync(string transferIdentifier, IEnumerable<PictureparkAsset> assets)
         {
@@ -634,8 +640,8 @@ namespace Client.Providers.Impl
                 Name = transferIdentifier,
                 TransferType = TransferType.FileUpload,
                 Files = assets.Select(asset => new TransferUploadFile() {
-                    FileName = asset.RecommendedFileName
-                }).ToList()
+                        FileName = asset.RecommendedFileName
+                    }).ToList()
             };
 
             var uploadOptions = new UploadOptions
@@ -647,7 +653,7 @@ namespace Client.Providers.Impl
                 WaitForTransferCompletion = true
             };
 
-            return await _client.Transfer.UploadFilesAsync(transferIdentifier, filePaths, uploadOptions).ConfigureAwait(false);
+            return await _client.Transfer.UploadFilesAsync(transferIdentifier, filePaths, uploadOptions);
         }
         #endregion
 
@@ -669,6 +675,7 @@ namespace Client.Providers.Impl
                 if (disposing)
                 {
                     _client?.Dispose();
+
                     _httpClient?.Dispose();
                 }
                 _disposed = true;

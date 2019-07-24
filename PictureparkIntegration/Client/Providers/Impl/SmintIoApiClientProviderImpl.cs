@@ -10,8 +10,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Client.Contracts;
-using System.IO;
-using System.Globalization;
 using System.Net;
 
 namespace Client.Providers.Impl
@@ -119,6 +117,7 @@ namespace Client.Providers.Impl
         public void Dispose()
         {
             Dispose(true);
+
             GC.SuppressFinalize(this);
         }
 
@@ -218,7 +217,7 @@ namespace Client.Providers.Impl
                     Description = GetValuesForImportLanguages(lpt.Content_element.Description),
                     Keywords = GetGroupedValuesForImportLanguages(lpt.Content_element.Keywords),
                     Category = lpt.Content_element.Content_category,
-                    ReleaseDetail = GetReleaseDetails(lpt),
+                    ReleaseDetails = GetReleaseDetails(lpt),
                     CopyrightNotices = GetValuesForImportLanguages(lpt.Content_element.Copyright_notices),
                     ProjectUuid = lpt.Project_uuid,
                     ProjectName = GetValuesForImportLanguages(lpt.Project_name),
@@ -282,33 +281,33 @@ namespace Client.Providers.Impl
                 return null;
             }
 
-            List<SmintIoUsageConstraints> constraints = new List<SmintIoUsageConstraints>();
+            List<SmintIoUsageConstraints> licenseUsageConstraints = new List<SmintIoUsageConstraints>();
 
-            foreach (var constraint in lpt.License_usage_constraints)
+            foreach (var licenseUsageConstraint in lpt.License_usage_constraints)
             {
-                constraints.Add(new SmintIoUsageConstraints()
+                licenseUsageConstraints.Add(new SmintIoUsageConstraints()
                 {
-                    EffectiveIsExclusive = constraint.Effective_is_exclusive,
-                    EffectiveAllowedUsages = constraint.Effective_allowed_usages,
-                    EffectiveRestrictedUsages = constraint.Effective_restricted_usages,
-                    EffectiveAllowedSizes = constraint.Effective_allowed_sizes,
-                    EffectiveRestrictedSizes = constraint.Effective_restricted_sizes,
-                    EffectiveAllowedPlacements = constraint.Effective_allowed_placements,
-                    EffectiveRestrictedPlacements = constraint.Effective_restricted_placements,
-                    EffectiveAllowedDistributions = constraint.Effective_allowed_distributions,
-                    EffectiveRestrictedDistributions = constraint.Effective_restricted_distributions,
-                    EffectiveAllowedGeographies = constraint.Effective_allowed_geographies,
-                    EffectiveRestrictedGeographies = constraint.Effective_restricted_geographies,
-                    EffectiveAllowedVerticals = constraint.Effective_allowed_verticals,
-                    EffectiveRestrictedVerticals = constraint.Effective_restricted_verticals,
-                    EffectiveToBeUsedUntil = constraint.Effective_to_be_used_until,
-                    EffectiveValidFrom = constraint.Effective_valid_from,
-                    EffectiveValidUntil = constraint.Effective_valid_until,
-                    EffectiveIsEditorialUse = constraint.Effective_is_editorial_use
+                    EffectiveIsExclusive = licenseUsageConstraint.Effective_is_exclusive,
+                    EffectiveAllowedUsages = licenseUsageConstraint.Effective_allowed_usages,
+                    EffectiveRestrictedUsages = licenseUsageConstraint.Effective_restricted_usages,
+                    EffectiveAllowedSizes = licenseUsageConstraint.Effective_allowed_sizes,
+                    EffectiveRestrictedSizes = licenseUsageConstraint.Effective_restricted_sizes,
+                    EffectiveAllowedPlacements = licenseUsageConstraint.Effective_allowed_placements,
+                    EffectiveRestrictedPlacements = licenseUsageConstraint.Effective_restricted_placements,
+                    EffectiveAllowedDistributions = licenseUsageConstraint.Effective_allowed_distributions,
+                    EffectiveRestrictedDistributions = licenseUsageConstraint.Effective_restricted_distributions,
+                    EffectiveAllowedGeographies = licenseUsageConstraint.Effective_allowed_geographies,
+                    EffectiveRestrictedGeographies = licenseUsageConstraint.Effective_restricted_geographies,
+                    EffectiveAllowedVerticals = licenseUsageConstraint.Effective_allowed_verticals,
+                    EffectiveRestrictedVerticals = licenseUsageConstraint.Effective_restricted_verticals,
+                    EffectiveToBeUsedUntil = licenseUsageConstraint.Effective_to_be_used_until,
+                    EffectiveValidFrom = licenseUsageConstraint.Effective_valid_from,
+                    EffectiveValidUntil = licenseUsageConstraint.Effective_valid_until,
+                    EffectiveIsEditorialUse = licenseUsageConstraint.Effective_is_editorial_use
                 });
             }
 
-            return constraints;
+            return licenseUsageConstraints;
         }
 
         private SmintIoDownloadConstraints GetDownloadConstraints(SyncLicensePurchaseTransaction lpt)
@@ -318,28 +317,32 @@ namespace Client.Providers.Impl
                 return null;
             }
 
+            var licenseDownloadConstraints = lpt.License_download_constraints;
+
             return new SmintIoDownloadConstraints()
             {
-                EffectiveMaxDownloads = lpt.License_download_constraints.Effective_max_downloads,
-                EffectiveMaxUsers = lpt.License_download_constraints.Effective_max_users,
-                EffectiveMaxReuses = lpt.License_download_constraints.Effective_max_reuses
+                EffectiveMaxDownloads = licenseDownloadConstraints.Effective_max_downloads,
+                EffectiveMaxUsers = licenseDownloadConstraints.Effective_max_users,
+                EffectiveMaxReuses = licenseDownloadConstraints.Effective_max_reuses
             };
         }
 
-        private SmintIoReleaseDetail GetReleaseDetails(SyncLicensePurchaseTransaction lpt)
+        private SmintIoReleaseDetails GetReleaseDetails(SyncLicensePurchaseTransaction lpt)
         {
             if (lpt.Content_element.Release_details == null)
             {
                 return null;
             }
 
-            return new SmintIoReleaseDetail()
+            var releaseDetails = lpt.Content_element.Release_details;
+
+            return new SmintIoReleaseDetails()
             {
-                ModelReleaseState = lpt.Content_element.Release_details.Model_release_state,
-                PropertyReleaseState = lpt.Content_element.Release_details.Property_release_state,
-                ProviderAllowedUseComment = GetValuesForImportLanguages(lpt.Content_element.Release_details.Provider_allowed_use_comment),
-                ProviderReleaseComment = GetValuesForImportLanguages(lpt.Content_element.Release_details.Provider_release_comment),
-                ProviderUsageConstraints = GetValuesForImportLanguages(lpt.Content_element.Release_details.Provider_usage_constraints)
+                ModelReleaseState = releaseDetails.Model_release_state,
+                PropertyReleaseState = releaseDetails.Property_release_state,
+                ProviderAllowedUseComment = GetValuesForImportLanguages(releaseDetails.Provider_allowed_use_comment),
+                ProviderReleaseComment = GetValuesForImportLanguages(releaseDetails.Provider_release_comment),
+                ProviderUsageConstraints = GetValuesForImportLanguages(releaseDetails.Provider_usage_constraints)
             };
         }
 

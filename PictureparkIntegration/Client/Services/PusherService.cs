@@ -18,6 +18,7 @@ namespace Client.Services
         private readonly AuthResult _authData;
 
         private Pusher _pusher;
+
         private Channel _channel;
 
         private readonly ISyncJob _syncJob;
@@ -31,8 +32,11 @@ namespace Client.Services
             ILogger<PusherService> logger)
         {
             _options = optionsMonitor.CurrentValue;
+
             _authData = authDataProvider.SmintIo;
+
             _syncJob = syncJob;
+
             _logger = logger;
         }
 
@@ -73,7 +77,7 @@ namespace Client.Services
             _pusher.ConnectionStateChanged += ConnectionStateChanged;
             _pusher.Error += PusherError;
 
-            var connectionState = _pusher.ConnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var connectionState = _pusher.ConnectAsync().GetAwaiter().GetResult();
 
             if (connectionState == ConnectionState.Connected)
             {
@@ -86,7 +90,7 @@ namespace Client.Services
             _channel?.UnbindAll();
             _channel?.Unsubscribe();
 
-            _pusher.DisconnectAsync().ConfigureAwait(false);
+            _pusher.DisconnectAsync();
 
             _pusher.ConnectionStateChanged -= ConnectionStateChanged;
             _pusher.Error -= PusherError;
@@ -94,7 +98,7 @@ namespace Client.Services
 
         private void SubscribeToPusherChannel()
         {
-            _channel = _pusher.SubscribeAsync($"private-2-{_options.ChannelId}").ConfigureAwait(false).GetAwaiter().GetResult();
+            _channel = _pusher.SubscribeAsync($"private-2-{_options.ChannelId}").GetAwaiter().GetResult();
 
             _channel.Bind("global-transaction-history-update", async (payload) =>
             {

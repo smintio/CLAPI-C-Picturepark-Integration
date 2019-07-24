@@ -21,7 +21,7 @@ namespace Client.Contracts
 
         public string Category { get; set; }
 
-        public SmintIoReleaseDetail ReleaseDetail { get; set; }
+        public SmintIoReleaseDetails ReleaseDetails { get; set; }
 
         public IDictionary<string, string> CopyrightNotices { get; set; }
 

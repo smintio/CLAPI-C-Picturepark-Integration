@@ -19,6 +19,7 @@ namespace Client.Auth
     public class SystemBrowser : IBrowser
     {
         public int Port { get; }
+
         private readonly string _path;
 
         public SystemBrowser(int? port = null, string path = null)
@@ -38,9 +39,13 @@ namespace Client.Auth
         private int GetRandomUnusedPort()
         {
             var listener = new TcpListener(IPAddress.Loopback, 0);
+
             listener.Start();
+
             var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+
             listener.Stop();
+
             return port;
         }
 
@@ -53,20 +58,37 @@ namespace Client.Auth
                 try
                 {
                     var result = await listener.WaitForCallbackAsync();
-                    if (String.IsNullOrWhiteSpace(result))
+
+                    if (string.IsNullOrWhiteSpace(result))
                     {
-                        return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = "Empty response." };
+                        return new BrowserResult
+                        {
+                            ResultType = BrowserResultType.UnknownError,
+                            Error = "Empty response"
+                        };
                     }
 
-                    return new BrowserResult { Response = result, ResultType = BrowserResultType.Success };
+                    return new BrowserResult
+                    {
+                        Response = result,
+                        ResultType = BrowserResultType.Success
+                    };
                 }
                 catch (TaskCanceledException ex)
                 {
-                    return new BrowserResult { ResultType = BrowserResultType.Timeout, Error = ex.Message };
+                    return new BrowserResult
+                    {
+                        ResultType = BrowserResultType.Timeout,
+                        Error = ex.Message
+                    };
                 }
                 catch (Exception ex)
                 {
-                    return new BrowserResult { ResultType = BrowserResultType.UnknownError, Error = ex.Message };
+                    return new BrowserResult
+                    {
+                        ResultType = BrowserResultType.UnknownError,
+                        Error = ex.Message
+                    };
                 }
             }
         }
@@ -80,6 +102,7 @@ namespace Client.Auth
             catch
             {
                 // hack because of this: https://github.com/dotnet/corefx/issues/10361
+
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     url = url.Replace("&", "^&");
@@ -107,7 +130,9 @@ namespace Client.Auth
         const int DefaultTimeout = 60 * 5; // 5 mins (in seconds)
 
         IWebHost _host;
+
         TaskCompletionSource<string> _source = new TaskCompletionSource<string>();
+
         string _url;
 
         public string Url => _url;
@@ -116,7 +141,8 @@ namespace Client.Auth
         {
             path = path ?? String.Empty;
 
-            if (path.StartsWith("/")) path = path.Substring(1);
+            if (path.StartsWith("/"))
+                path = path.Substring(1);
 
             _url = $"http://127.0.0.1:{port}/{path}";
 
@@ -134,6 +160,7 @@ namespace Client.Auth
             Task.Run(async () =>
             {
                 await Task.Delay(500);
+
                 _host.Dispose();
             });
         }

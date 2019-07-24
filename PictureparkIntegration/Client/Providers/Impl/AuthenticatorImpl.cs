@@ -12,7 +12,7 @@ namespace Client.Providers.Impl
 {
     public class AuthenticatorImpl: IAuthenticator
     {
-        private readonly PictureparkAuthOptions _ppAuthOptions;
+        private readonly PictureparkAuthOptions _pictureparkAuthOptions;
 
         private readonly SmintIoAppOptions _smintIoAppOptions;
         private readonly SmintIoAuthOptions _smintIoAuthOptions;
@@ -20,12 +20,12 @@ namespace Client.Providers.Impl
         private readonly ILogger _logger;
 
         public AuthenticatorImpl(
-            IOptionsMonitor<PictureparkAuthOptions> ppAuthOptions,
+            IOptionsMonitor<PictureparkAuthOptions> pictureparkAuthOptions,
             IOptionsMonitor<SmintIoAppOptions> smintIoAppOptions,
             IOptionsMonitor<SmintIoAuthOptions> smintIoAuthOptions,
             ILogger<PictureparkApiClientProviderImpl> logger)
         {
-            _ppAuthOptions = ppAuthOptions.CurrentValue;
+            _pictureparkAuthOptions = pictureparkAuthOptions.CurrentValue;
 
             _smintIoAppOptions = smintIoAppOptions.CurrentValue;
             _smintIoAuthOptions = smintIoAuthOptions.CurrentValue;
@@ -79,44 +79,48 @@ namespace Client.Providers.Impl
         {
             return new AuthResult
             {
-                AccessToken = _ppAuthOptions.AccessToken
+                AccessToken = _pictureparkAuthOptions.AccessToken
             };
         }
 
-        //public async Task<AuthResult> AuthenticatePictureparkAsync()
-        //{
-        //    _logger.LogInformation("Logging in to Picturepark");
-        //    try
-        //    {
-        //        var clientOptions = new OidcClientOptions
-        //        {
-        //            Authority = _ppAuthOptions.Authority,
-        //            ClientId = _ppAuthOptions.ClientId,
-        //            ClientSecret = _ppAuthOptions.ClientSecret,
-        //            Scope = _ppAuthOptions.Scope,
-        //            RedirectUri = _ppAuthOptions.RedirectUri,
-        //            FilterClaims = false,
-        //            Flow = OidcClientOptions.AuthenticationFlow.Hybrid,
-        //            ResponseMode = OidcClientOptions.AuthorizeResponseMode.FormPost
-        //        };
+        /*
+        public async Task<AuthResult> AuthenticatePictureparkAsync()
+        {
+            _logger.LogInformation("Logging in to Picturepark");
+        
+            try
+            {
+                var clientOptions = new OidcClientOptions
+                {
+                    Authority = _pictureparkAuthOptions.Authority,
+                    ClientId = _pictureparkAuthOptions.ClientId,
+                    ClientSecret = _pictureparkAuthOptions.ClientSecret,
+                    Scope = _pictureparkAuthOptions.Scope,
+                    RedirectUri = _pictureparkAuthOptions.RedirectUri,
+                    FilterClaims = false,
+                    Flow = OidcClientOptions.AuthenticationFlow.Hybrid,
+                    ResponseMode = OidcClientOptions.AuthorizeResponseMode.FormPost
+                };
 
-        //        var result = await LoginAsync(_ppAuthOptions, clientOptions);
-        //        return  new AuthResult
-        //        {
-        //            Success = !result.IsError,
-        //            ErrorMsg = result.Error,
-        //            AccessToken = result.AccessToken,
-        //            RefreshToken = result.RefreshToken,
-        //            IdentityToken = result.IdentityToken,
-        //            Expiration = result.AccessTokenExpiration
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, $"Error authenticating with Picturepark");
-        //        throw;
-        //    }
-        //}
+                var result = await LoginAsync(_pictureparkAuthOptions, clientOptions);
+                return  new AuthResult
+                {
+                    Success = !result.IsError,
+                    ErrorMsg = result.Error,
+                    AccessToken = result.AccessToken,
+                    RefreshToken = result.RefreshToken,
+                    IdentityToken = result.IdentityToken,
+                    Expiration = result.AccessTokenExpiration
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error authenticating with Picturepark");
+
+                throw;
+            }
+        }
+        */
 
         public async Task<AuthResult> RefreshSmintIoTokenAsync(string refreshToken)
         {
@@ -131,12 +135,14 @@ namespace Client.Providers.Impl
                 refreshToken);
         }
 
-        //public async Task<AuthResult> RefreshPictureparkTokenAsync(string refreshToken)
-        //{
-        //    _logger.LogInformation("Refreshing token for Picturepark");
-        //
-        //    return await RefreshTokenAsync(_ppAuthOptions, refreshToken);
-        //}
+        /*
+        public async Task<AuthResult> RefreshPictureparkTokenAsync(string refreshToken)
+        {
+            _logger.LogInformation("Refreshing token for Picturepark");
+        
+            return await RefreshTokenAsync(_ppAuthOptions, refreshToken);
+        }
+        */
 
         private async Task<AuthResult> RefreshTokenAsync(string tokenEndpoint, string clientId, string clientSecret, string refreshToken)
         {
@@ -149,7 +155,7 @@ namespace Client.Providers.Impl
             request.AddParameter("client_id", clientId);
             request.AddParameter("client_secret", clientSecret);
 
-            var response = await client.ExecuteTaskAsync<AuthResult>(request).ConfigureAwait(false);
+            var response = await client.ExecuteTaskAsync<AuthResult>(request);
 
             return response.Data;
         }
