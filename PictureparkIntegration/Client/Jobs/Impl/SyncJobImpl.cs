@@ -206,8 +206,8 @@ namespace Client.Jobs.Impl
                     Id = asset.LPTUuid,
                     Metadata = new DataDictionary()
                     {
-                        {nameof(SmintIoContentLayer), GetContentMetaData(asset)},
-                        {nameof(SmintIoLicenseLayer), GetLicenseMetaData(asset)}
+                        {nameof(SmintIoContentLayer), GetContentMetadata(asset)},
+                        {nameof(SmintIoLicenseLayer), GetLicenseMetadata(asset)}
                     }
                 };
 
@@ -241,8 +241,8 @@ namespace Client.Jobs.Impl
 
                 targetAsset.Metadata = new DataDictionary()
                 {
-                    { nameof(ContentLayer), await GetContentMetaDataAsync(asset) },
-                    { nameof(LicenseLayer), await GetLicenseMetaDataAsync(asset) }
+                    { nameof(ContentLayer), await GetContentMetadataAsync(asset) },
+                    { nameof(LicenseLayer), await GetLicenseMetadataAsync(asset) }
                 };
 
                 targetAssets.Add(targetAsset);
@@ -253,7 +253,7 @@ namespace Client.Jobs.Impl
             return targetAssets;
         }
 
-        private async Task<DataDictionary> GetContentMetaDataAsync(SmintIoAsset asset)
+        private async Task<DataDictionary> GetContentMetadataAsync(SmintIoAsset asset)
         {
             var keywords = JoinValues(asset.Keywords);
 
@@ -308,35 +308,35 @@ namespace Client.Jobs.Impl
             return contentCategoryListItems.First(contentCategoryListItem => string.Equals(contentCategoryListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
         }
 
-        private async Task<DataDictionary> GetLicenseMetaDataAsync(SmintIoAsset asset)
+        private async Task<DataDictionary> GetLicenseMetadataAsync(SmintIoAsset asset)
         {
             var licenseType = await GetLicenseTypePictureparkKeyAsync(asset.LicenseType);
 
             var dataDictionary = new DataDictionary
             {
-                { "licenseeName", asset.LicenseeName },
-                { "licenseeUuid", asset.LicenseeUuid },
-                { "licenseType", new { _refId = licenseType }},
-                { "hasBeenCancelled", asset.State == SmintIo.CLAPI.Consumer.Client.Generated.LicensePurchaseTransactionStateEnum.Cancelled }
+                { "LicenseLayer.licenseeName", asset.LicenseeName },
+                { "LicenseLayer.licenseeUuid", asset.LicenseeUuid },
+                { "LicenseLayer.licenseType", new { _refId = licenseType }},
+                { "LicenseLayer.hasBeenCancelled", asset.State == SmintIo.CLAPI.Consumer.Client.Generated.LicensePurchaseTransactionStateEnum.Cancelled }
             };
 
             if (asset.LicenseText?.Count > 0)
-                dataDictionary.Add("licenseText", asset.LicenseText);
+                dataDictionary.Add("LicenseLayer.licenseText", asset.LicenseText);
 
             if (asset.LicenseOptions?.Count > 0)
-                dataDictionary.Add("licenseOptions", GetLicenseOptions(asset.LicenseOptions));
+                dataDictionary.Add("LicenseLayer.licenseOptions", GetLicenseOptions(asset.LicenseOptions));
 
             if (asset.UsageConstraints?.Count > 0)
-                dataDictionary.Add("usageConstraints", await GetUsageConstraintsAsync(asset.UsageConstraints));
+                dataDictionary.Add("LicenseLayer.usageConstraints", await GetUsageConstraintsAsync(asset.UsageConstraints));
 
             if (asset.DownloadConstraints != null)
-                dataDictionary.Add("downloadConstraints", GetDownloadConstraints(asset.DownloadConstraints));
+                dataDictionary.Add("LicenseLayer.downloadConstraints", GetDownloadConstraints(asset.DownloadConstraints));
 
             if (asset.ReleaseDetails != null)
-                dataDictionary.Add("releaseDetails", await GetReleaseDetailsMetaDataAsync(asset.ReleaseDetails));
+                dataDictionary.Add("LicenseLayer.releaseDetails", await GetReleaseDetailsMetadataAsync(asset.ReleaseDetails));
 
             if (asset.EffectiveIsEditorialUse != null)
-                dataDictionary.Add("effectiveIsEditorialUse", asset.EffectiveIsEditorialUse);
+                dataDictionary.Add("LicenseLayer.effectiveIsEditorialUse", asset.EffectiveIsEditorialUse);
 
             return dataDictionary;
         }
@@ -545,7 +545,7 @@ namespace Client.Jobs.Impl
             return dataDictionary;
         }
 
-        private async Task<DataDictionary> GetReleaseDetailsMetaDataAsync(SmintIoReleaseDetails releaseDetails)
+        private async Task<DataDictionary> GetReleaseDetailsMetadataAsync(SmintIoReleaseDetails releaseDetails)
         {
             var modelReleaseState = await GetReleaseStatePictureparkKeyAsync(releaseDetails.ModelReleaseState);
             var propertyReleaseState = await GetReleaseStatePictureparkKeyAsync(releaseDetails.PropertyReleaseState);
