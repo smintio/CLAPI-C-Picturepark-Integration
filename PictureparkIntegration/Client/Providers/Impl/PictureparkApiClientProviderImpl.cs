@@ -541,6 +541,8 @@ namespace Client.Providers.Impl
 
                 await DownloadFileAsync(new Uri(downloadUrl), localFileName);
 
+                _logger.LogInformation($"Downloaded file UUID {assetForCreation.FindAgainFileUuid} to {localFileName}");
+
                 assetForCreation.LocalFileName = localFileName;
             }
         }
