@@ -21,12 +21,11 @@ If you want to integrate Smint.io to your software system, you should provide a 
 
 *Still missing*
 
-Some things are still missing in the implementation and will come up soon:
+Some things are still missing in the implementation and will come up soon (the example is complete on Smint.io side, the issues still open all solely apply to the Picturepark side of things):
 
 - Automatically parse keywords to Picturepark taxononmy
-- UI indicators
-- Display generic metadata references with name instead of a GUID in Picturepark
-- Handling of cancelled license purchase transactions
+- All UI indicators finalized
+- Display generic metadata references with name instead of a GUID in Picturepark (still missing in some places)
 
 *Generic set-up*
 
