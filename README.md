@@ -5,6 +5,18 @@ Sample of integrating Smint.io with Picturepark DAM using the Smint.io Content L
 
 If you want to integrate Smint.io to your software system, you should provide a proper plugin with configuration facilities embedded to your user interface. Find out more about the suggested integration features in the Smint.io Integration Guide, which has been provided to you when you signed up as a Smint.io Solution Partner.
 
+**Implemented features**
+
+- Acquiring access and refresh token from Smint.io
+- Synchronization of all required Smint.io generic metadata
+- Synchronization of all required content and license metadata
+- Support for compound assets (aka „multipart“ assets)
+- Handling of updates to license purchase transactions that have already been synchronized before
+- Live synchronization whenever an asset is being purchased on Smint.io
+- Regular synchronization
+- Exponential backoff API consumption pattern
+- Warning indicators whenever an asset is subject to editorial use or other license restrictions
+
 **Interesting topics**
 
 *Still missing*
