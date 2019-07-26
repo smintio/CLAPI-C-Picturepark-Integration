@@ -13,8 +13,8 @@ Some things are still missing in the implementation and will come up soon:
 
 - Automatically parse keywords to Picturepark taxononmy
 - UI indicators
-- Update of already uploaded assets (updated license purchase transaction metadata)
 - Display generic metadata references with name instead of a GUID in Picturepark
+- Handling of cancelled license purchase transactions
 
 *Generic set-up*
 
