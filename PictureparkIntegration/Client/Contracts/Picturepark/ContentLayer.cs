@@ -81,5 +81,23 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("en", "Created At")]
         [PictureparkNameTranslation("de", "Erzeugt")]
         public DateTimeOffset CreatedAt { get; set; }
+
+        [PictureparkRequired]
+        [PictureparkNameTranslation("x-default", "Transaction ID")]
+        [PictureparkNameTranslation("en", "Transaction ID")]
+        [PictureparkNameTranslation("de", "Transaktions-ID")]
+        public string LicensePurchaseTransactionUuid { get; set; }
+
+        [PictureparkRequired]
+        [PictureparkNameTranslation("x-default", "Cart ID")]
+        [PictureparkNameTranslation("en", "Cart ID")]
+        [PictureparkNameTranslation("de", "ID des Warenkorbs")]
+        public string CartPurchaseTransactionUuid { get; set; }
+
+        // Not required for compound assets
+        [PictureparkNameTranslation("x-default", "File ID")]
+        [PictureparkNameTranslation("en", "File ID")]
+        [PictureparkNameTranslation("de", "ID der Datei")]
+        public string FileUuid { get; set; }
     }
 }

@@ -10,36 +10,36 @@ namespace Client.Providers
 
         void ClearCache();
 
-        Task<IEnumerable<PictureparkListItem>> GetContentProvidersAsync();
-        Task ImportContentProvidersAsync(IEnumerable<PictureparkListItem> contentProviders);
+        Task<IList<PictureparkListItem>> GetContentProvidersAsync();
+        Task ImportContentProvidersAsync(IList<PictureparkListItem> contentProviders);
 
-        Task<IEnumerable<PictureparkListItem>> GetContentCategoriesAsync();
-        Task ImportContentCategoriesAsync(IEnumerable<PictureparkListItem> contentCategories);
+        Task<IList<PictureparkListItem>> GetContentCategoriesAsync();
+        Task ImportContentCategoriesAsync(IList<PictureparkListItem> contentCategories);
 
-        Task<IEnumerable<PictureparkListItem>> GetLicenseTypesAsync();
-        Task ImportLicenseTypesAsync(IEnumerable<PictureparkListItem> licenseTypes);
+        Task<IList<PictureparkListItem>> GetLicenseTypesAsync();
+        Task ImportLicenseTypesAsync(IList<PictureparkListItem> licenseTypes);
 
-        Task<IEnumerable<PictureparkListItem>> GetReleaseStatesAsync();
-        Task ImportReleaseStatesAsync(IEnumerable<PictureparkListItem> releaseStates);
+        Task<IList<PictureparkListItem>> GetReleaseStatesAsync();
+        Task ImportReleaseStatesAsync(IList<PictureparkListItem> releaseStates);
 
-        Task<IEnumerable<PictureparkListItem>> GetLicenseUsagesAsync();
-        Task ImportLicenseUsagesAsync(IEnumerable<PictureparkListItem> licenseUsages);
+        Task<IList<PictureparkListItem>> GetLicenseUsagesAsync();
+        Task ImportLicenseUsagesAsync(IList<PictureparkListItem> licenseUsages);
 
-        Task<IEnumerable<PictureparkListItem>> GetLicenseSizesAsync();
-        Task ImportLicenseSizesAsync(IEnumerable<PictureparkListItem> licenseSizes);
+        Task<IList<PictureparkListItem>> GetLicenseSizesAsync();
+        Task ImportLicenseSizesAsync(IList<PictureparkListItem> licenseSizes);
 
-        Task<IEnumerable<PictureparkListItem>> GetLicensePlacementsAsync();
-        Task ImportLicensePlacementsAsync(IEnumerable<PictureparkListItem> licensePlacements);
+        Task<IList<PictureparkListItem>> GetLicensePlacementsAsync();
+        Task ImportLicensePlacementsAsync(IList<PictureparkListItem> licensePlacements);
 
-        Task<IEnumerable<PictureparkListItem>> GetLicenseDistributionsAsync();
-        Task ImportLicenseDistributionsAsync(IEnumerable<PictureparkListItem> licenseDistributions);
+        Task<IList<PictureparkListItem>> GetLicenseDistributionsAsync();
+        Task ImportLicenseDistributionsAsync(IList<PictureparkListItem> licenseDistributions);
 
-        Task<IEnumerable<PictureparkListItem>> GetLicenseGeographiesAsync();
-        Task ImportLicenseGeographiesAsync(IEnumerable<PictureparkListItem> licenseGeographies);
+        Task<IList<PictureparkListItem>> GetLicenseGeographiesAsync();
+        Task ImportLicenseGeographiesAsync(IList<PictureparkListItem> licenseGeographies);
 
-        Task<IEnumerable<PictureparkListItem>> GetLicenseVerticalsAsync();
-        Task ImportLicenseVerticalsAsync(IEnumerable<PictureparkListItem> licenseVerticals);
+        Task<IList<PictureparkListItem>> GetLicenseVerticalsAsync();
+        Task ImportLicenseVerticalsAsync(IList<PictureparkListItem> licenseVerticals);
 
-        Task ImportAssetsAsync(IEnumerable<PictureparkAsset> assets);
+        Task ImportAssetsAsync(string folderName, IList<PictureparkAsset> assets);
     }
 }

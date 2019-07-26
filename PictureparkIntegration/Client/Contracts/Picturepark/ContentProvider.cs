@@ -8,6 +8,7 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io Content Provider")]
     [PictureparkNameTranslation("en", "Smint.io Content Provider")]
     [PictureparkNameTranslation("de", "Smint.io Content-Quelle")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.contentProvider.name | translate}}")]
     public class ContentProvider : ReferenceObject
     {
         [PictureparkRequired]

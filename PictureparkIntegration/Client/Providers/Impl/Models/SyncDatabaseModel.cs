@@ -4,6 +4,6 @@ namespace Client.Providers.Impl.Models
 {
     public class SyncDatabaseModel
     {
-        public DateTimeOffset? NextMinDate { get; set; }
+        public string ContinuationUuid { get; set; }
     }
 }

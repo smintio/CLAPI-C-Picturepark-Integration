@@ -7,10 +7,6 @@ If you want to integrate Smint.io to your software system, you should provide a 
 
 **Interesting topics**
 
-*Bugs*
-
-- When all assets are synced, there is an endless loop because the last asset for sync is being read over-and-over again
-
 *Still missing*
 
 Some things are still missing in the implementation and will come up soon:
@@ -60,9 +56,9 @@ Reading generic and transforming generic metadata from Smint.io is implemented i
 
 *Getting assets for synchronization*
 
-When synchronizing assets from Smint.io, you need to query so-called *license purchase transactions* by using the `getLicensePurchaseTransactionsForSync` API. It has just two optional parameters. One is the number of records given in `limit` and the `lastUpdatedAtFrom` parameter.
+When synchronizing assets from Smint.io, you need to query so-called *license purchase transactions* by using the `getLicensePurchaseTransactionsForSync` API. It has just two optional parameters. One is the number of records given in `limit` and the `continuationUuid` parameter.
 
-We first check if we had a previous synchronization run. From previous runs we always remember the *newest* `lastUpdatedAt` timestamp that we received from Smint.io and use it as the `lastUpdatedAtFrom` parameter when the next synchronization runs (see `SynchronizeAssetsAsync` in [SyncJobImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Jobs/Impl/SyncJobImpl.cs)).
+We first check if we had a previous synchronization run. From previous runs we always remember the `continuationUuid` value that we received in the query result of the last run, and use it as the `continuationUuid` parameter when the next synchronization runs (see `SynchronizeAssetsAsync` in [SyncJobImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Jobs/Impl/SyncJobImpl.cs)).
 
 *Interpreting data*
 
@@ -82,13 +78,15 @@ The actual mapping is being done in [SyncJobImpl.cs](https://github.com/smintio/
 
 *Downloading and storing the raw binary files*
 
-The download of the raw binary file is very easy. Once you got the license purchase transaction metadata downloaded, you can use the `GetRawDownloadLicensePurchaseTransactionUrlAsync` to get the download URL from where you can easily download the file (implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs)).
+The download of the raw binary file(s) israthery easy. Once you got the license purchase transaction metadata downloaded, you can use the `GetRawDownloadLicensePurchaseTransactionUrlsAsync` to get the download URsL from where you can easily download all raw binary files that belong to the asset (implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs)).
 
-**Warning:** Please note that the download URL is secured and will only stay valid for up to one hour. The download must start within that time interval to succeed.
+**Warning:** Please note that the download URLs are secured and will only stay valid for up to one hour. The download must start within that time interval to succeed.
+
+**Warning:** Please note that you may receive more than one binary asset in the response (especially if `content_type` is set to `compound` which designates a compound (or multi-part) asset. The raw download URLs you receive contain a `file_uuid` field which is unique *in the license purchase transaction context*. The `file_uuid` helps you to differentiate the binary assets within the license purchase transaction context.
 
 **Warning:** Please note that we do not only support images, but also (*large*) videos, templates, texts and a lot of other file types. Be prepared to handle those!
 
-**Recommendation:** The raw binary file is stored on our systems with no user-friendly name. Please use the `recommended_file_name` that is being provided in the license purchase transaction to store the file on your side.
+**Recommendation:** The raw binary files are stored on our systems with no user-friendly name. Please use the `recommended_file_name` that is being provided in the raw download URL object to store the files on your side.
 
 *Exponential backoff*
 

@@ -8,7 +8,7 @@ namespace Client.Contracts
     public sealed class SmintIoAsset
     {
         public string LPTUuid { get; set; }
-        public string CartPTUuid { get; set; }
+        public string CPTUuid { get; set; }
 
         public LicensePurchaseTransactionStateEnum? State { get; set; }
 
@@ -44,9 +44,7 @@ namespace Client.Contracts
 
         public bool? EffectiveIsEditorialUse { get; set; }
 
-        public string DownloadUrl { get; set; }
-
-        public string RecommendedFileName { get; set; }
+        public List<SmintIoRawDownloadUrl> RawDownloadUrls { get; set; }
 
         public string SmintIoUrl { get; set; }
         

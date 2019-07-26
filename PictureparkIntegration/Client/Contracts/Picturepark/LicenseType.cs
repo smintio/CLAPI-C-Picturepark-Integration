@@ -8,6 +8,7 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io License Type")]
     [PictureparkNameTranslation("en", "Smint.io License Type")]
     [PictureparkNameTranslation("de", "Smint.io Lizenztyp")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.licenseType.name | translate}}")]
     public class LicenseType : ReferenceObject
     {
         [PictureparkRequired]

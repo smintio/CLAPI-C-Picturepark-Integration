@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Client.Contracts;
 using System.IO;
-using System.Net;
 using Client.Contracts.Picturepark;
 using Client.Providers.Impl.Models;
 
@@ -105,7 +104,7 @@ namespace Client.Jobs.Impl
             _logger.LogInformation("Finished Smint.io generic metadata synchronization");
         }
 
-        private IEnumerable<PictureparkListItem> TransformGenericMetadata(IList<SmintIoMetadataElement> smintIoGenericMetadataElements)
+        private IList<PictureparkListItem> TransformGenericMetadata(IList<SmintIoMetadataElement> smintIoGenericMetadataElements)
         {
             return smintIoGenericMetadataElements.Select(smintIoGenericMetadataElement =>
             {
@@ -118,7 +117,7 @@ namespace Client.Jobs.Impl
                         { "name", smintIoGenericMetadataElement.Values }
                     }
                 };
-            });
+            }).ToList();
         }
 
         private async Task SynchronizeAssetsAsync()
@@ -129,43 +128,39 @@ namespace Client.Jobs.Impl
 
             var syncDatabaseModel = _syncDatabaseProvider.GetSyncDatabaseModel();
 
-            DateTimeOffset? minDate = null;
+            string continuationUuid = null;
 
             if (syncDatabaseModel != null)
             {
                 // get last committed state
 
-                minDate = syncDatabaseModel.NextMinDate;
+                continuationUuid = syncDatabaseModel.ContinuationUuid;
             }
-
-            var originalMinDate = minDate;
 
             try
             {
-                IEnumerable<SmintIoAsset> assets = null;
+                IList<SmintIoAsset> assets = null;
 
                 do
                 {
-                    assets = await _smintIoClient.GetAssetsAsync(minDate);
+                    (assets, continuationUuid) = await _smintIoClient.GetAssetsAsync(continuationUuid);
 
                     if (assets != null && assets.Any())
                     {
                         CreateTempFolder(folderName);
 
-                        minDate = assets.Max(asset => asset.LptLastUpdatedAt);
-
                         var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
 
-                        var transformedAssets = await TransformAssetsAsync(assets, folderName, transferIdentifier);
+                        var transformedAssets = await TransformAssetsAsync(assets, transferIdentifier);
 
-                        await _pictureparkClient.ImportAssetsAsync(transformedAssets);
+                        await _pictureparkClient.ImportAssetsAsync(folderName, transformedAssets);
                     }
 
                     // store committed data
 
                     _syncDatabaseProvider.SetSyncDatabaseModel(new SyncDatabaseModel()
                     {
-                        NextMinDate = minDate
+                        ContinuationUuid = continuationUuid
                     });
 
                     _logger.LogInformation($"Synchronized {assets.Count()} Smint.io assets");
@@ -195,7 +190,7 @@ namespace Client.Jobs.Impl
          * This is not working currently, some error occurs on Picturepark side
          */
 
-        /* private IEnumerable<PictureparkAsset> TransformAssetsWeb(IEnumerable<SmintIoAsset> assets, string folderName)
+        /* private IList<PictureparkAsset> TransformAssetsWeb(IList<SmintIoAsset> assets, string folderName)
         {
             IList<PictureparkAsset> targetAssets = new List<PictureparkAsset>(); 
 
@@ -219,41 +214,78 @@ namespace Client.Jobs.Impl
         } 
         */
 
-        private async Task<IEnumerable<PictureparkAsset>> TransformAssetsAsync(IEnumerable<SmintIoAsset> assets, string folderName, string transferIdentifier)
+        private async Task<IList<PictureparkAsset>> TransformAssetsAsync(IList<SmintIoAsset> assets, string transferIdentifier)
         {
             IList<PictureparkAsset> targetAssets = new List<PictureparkAsset>();
 
             foreach (var asset in assets)
             {
-                _logger.LogInformation($"Transforming and downloading Smint.io LPT {asset.LPTUuid}...");
+                _logger.LogInformation($"Transforming Smint.io LPT {asset.LPTUuid}...");
 
-                string fileName = $"{folderName}/{asset.LPTUuid}.{ExtractFileExtension(asset.DownloadUrl)}";
+                var rawDownloadUrls = asset.RawDownloadUrls;
 
-                var targetAsset = new PictureparkAsset()
+                IList<PictureparkAsset> assetTargetAssets = new List<PictureparkAsset>();
+
+                foreach (var rawDownloadUrl in rawDownloadUrls)
                 {
-                    TransferId = transferIdentifier,
-                    RecommendedFileName = asset.RecommendedFileName,
-                    DownloadUrl = fileName,
-                    Id = asset.LPTUuid
-                };
+                    var fileUuid = rawDownloadUrl.FileUuid;
+                    var downloadUrl = rawDownloadUrl.DownloadUrl;
+                    var recommendedFileName = rawDownloadUrl.RecommendedFileName;
+                    var usage = rawDownloadUrl.Usage;
 
-                await DownloadFileAsync(new Uri(asset.DownloadUrl), fileName);
+                    var targetAsset = new PictureparkAsset()
+                    {
+                        TransferId = transferIdentifier,
+                        LPTUuid = asset.LPTUuid,
+                        FileUuid = fileUuid,
+                        FindAgainFileUuid = $"{asset.LPTUuid}_{fileUuid}",
+                        IsCompoundAsset = false,
+                        RecommendedFileName = recommendedFileName,
+                        DownloadUrl = downloadUrl,
+                        Usage = usage,
+                        Name = asset.Name
+                    };
 
-                targetAsset.Metadata = new DataDictionary()
+                    targetAsset.Metadata = new DataDictionary()
+                    {
+                        { nameof(ContentLayer), await GetContentMetadataAsync(asset, fileUuid) },
+                        { nameof(LicenseLayer), await GetLicenseMetadataAsync(asset) }
+                    };
+
+                    assetTargetAssets.Add(targetAsset);
+
+                    targetAssets.Add(targetAsset);
+                }
+
+                if (assetTargetAssets.Count > 0) // TODO set to 1
                 {
-                    { nameof(ContentLayer), await GetContentMetadataAsync(asset) },
-                    { nameof(LicenseLayer), await GetLicenseMetadataAsync(asset) }
-                };
+                    // we have a compound asset
 
-                targetAssets.Add(targetAsset);
+                    var targetCompoundAsset = new PictureparkAsset()
+                    {
+                        TransferId = transferIdentifier,
+                        LPTUuid = asset.LPTUuid,
+                        IsCompoundAsset = true,
+                        AssetParts = assetTargetAssets,
+                        Name = assetTargetAssets.First().Name
+                    };
 
-                _logger.LogInformation($"Transformed and downloaded Smint.io LPT {asset.LPTUuid}");
+                    targetCompoundAsset.Metadata = new DataDictionary()
+                    {
+                        { nameof(ContentLayer), await GetContentMetadataAsync(asset, null) },
+                        { nameof(LicenseLayer), await GetLicenseMetadataAsync(asset) }
+                    };
+
+                    targetAssets.Add(targetCompoundAsset);
+                }
+
+                _logger.LogInformation($"Transformed Smint.io LPT {asset.LPTUuid}");
             }
 
             return targetAssets;
         }
 
-        private async Task<DataDictionary> GetContentMetadataAsync(SmintIoAsset asset)
+        private async Task<DataDictionary> GetContentMetadataAsync(SmintIoAsset asset, string fileUuid)
         {
             var keywords = JoinValues(asset.Keywords);
 
@@ -267,7 +299,9 @@ namespace Client.Jobs.Impl
                 { "category", new { _refId = contentCategory } },
                 { "smintIoUrl", asset.SmintIoUrl },
                 { "purchasedAt", asset.PurchasedAt },
-                { "createdAt", asset.CreatedAt }
+                { "createdAt", asset.CreatedAt },
+                { "licensePurchaseTransactionUuid", asset.LPTUuid },
+                { "cartPurchaseTransactionUuid", asset.CPTUuid }
             };
 
             if (!string.IsNullOrEmpty(asset.ProjectUuid))
@@ -290,6 +324,9 @@ namespace Client.Jobs.Impl
 
             if (asset.CopyrightNotices?.Count > 0)
                 dataDictionary.Add("copyrightNotices", asset.CopyrightNotices);
+
+            if (!string.IsNullOrEmpty(fileUuid))
+                dataDictionary.Add("fileUuid", fileUuid);
 
             return dataDictionary;
         }
@@ -452,7 +489,7 @@ namespace Client.Jobs.Impl
             return dataDictionaries.ToArray();
         }
 
-        private async Task<IEnumerable<string>> GetLicenseUsagesPictureparkKeysAsync(IList<string> smintIoKeys)
+        private async Task<IList<string>> GetLicenseUsagesPictureparkKeysAsync(IList<string> smintIoKeys)
         {
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
@@ -461,10 +498,11 @@ namespace Client.Jobs.Impl
 
             return licenseUsagesListItems
                 .Where(licenseUsageListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseUsageListItem.SmintIoKey, smintIoKey)))
-                .Select(licenseUsageListItem => licenseUsageListItem.PictureparkListItemId);
+                .Select(licenseUsageListItem => licenseUsageListItem.PictureparkListItemId)
+                .ToList();
         }
 
-        private async Task<IEnumerable<string>> GetLicenseSizesPictureparkKeysAsync(IList<string> smintIoKeys)
+        private async Task<IList<string>> GetLicenseSizesPictureparkKeysAsync(IList<string> smintIoKeys)
         {
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
@@ -473,10 +511,11 @@ namespace Client.Jobs.Impl
 
             return licenseSizesListItems
                 .Where(licenseSizeListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseSizeListItem.SmintIoKey, smintIoKey)))
-                .Select(licenseSizeListItem => licenseSizeListItem.PictureparkListItemId);
+                .Select(licenseSizeListItem => licenseSizeListItem.PictureparkListItemId)
+                .ToList();
         }
 
-        private async Task<IEnumerable<string>> GetLicensePlacementsPictureparkKeysAsync(IList<string> smintIoKeys)
+        private async Task<IList<string>> GetLicensePlacementsPictureparkKeysAsync(IList<string> smintIoKeys)
         {
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
@@ -485,10 +524,11 @@ namespace Client.Jobs.Impl
 
             return licensePlacementsListItems
                 .Where(licensePlacementListItem => smintIoKeys.Any(smintIoKey => string.Equals(licensePlacementListItem.SmintIoKey, smintIoKey)))
-                .Select(licensePlacementListItem => licensePlacementListItem.PictureparkListItemId);
+                .Select(licensePlacementListItem => licensePlacementListItem.PictureparkListItemId)
+                .ToList();
         }
 
-        private async Task<IEnumerable<string>> GetLicenseDistributionsPictureparkKeysAsync(IList<string> smintIoKeys)
+        private async Task<IList<string>> GetLicenseDistributionsPictureparkKeysAsync(IList<string> smintIoKeys)
         {
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
@@ -497,10 +537,11 @@ namespace Client.Jobs.Impl
 
             return licenseDistributionsListItems
                 .Where(licenseDistributionListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseDistributionListItem.SmintIoKey, smintIoKey)))
-                .Select(licenseDistributionListItem => licenseDistributionListItem.PictureparkListItemId);
+                .Select(licenseDistributionListItem => licenseDistributionListItem.PictureparkListItemId)
+                .ToList();
         }
 
-        private async Task<IEnumerable<string>> GetLicenseGeographiesPictureparkKeysAsync(IList<string> smintIoKeys)
+        private async Task<IList<string>> GetLicenseGeographiesPictureparkKeysAsync(IList<string> smintIoKeys)
         {
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
@@ -509,10 +550,11 @@ namespace Client.Jobs.Impl
 
             return licenseGeographiesListItems
                 .Where(licenseGeographyListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseGeographyListItem.SmintIoKey, smintIoKey)))
-                .Select(licenseGeographyListItem => licenseGeographyListItem.PictureparkListItemId);
+                .Select(licenseGeographyListItem => licenseGeographyListItem.PictureparkListItemId)
+                .ToList();
         }
 
-        private async Task<IEnumerable<string>> GetLicenseVerticalsPictureparkKeysAsync(IList<string> smintIoKeys)
+        private async Task<IList<string>> GetLicenseVerticalsPictureparkKeysAsync(IList<string> smintIoKeys)
         {
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
@@ -521,7 +563,8 @@ namespace Client.Jobs.Impl
 
             return licenseVerticalsListItems
                 .Where(licenseVerticalListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseVerticalListItem.SmintIoKey, smintIoKey)))
-                .Select(licenseVerticalListItem => licenseVerticalListItem.PictureparkListItemId);
+                .Select(licenseVerticalListItem => licenseVerticalListItem.PictureparkListItemId)
+                .ToList();
         }
 
         private DataDictionary GetDownloadConstraints(SmintIoDownloadConstraints downloadConstraints)
@@ -597,31 +640,6 @@ namespace Client.Jobs.Impl
             }
 
             return result;
-        }
-
-        private string ExtractFileExtension(string url)
-        {
-            url = url.Substring(0, url.IndexOf("?"));
-
-            string fileName = url.Substring(url.LastIndexOf("/") + 1);
-
-            return fileName.Substring(fileName.LastIndexOf(".") + 1);
-        }
-
-        private async Task DownloadFileAsync(Uri uri, string fileName)
-        {
-            try
-            {
-                WebClient wc = new WebClient();
-
-                await wc.DownloadFileTaskAsync(uri, fileName);
-            }
-            catch (WebException we)
-            {
-                _logger.LogError(we, "Error downloading asset");
-
-                throw;
-            }
         }
     }
 }

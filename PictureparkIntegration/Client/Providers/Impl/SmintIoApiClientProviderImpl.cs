@@ -103,15 +103,17 @@ namespace Client.Providers.Impl
                 .ToList();
         }
 
-        public async Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate)
+        public async Task<(IList<SmintIoAsset>, string)> GetAssetsAsync(string continuationUuid)
         {
             _logger.LogInformation("Receiving assets from Smint.io...");
 
-            var result = await LoadAssetsAsync(minDate);
+            IList<SmintIoAsset> result;
+
+            (result, continuationUuid) = await LoadAssetsAsync(continuationUuid);
             
             _logger.LogInformation($"Received {result.Count()} assets from Smint.io");
 
-            return result;
+            return (result, continuationUuid);
         }
 
         public void Dispose()
@@ -161,7 +163,7 @@ namespace Client.Providers.Impl
                     });
         }
 
-        private async Task<IEnumerable<SmintIoAsset>> LoadAssetsAsync(DateTimeOffset? minDate)
+        private async Task<(IList<SmintIoAsset>, string)> LoadAssetsAsync(string continuationUuid)
         {
             _clapicOpenApiClient.AccessToken = _authDataProvider.SmintIo.AccessToken;
 
@@ -170,13 +172,13 @@ namespace Client.Providers.Impl
             SyncLicensePurchaseTransactionQueryResult syncLptQueryResult = await _retryPolicy.ExecuteAsync(async () =>
             {
                 return await _clapicOpenApiClient.GetLicensePurchaseTransactionsForSyncAsync(
-                    lastUpdatedAtFrom: minDate,
+                    continuationUuid: continuationUuid,
                     limit: 10);
             });
 
             if (syncLptQueryResult.Count == 0)
             {
-                return assets;
+                return (assets, syncLptQueryResult.Continuation_uuid);
             }
 
             foreach (var lpt in syncLptQueryResult.License_purchase_transactions)
@@ -210,7 +212,7 @@ namespace Client.Providers.Impl
                 var asset = new SmintIoAsset()
                 {
                     LPTUuid = lpt.Uuid,
-                    CartPTUuid = lpt.Cart_purchase_transaction_uuid,
+                    CPTUuid = lpt.Cart_purchase_transaction_uuid,
                     State = lpt.State,
                     Provider = lpt.Content_element.Provider,
                     Name = GetValuesForImportLanguages(lpt.Content_element.Name),
@@ -231,7 +233,6 @@ namespace Client.Providers.Impl
                     UsageConstraints = GetUsageConstraints(lpt),
                     DownloadConstraints = GetDownloadConstraints(lpt),
                     EffectiveIsEditorialUse = isEditorialUse,
-                    RecommendedFileName = lpt.Recommended_file_name,
                     SmintIoUrl = url,
                     PurchasedAt = lpt.Purchased_at,
                     CreatedAt = lpt.Created_at,
@@ -240,17 +241,34 @@ namespace Client.Providers.Impl
 
                 if (lpt.Can_be_synced ?? false)
                 {
-                    var downloadUrl =
-                        await _clapicOpenApiClient.GetRawDownloadLicensePurchaseTransactionUrlAsync(asset.CartPTUuid,
-                            asset.LPTUuid);
+                    var downloadUrls =
+                        await _clapicOpenApiClient.GetRawDownloadLicensePurchaseTransactionUrlsAsync(asset.CPTUuid, asset.LPTUuid);
 
-                    asset.DownloadUrl = downloadUrl;
+                    asset.RawDownloadUrls = GetRawDownloadUrls(downloadUrls);
 
                     assets.Add(asset);
                 }
             }
 
-            return assets;
+            return (assets, syncLptQueryResult.Continuation_uuid);
+        }
+
+        private List<SmintIoRawDownloadUrl> GetRawDownloadUrls(IList<RawDownloadUrl> rawDownloadUrls)
+        {
+            List<SmintIoRawDownloadUrl> smintIoRawDownloadUrls = new List<SmintIoRawDownloadUrl>();
+
+            foreach (var rawDownloadUrl in rawDownloadUrls)
+            {
+                smintIoRawDownloadUrls.Add(new SmintIoRawDownloadUrl()
+                {
+                    FileUuid = rawDownloadUrl.File_uuid,
+                    DownloadUrl = rawDownloadUrl.Download_url,
+                    RecommendedFileName = rawDownloadUrl.Recommended_file_name,
+                    Usage = GetValuesForImportLanguages(rawDownloadUrl.Usage)
+                });
+            }
+
+            return smintIoRawDownloadUrls;
         }
 
         private List<SmintIoLicenseOptions> GetLicenseOptions(SyncLicensePurchaseTransaction lpt)
@@ -348,6 +366,9 @@ namespace Client.Providers.Impl
 
         private IDictionary<string, string[]> GetGroupedValuesForImportLanguages(LocalizedMetadataElements localizedMetadataElements)
         {
+            if (localizedMetadataElements == null)
+                return null;
+
             return localizedMetadataElements
                 .Where(localizedMetadataElement => _options.ImportLanguages.Contains(localizedMetadataElement.Culture))
                 .GroupBy(localizedMetadataElement => localizedMetadataElement.Culture)
@@ -356,6 +377,9 @@ namespace Client.Providers.Impl
 
         private IDictionary<string, string> GetValuesForImportLanguages(LocalizedStrings localizedStrings)
         {
+            if (localizedStrings == null)
+                return null;
+
             return localizedStrings
                 .Where(localizedString => _options.ImportLanguages.Contains(localizedString.Culture))
                 .ToDictionary(localizedString => localizedString.Culture, localizedString => localizedString.Value);

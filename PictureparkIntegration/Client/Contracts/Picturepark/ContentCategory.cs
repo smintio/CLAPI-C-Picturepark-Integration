@@ -8,6 +8,7 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io Content Category")]
 	[PictureparkNameTranslation("en", "Smint.io Content Category")]
     [PictureparkNameTranslation("de", "Smint.io Content-Kategorie")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.contentCategory.name | translate}}")]
     public class ContentCategory : ReferenceObject
     {
         [PictureparkRequired]

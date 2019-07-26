@@ -9,6 +9,6 @@ namespace Client.Providers
     {
         Task<SmintIoGenericMetadata> GetGenericMetadataAsync();
 
-        Task<IEnumerable<SmintIoAsset>> GetAssetsAsync(DateTimeOffset? minDate);
+        Task<(IList<SmintIoAsset>, string)> GetAssetsAsync(string continuationUuid);
     }
 }

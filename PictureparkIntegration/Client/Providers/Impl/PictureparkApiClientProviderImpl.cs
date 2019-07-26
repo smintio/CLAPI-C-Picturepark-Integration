@@ -33,18 +33,18 @@ namespace Client.Providers.Impl
 
         private bool _disposed;
 
-        private IEnumerable<PictureparkListItem> _contentProviderCache;
-        private IEnumerable<PictureparkListItem> _contentCategoryCache;
+        private IList<PictureparkListItem> _contentProviderCache;
+        private IList<PictureparkListItem> _contentCategoryCache;
 
-        private IEnumerable<PictureparkListItem> _licenseTypeCache;
-        private IEnumerable<PictureparkListItem> _releaseStateCache;
+        private IList<PictureparkListItem> _licenseTypeCache;
+        private IList<PictureparkListItem> _releaseStateCache;
 
-        private IEnumerable<PictureparkListItem> _licenseUsageCache;
-        private IEnumerable<PictureparkListItem> _licenseSizeCache;
-        private IEnumerable<PictureparkListItem> _licensePlacementCache;
-        private IEnumerable<PictureparkListItem> _licenseDistributionCache;
-        private IEnumerable<PictureparkListItem> _licenseGeographyCache;
-        private IEnumerable<PictureparkListItem> _licenseVerticalCache;
+        private IList<PictureparkListItem> _licenseUsageCache;
+        private IList<PictureparkListItem> _licenseSizeCache;
+        private IList<PictureparkListItem> _licensePlacementCache;
+        private IList<PictureparkListItem> _licenseDistributionCache;
+        private IList<PictureparkListItem> _licenseGeographyCache;
+        private IList<PictureparkListItem> _licenseVerticalCache;
 
         private readonly ILogger _logger;
 
@@ -122,7 +122,7 @@ namespace Client.Providers.Impl
             _licenseVerticalCache = null;
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetContentProvidersAsync()
+        public async Task<IList<PictureparkListItem>> GetContentProvidersAsync()
         {
             if (_contentProviderCache != null)
                 return _contentProviderCache;
@@ -132,7 +132,7 @@ namespace Client.Providers.Impl
             return _contentProviderCache;
         }
         
-        public async Task ImportContentProvidersAsync(IEnumerable<PictureparkListItem> contentProviders)
+        public async Task ImportContentProvidersAsync(IList<PictureparkListItem> contentProviders)
         {
             _logger.LogInformation("Importing content providers to Picturepark...");
 
@@ -141,7 +141,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {contentProviders.Count()} content providers to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetContentCategoriesAsync()
+        public async Task<IList<PictureparkListItem>> GetContentCategoriesAsync()
         {
             if (_contentCategoryCache != null)
                 return _contentCategoryCache;
@@ -151,7 +151,7 @@ namespace Client.Providers.Impl
             return _contentCategoryCache;
         }
 
-        public async Task ImportContentCategoriesAsync(IEnumerable<PictureparkListItem> contentCategories)
+        public async Task ImportContentCategoriesAsync(IList<PictureparkListItem> contentCategories)
         {
             _logger.LogInformation("Importing content categories to Picturepark...");
 
@@ -160,7 +160,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {contentCategories.Count()} content categories to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetLicenseTypesAsync()
+        public async Task<IList<PictureparkListItem>> GetLicenseTypesAsync()
         {
             if (_licenseTypeCache != null)
                 return _licenseTypeCache;
@@ -170,7 +170,7 @@ namespace Client.Providers.Impl
             return _licenseTypeCache;
         }
 
-        public async Task ImportLicenseTypesAsync(IEnumerable<PictureparkListItem> licenseTypes)
+        public async Task ImportLicenseTypesAsync(IList<PictureparkListItem> licenseTypes)
         {
             _logger.LogInformation("Importing license types to Picturepark...");
 
@@ -179,7 +179,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseTypes.Count()} license types to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetReleaseStatesAsync()
+        public async Task<IList<PictureparkListItem>> GetReleaseStatesAsync()
         {
             if (_releaseStateCache != null)
                 return _releaseStateCache;
@@ -189,7 +189,7 @@ namespace Client.Providers.Impl
             return _releaseStateCache;
         }
 
-        public async Task ImportReleaseStatesAsync(IEnumerable<PictureparkListItem> releaseStates)
+        public async Task ImportReleaseStatesAsync(IList<PictureparkListItem> releaseStates)
         {
             _logger.LogInformation("Importing release states to Picturepark...");
 
@@ -198,7 +198,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {releaseStates.Count()} release states to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetLicenseUsagesAsync()
+        public async Task<IList<PictureparkListItem>> GetLicenseUsagesAsync()
         {
             if (_licenseUsageCache != null)
                 return _licenseUsageCache;
@@ -208,7 +208,7 @@ namespace Client.Providers.Impl
             return _licenseUsageCache;
         }
 
-        public async Task ImportLicenseUsagesAsync(IEnumerable<PictureparkListItem> licenseUsages)
+        public async Task ImportLicenseUsagesAsync(IList<PictureparkListItem> licenseUsages)
         {
             _logger.LogInformation("Importing license usages to Picturepark...");
 
@@ -217,7 +217,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseUsages.Count()} license usages to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetLicenseSizesAsync()
+        public async Task<IList<PictureparkListItem>> GetLicenseSizesAsync()
         {
             if (_licenseSizeCache != null)
                 return _licenseSizeCache;
@@ -227,7 +227,7 @@ namespace Client.Providers.Impl
             return _licenseSizeCache;
         }
 
-        public async Task ImportLicenseSizesAsync(IEnumerable<PictureparkListItem> licenseSizes)
+        public async Task ImportLicenseSizesAsync(IList<PictureparkListItem> licenseSizes)
         {
             _logger.LogInformation("Importing license sizes to Picturepark...");
 
@@ -236,7 +236,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseSizes.Count()} license sizes to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetLicensePlacementsAsync()
+        public async Task<IList<PictureparkListItem>> GetLicensePlacementsAsync()
         {
             if (_licensePlacementCache != null)
                 return _licensePlacementCache;
@@ -246,7 +246,7 @@ namespace Client.Providers.Impl
             return _licensePlacementCache;
         }
 
-        public async Task ImportLicensePlacementsAsync(IEnumerable<PictureparkListItem> licensePlacements)
+        public async Task ImportLicensePlacementsAsync(IList<PictureparkListItem> licensePlacements)
         {
             _logger.LogInformation("Importing license placements to Picturepark...");
 
@@ -255,7 +255,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licensePlacements.Count()} license placements to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetLicenseDistributionsAsync()
+        public async Task<IList<PictureparkListItem>> GetLicenseDistributionsAsync()
         {
             if (_licenseDistributionCache != null)
                 return _licenseDistributionCache;
@@ -265,7 +265,7 @@ namespace Client.Providers.Impl
             return _licenseDistributionCache;
         }
 
-        public async Task ImportLicenseDistributionsAsync(IEnumerable<PictureparkListItem> licenseDistributions)
+        public async Task ImportLicenseDistributionsAsync(IList<PictureparkListItem> licenseDistributions)
         {
             _logger.LogInformation("Importing license distributions to Picturepark...");
 
@@ -274,7 +274,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseDistributions.Count()} license distributions to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetLicenseGeographiesAsync()
+        public async Task<IList<PictureparkListItem>> GetLicenseGeographiesAsync()
         {
             if (_licenseGeographyCache != null)
                 return _licenseGeographyCache;
@@ -284,7 +284,7 @@ namespace Client.Providers.Impl
             return _licenseGeographyCache;
         }
 
-        public async Task ImportLicenseGeographiesAsync(IEnumerable<PictureparkListItem> licenseGeographies)
+        public async Task ImportLicenseGeographiesAsync(IList<PictureparkListItem> licenseGeographies)
         {
             _logger.LogInformation("Importing license geographies to Picturepark...");
 
@@ -293,7 +293,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseGeographies.Count()} license geographies to Picturepark");
         }
 
-        public async Task<IEnumerable<PictureparkListItem>> GetLicenseVerticalsAsync()
+        public async Task<IList<PictureparkListItem>> GetLicenseVerticalsAsync()
         {
             if (_licenseVerticalCache != null)
                 return _licenseVerticalCache;
@@ -303,7 +303,7 @@ namespace Client.Providers.Impl
             return _licenseVerticalCache;
         }
 
-        public async Task ImportLicenseVerticalsAsync(IEnumerable<PictureparkListItem> licenseVerticals)
+        public async Task ImportLicenseVerticalsAsync(IList<PictureparkListItem> licenseVerticals)
         {
             _logger.LogInformation("Importing license verticals to Picturepark...");
 
@@ -312,7 +312,7 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseVerticals.Count()} license verticals to Picturepark");
         }
 
-        private async Task<IEnumerable<PictureparkListItem>> GetListItemsAsync(string schemaId)
+        private async Task<IList<PictureparkListItem>> GetListItemsAsync(string schemaId)
         {
             try
             {
@@ -334,7 +334,7 @@ namespace Client.Providers.Impl
                         SmintIoKey = (string)dataDictionary["key"],
                         Content = dataDictionary      
                     };
-                });
+                }).ToList();
             }
             catch(Exception ex)
             {
@@ -344,7 +344,7 @@ namespace Client.Providers.Impl
             }
         }
 
-        private async Task ImportListItemsAsync(string schemaId, IEnumerable<PictureparkListItem> listItems)
+        private async Task ImportListItemsAsync(string schemaId, IList<PictureparkListItem> listItems)
         {
             try
             {
@@ -393,7 +393,7 @@ namespace Client.Providers.Impl
             }
         }
 
-        public async Task ImportAssetsAsync(IEnumerable<PictureparkAsset> assets)
+        public async Task ImportAssetsAsync(string folderName, IList<PictureparkAsset> assets)
         {
             _logger.LogInformation("Importing assets to Picturepark...");
 
@@ -403,53 +403,30 @@ namespace Client.Providers.Impl
             {
                 await _retryPolicy.ExecuteAsync(async () =>
                 {
-                    await ImportByTransferAsync(key, value);
+                    await ImportByTransferAsync(folderName, key, value);
                 });
             }
 
             _logger.LogInformation($"Imported {assets.Count()} assets to Picturepark");
         }
 
-        #region PictureparkHelpers
-        private async Task ImportByTransferAsync(string transferIdentifier, IEnumerable<PictureparkAsset> assets)
+        private async Task ImportByTransferAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> assets)
         {
             try
             {
-                // TODO handle update of metadata if target file already exists
-
                 _logger.LogInformation($"Starting import of transfer {transferIdentifier}...");
 
-                var fileTransfers = new List<FileTransferCreateItem>();
+                await ResolveAlreadyExistingAssetsAsync(assets);
 
-                var transferResult = await CreateFileTransferAsync(transferIdentifier, assets);
+                var assetsForCreation = assets.Where(asset => !asset.IsCompoundAsset && asset.PictureparkContentId == null).ToList();
+                var assetsForUpdate = assets.Where(asset => !asset.IsCompoundAsset && asset.PictureparkContentId != null).ToList();
 
-                var files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
+                await CreateNewAssetsAsync(folderName, transferIdentifier, assetsForCreation);
+                await UpdateAssetsAsync(assetsForUpdate);
 
-                foreach (FileTransfer file in files.Results)
-                {
-                    var asset = assets.FirstOrDefault(assetInner => string.Equals(assetInner.Id, file.Identifier));
+                var compoundAssets = assets.Where(asset => asset.IsCompoundAsset).ToList();
 
-                    var fileTransferCreateItem = new FileTransferCreateItem
-                    {
-                        FileId = file.Id,
-                        LayerSchemaIds = new[] {
-                            nameof(ContentLayer),
-                            nameof(LicenseLayer)
-                        },
-                        Metadata = asset.Metadata
-                    };
-
-                    fileTransfers.Add(fileTransferCreateItem);
-                }
-
-                var partialRequest = new ImportTransferPartialRequest()
-                {
-                    Items = fileTransfers
-                };
-
-                var importResult = await _client.Transfer.PartialImportAsync(transferResult.Transfer.Id, partialRequest);
-
-                await _client.BusinessProcess.WaitForCompletionAsync(importResult.BusinessProcessId);
+                await CreateOrUpdateCompoundAssetsAsync(compoundAssets);
 
                 _logger.LogInformation($"Finished import of transfer {transferIdentifier}");
             }
@@ -461,6 +438,227 @@ namespace Client.Providers.Impl
 
                 throw;
             }
+        }
+
+        private async Task ResolveAlreadyExistingAssetsAsync(IList<PictureparkAsset> assets)
+        {
+            foreach (var asset in assets)
+            {
+                var filters = new List<FilterBase>
+                    {
+                        FilterBase.FromExpression<Content>(i => i.LayerSchemaIds, new string[] { nameof(ContentLayer) }),
+                        FilterBase.FromExpression<ContentLayer>(i => i.LicensePurchaseTransactionUuid, new string[] { asset.LPTUuid })
+                    };
+
+                if (asset.IsCompoundAsset)
+                    filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(CompoundAsset) }));
+                else
+                    filters.Add(FilterBase.FromExpression<ContentLayer>(i => i.FileUuid, new string[] { asset.FileUuid }));
+                    
+                var contentSearchRequest = new ContentSearchRequest()
+                {
+                    Filter = new AndFilter
+                    {
+                        Filters = filters
+                    }
+                };
+
+                var searchResults = await _client.Content.SearchAsync(contentSearchRequest);
+
+                var count = searchResults.Results.Count;
+
+                if (count == 0)
+                    continue;
+
+                if (count > 1)
+                    throw new Exception($"Unexpected number of Picturepark asset search results ({searchResults.Results.Count} instead of 0 or 1)");
+
+                var searchResult = searchResults.Results.First();
+
+                asset.PictureparkContentId = searchResult.Id;
+            }
+        }
+
+        private async Task CreateNewAssetsAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> assetsForCreation)
+        {
+            if (!assetsForCreation.Any())
+                return;
+
+            await DownloadFilesAsync(folderName, assetsForCreation);
+
+            var fileTransfers = new List<FileTransferCreateItem>();
+
+            var transferResult = await CreateFileTransferAsync(transferIdentifier, assetsForCreation);
+
+            var files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
+
+            foreach (FileTransfer file in files.Results)
+            {
+                var assetForCreation = assetsForCreation.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+
+                var fileTransferCreateItem = new FileTransferCreateItem
+                {
+                    FileId = file.Id,
+                    LayerSchemaIds = new[] {
+                            nameof(ContentLayer),
+                            nameof(LicenseLayer)
+                        },
+                    Metadata = assetForCreation.Metadata
+                };
+
+                fileTransfers.Add(fileTransferCreateItem);
+            }
+
+            var partialRequest = new ImportTransferPartialRequest()
+            {
+                Items = fileTransfers
+            };
+
+            var importResult = await _client.Transfer.PartialImportAsync(transferResult.Transfer.Id, partialRequest);
+
+            await _client.BusinessProcess.WaitForCompletionAsync(importResult.BusinessProcessId);
+
+            files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
+
+            foreach (FileTransfer file in files.Results)
+            {
+                var assetForCreation = assetsForCreation.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+
+                assetForCreation.PictureparkContentId = file.ContentId;
+            }
+        }
+
+        private async Task DownloadFilesAsync(string folderName, IList<PictureparkAsset> assetsForCreation)
+        {
+            foreach (var assetForCreation in assetsForCreation)
+            {
+                var downloadUrl = assetForCreation.DownloadUrl;
+                var recommendedFileName = assetForCreation.RecommendedFileName;
+                
+                string localFileName = $"{folderName}/{recommendedFileName}";
+
+                _logger.LogInformation($"Downloading file UUID {assetForCreation.FindAgainFileUuid} to {localFileName}...");
+
+                await DownloadFileAsync(new Uri(downloadUrl), localFileName);
+
+                assetForCreation.LocalFileName = localFileName;
+            }
+        }
+
+        private async Task DownloadFileAsync(Uri uri, string fileName)
+        {
+            try
+            {
+                WebClient wc = new WebClient();
+
+                await wc.DownloadFileTaskAsync(uri, fileName);
+            }
+            catch (WebException we)
+            {
+                _logger.LogError(we, "Error downloading asset");
+
+                throw;
+            }
+        }
+
+        private async Task UpdateAssetsAsync(IList<PictureparkAsset> assetsForUpdate)
+        {
+            if (!assetsForUpdate.Any())
+                return;
+
+            var contentMetadataUpdateManyRequest = new ContentMetadataUpdateManyRequest();
+
+            foreach (PictureparkAsset assetForUpdate in assetsForUpdate)
+            {
+                var contentMetadataUpdateItem = new ContentMetadataUpdateItem()
+                {
+                    Id = assetForUpdate.PictureparkContentId,
+                    LayerSchemaIds = new[] {
+                            nameof(ContentLayer),
+                            nameof(LicenseLayer)
+                        },
+                    Metadata = assetForUpdate.Metadata,
+                    LayerSchemasUpdateOptions = UpdateOption.Merge,
+                    SchemaFieldsUpdateOptions = UpdateOption.Replace
+                };
+
+                contentMetadataUpdateManyRequest.Items.Add(contentMetadataUpdateItem);
+            }
+
+            var result = await _client.Content.UpdateMetadataManyAsync(contentMetadataUpdateManyRequest);
+
+            await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
+        }
+
+        private async Task CreateOrUpdateCompoundAssetsAsync(IList<PictureparkAsset> assets)
+        {
+            foreach (PictureparkAsset asset in assets)
+            {
+                var assetParts = asset.AssetParts;
+
+                if (assetParts.Count == 0)
+                    continue;
+
+                if (string.IsNullOrEmpty(asset.PictureparkContentId))
+                {
+                    var contentCreateRequest = new ContentCreateRequest()
+                    {
+                        ContentSchemaId = nameof(CompoundAsset),
+                        Content = GetCompoundAssetsMetadata(asset, assetParts),
+                        LayerSchemaIds = new[] {
+                                nameof(ContentLayer),
+                                nameof(LicenseLayer)
+                            },
+                        Metadata = asset.Metadata
+                    };
+
+                    await _client.Content.CreateAsync(contentCreateRequest);
+                }
+                else
+
+                {
+                    var contentUpdateRequest = new ContentMetadataUpdateRequest()
+                    {
+                        Content = GetCompoundAssetsMetadata(asset, assetParts),
+                        LayerSchemaIds = new[] {
+                            nameof(ContentLayer),
+                            nameof(LicenseLayer)
+                        },
+                        Metadata = asset.Metadata,
+                        LayerSchemasUpdateOptions = UpdateOption.Merge,
+                        SchemaFieldsUpdateOptions = UpdateOption.Replace
+                    };
+
+                    await _client.Content.UpdateMetadataAsync(asset.PictureparkContentId, contentUpdateRequest);
+                }
+            }
+        }
+
+        private DataDictionary GetCompoundAssetsMetadata(PictureparkAsset asset, IList<PictureparkAsset> assetParts)
+        {
+            var dataDictionary = new DataDictionary()
+            {
+                { "name", asset.Name },
+                { "compoundAssetParts", assetParts.Select(assetPart => GetCompoundAssetPartMetadata(assetPart)).ToArray() }
+            };
+
+            return dataDictionary;
+        }
+
+        private object GetCompoundAssetPartMetadata(PictureparkAsset assetPart)
+        {
+            var dataDictionary = new DataDictionary()
+            {
+                { "_relationType", "CompoundAssetPart" },
+                { "_sourceDocType", "Content" },
+                { "_targetDocType", "Content" },
+                { "_targetId", assetPart.PictureparkContentId }
+            };
+
+            if (assetPart.Usage?.Count > 0)
+                dataDictionary.Add("usage", assetPart.Usage);
+
+            return dataDictionary;
         }
 
         private async Task TryDeleteTransferAsync(string transferIdentifier)
@@ -518,6 +716,12 @@ namespace Client.Providers.Impl
             }
 
             _logger.LogInformation("Initializing Picturpark schemas...");
+
+            _logger.LogInformation("Initializing Picturepark compound asset schema...");
+
+            await InitSchemaAsync(typeof(CompoundAsset));
+
+            _logger.LogInformation("Initialized Picturepark compound asset schema");
 
             _logger.LogInformation("Initializing Picturepark content layer schema...");
 
@@ -605,10 +809,21 @@ namespace Client.Providers.Impl
 
                 await _client.Schema.UpdateAsync(typeData, false);
             }
+
+            var compoundTypeData = await _client.Schema.GetAsync(nameof(CompoundAsset));
+
+            if (compoundTypeData.LayerSchemaIds == null)
+            {
+                compoundTypeData.LayerSchemaIds = new List<string>();
+            }
+
+            compoundTypeData.LayerSchemaIds.Add(schemaName);
+
+            await _client.Schema.UpdateAsync(compoundTypeData, false);
         }
 
         /*
-        private async Task<CreateTransferResult> CreateWebTransferAsync(string transferIdentifier, IEnumerable<PictureparkAsset> assets)
+        private async Task<CreateTransferResult> CreateWebTransferAsync(string transferIdentifier, IList<PictureparkAsset> assets)
         {
             var request = new CreateTransferRequest
             {
@@ -626,17 +841,20 @@ namespace Client.Providers.Impl
         }
         */
 
-        private async Task<CreateTransferResult> CreateFileTransferAsync(string transferIdentifier, IEnumerable<PictureparkAsset> assets)
+        private async Task<CreateTransferResult> CreateFileTransferAsync(string transferIdentifier, IList<PictureparkAsset> assets)
         {
-            var filePaths = assets.Select(asset => new FileLocations(asset.DownloadUrl, asset.RecommendedFileName, asset.Id)).ToList();
+            var filePaths = assets
+                .Where(asset => !asset.IsCompoundAsset)
+                .Select(asset => new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.FindAgainFileUuid)).ToList();
 
             var request = new CreateTransferRequest
             {
                 Name = transferIdentifier,
                 TransferType = TransferType.FileUpload,
-                Files = assets.Select(asset => new TransferUploadFile() {
-                        FileName = asset.RecommendedFileName
-                    }).ToList()
+                Files = assets.Select(asset => new TransferUploadFile()
+                {
+                    FileName = asset.RecommendedFileName
+                }).ToList()
             };
 
             var uploadOptions = new UploadOptions
@@ -650,7 +868,6 @@ namespace Client.Providers.Impl
 
             return await _client.Transfer.UploadFilesAsync(transferIdentifier, filePaths, uploadOptions);
         }
-        #endregion
 
         private void InitPictureparkService()
         {
