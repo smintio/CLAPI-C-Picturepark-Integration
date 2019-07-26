@@ -154,14 +154,14 @@ namespace Client.Jobs.Impl
                         var transformedAssets = await TransformAssetsAsync(assets, transferIdentifier);
 
                         await _pictureparkClient.ImportAssetsAsync(folderName, transformedAssets);
+
+                        // store committed data
+
+                        _syncDatabaseProvider.SetSyncDatabaseModel(new SyncDatabaseModel()
+                        {
+                            ContinuationUuid = continuationUuid
+                        });
                     }
-
-                    // store committed data
-
-                    _syncDatabaseProvider.SetSyncDatabaseModel(new SyncDatabaseModel()
-                    {
-                        ContinuationUuid = continuationUuid
-                    });
 
                     _logger.LogInformation($"Synchronized {assets.Count()} Smint.io assets");
                 } while (assets != null && assets.Any());
@@ -257,7 +257,7 @@ namespace Client.Jobs.Impl
                     targetAssets.Add(targetAsset);
                 }
 
-                if (assetTargetAssets.Count > 0) // TODO set to 1
+                if (assetTargetAssets.Count > 1)
                 {
                     // we have a compound asset
 
