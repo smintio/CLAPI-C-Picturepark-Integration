@@ -617,7 +617,6 @@ namespace Client.Providers.Impl
                     await _client.Content.CreateAsync(contentCreateRequest);
                 }
                 else
-
                 {
                     var contentUpdateRequest = new ContentMetadataUpdateRequest()
                     {
