@@ -25,7 +25,6 @@ Some things are still missing in the implementation and will come up soon (the e
 
 - Automatically parse keywords to Picturepark taxononmy
 - All UI indicators finalized
-- Display generic metadata references with name instead of a GUID in Picturepark (still missing in some places)
 
 *Generic set-up*
 
@@ -87,17 +86,17 @@ Find the Picturepark schema definitions [here](https://github.com/smintio/CLAPI-
 
 The actual mapping is being done in [SyncJobImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Jobs/Impl/SyncJobImpl.cs).
 
-*Downloading and storing the raw binary files*
+*Downloading and storing the binaries*
 
-The download of the raw binary file(s) israthery easy. Once you got the license purchase transaction metadata downloaded, you can use the `GetRawDownloadLicensePurchaseTransactionUrlsAsync` to get the download URsL from where you can easily download all raw binary files that belong to the asset (implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs)).
+The download of the binaries is rathery easy. Once you got the license purchase transaction metadata downloaded, you can use the `GetLicensePurchaseTransactionBinariesForSyncAsync` to get the binaries that belong to the asset (implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs)).
 
-**Warning:** Please note that the download URLs are secured and will only stay valid for up to one hour. The download must start within that time interval to succeed.
+**Warning:** Please note that all binary download URLs are secured and will only stay valid for up to one hour. The download must start within that time interval to succeed.
 
-**Warning:** Please note that you may receive more than one binary asset in the response (especially if `content_type` is set to `compound` which designates a compound (or multi-part) asset. The raw download URLs you receive contain a `file_uuid` field which is unique *in the license purchase transaction context*. The `file_uuid` helps you to differentiate the binary assets within the license purchase transaction context.
+**Warning:** Please note that you may receive more than one binary in the response. The binaries you receive contain a `uuid` field which is unique *in the license purchase transaction context*. The `uuid` helps you to differentiate the binaries within the license purchase transaction context.
 
 **Warning:** Please note that we do not only support images, but also (*large*) videos, templates, texts and a lot of other file types. Be prepared to handle those!
 
-**Recommendation:** The raw binary files are stored on our systems with no user-friendly name. Please use the `recommended_file_name` that is being provided in the raw download URL object to store the files on your side.
+**Recommendation:** The binaries are stored on our systems with no user-friendly name. Please use the `recommended_file_name` that is being provided in the binary metadata object to store the files on your side.
 
 *Exponential backoff*
 

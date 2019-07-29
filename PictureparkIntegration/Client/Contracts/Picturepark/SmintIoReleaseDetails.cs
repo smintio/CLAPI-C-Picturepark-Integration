@@ -7,17 +7,17 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io Release Details")]
     [PictureparkNameTranslation("en", "Smint.io Release Details")]
     [PictureparkNameTranslation("de", "Smint.io Freigabe-Information")]
-    public class ReleaseDetails
+    public class SmintIoReleaseDetails
     {
         [PictureparkNameTranslation("x-default", "Model Release")]
         [PictureparkNameTranslation("en", "Model Release")]
         [PictureparkNameTranslation("de", "Modell-Freigabe")]
-        public ReleaseState ModelReleaseState { get; set; }
+        public SmintIoReleaseState ModelReleaseState { get; set; }
 
         [PictureparkNameTranslation("x-default", "Property Release")]
         [PictureparkNameTranslation("en", "Property Release")]
         [PictureparkNameTranslation("de", "Eigentums-Freigabe")]
-        public ReleaseState PropertyReleaseState { get; set; }
+        public SmintIoReleaseState PropertyReleaseState { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Use")]
         [PictureparkNameTranslation("en", "Allowed Use")]

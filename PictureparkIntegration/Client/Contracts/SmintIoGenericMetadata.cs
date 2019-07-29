@@ -5,6 +5,10 @@ namespace Client.Contracts
     public class SmintIoGenericMetadata
     {
         public IList<SmintIoMetadataElement> ContentProviders;
+
+        public IList<SmintIoMetadataElement> ContentTypes;
+        public IList<SmintIoMetadataElement> BinaryTypes;
+
         public IList<SmintIoMetadataElement> ContentCategories;
 
         public IList<SmintIoMetadataElement> LicenseTypes;

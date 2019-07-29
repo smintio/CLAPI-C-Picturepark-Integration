@@ -5,10 +5,11 @@ namespace Client.Contracts.Picturepark
 {
     [PictureparkReference]
     [PictureparkSchema(SchemaType.List)]
-    [PictureparkNameTranslation("x-default", "Smint.io License Placement")]
-    [PictureparkNameTranslation("en", "Smint.io License Placement")]
-    [PictureparkNameTranslation("de", "Smint.io Lizenz Platzierung")]
-    public class LicensePlacement : ReferenceObject
+    [PictureparkNameTranslation("x-default", "Smint.io License Vertical")]
+    [PictureparkNameTranslation("en", "Smint.io License Vertical")]
+    [PictureparkNameTranslation("de", "Smint.io Lizenz Industrie")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIoLicenseVertical.name | translate}}")]
+    public class SmintIoLicenseVertical : ReferenceObject
     {
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Key")]

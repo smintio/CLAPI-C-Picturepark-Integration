@@ -14,6 +14,8 @@ namespace Client.Contracts
 
         public string Provider { get; set; }
 
+        public string ContentType { get; set; }
+
         public IDictionary<string, string> Name { get; set; }
         public IDictionary<string, string> Description { get; set; }
 
@@ -44,7 +46,7 @@ namespace Client.Contracts
 
         public bool? EffectiveIsEditorialUse { get; set; }
 
-        public List<SmintIoRawDownloadUrl> RawDownloadUrls { get; set; }
+        public List<SmintIoBinary> Binaries { get; set; }
 
         public string SmintIoUrl { get; set; }
         

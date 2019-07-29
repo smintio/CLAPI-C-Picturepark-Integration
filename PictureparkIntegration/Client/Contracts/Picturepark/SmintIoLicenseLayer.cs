@@ -8,8 +8,8 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io License Information")]
     [PictureparkNameTranslation("en", "Smint.io License Information")]
     [PictureparkNameTranslation("de", "Smint.io Lizenzinformation")]
-    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIoLicense.name}} {% if data.smintIoLicense.effectiveIsEditorialUse == true %} WARNING: This asset is for editorial use only!{% endif %}")]
-    public class LicenseLayer
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIoLicenseLayer.name}} {% if data.smintIoLicenseLayer.effectiveIsEditorialUse == true %} WARNING: This asset is for editorial use only!{% endif %}")]
+    public class SmintIoLicenseLayer
     {
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Licensee Name")]
@@ -27,7 +27,7 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "License Type")]
         [PictureparkNameTranslation("en", "License Type")]
         [PictureparkNameTranslation("de", "Lizenztyp")]
-        public LicenseType LicenseType { get; set; }
+        public SmintIoLicenseType LicenseType { get; set; }
 
         [PictureparkNameTranslation("x-default", "License Text")]
         [PictureparkNameTranslation("en", "License Text")]
@@ -37,22 +37,22 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "License Options")]
         [PictureparkNameTranslation("en", "License Options")]
         [PictureparkNameTranslation("de", "Lizenzoptionen")]
-        public List<LicenseOption> LicenseOptions { get; set; }
+        public List<SmintIoLicenseOption> LicenseOptions { get; set; }
 
         [PictureparkNameTranslation("x-default", "Usage Constraints")]
         [PictureparkNameTranslation("en", "Usage Constraints")]
         [PictureparkNameTranslation("de", "Nutzungsbedingungen")]
-        public List<UsageConstraints> UsageConstraints { get; set; }
+        public List<SmintIoUsageConstraints> UsageConstraints { get; set; }
 
         [PictureparkNameTranslation("x-default", "Download Constraints")]
         [PictureparkNameTranslation("en", "Download Constraints")]
         [PictureparkNameTranslation("de", "Download-Bedingungen")]
-        public DownloadConstraints DownloadConstraints { get; set; }
+        public SmintIoDownloadConstraints DownloadConstraints { get; set; }
 
         [PictureparkNameTranslation("x-default", "Release Details")]
         [PictureparkNameTranslation("en", "Release Details")]
         [PictureparkNameTranslation("de", "Freigabeinformation")]
-        public ReleaseDetails ReleaseDetails { get; set; }
+        public SmintIoReleaseDetails ReleaseDetails { get; set; }
         
         [PictureparkNameTranslation("x-default", "For Editorial Use Only")]
         [PictureparkNameTranslation("en", "For Editorial Use Only")]

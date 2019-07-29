@@ -70,6 +70,10 @@ namespace Client.Providers.Impl
             var smintIoGenericMetadata = new SmintIoGenericMetadata();
 
             smintIoGenericMetadata.ContentProviders = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.Providers);
+
+            smintIoGenericMetadata.ContentTypes = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.Content_types);
+            smintIoGenericMetadata.BinaryTypes = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.Binary_types);
+
             smintIoGenericMetadata.ContentCategories = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.Content_categories);
 
             smintIoGenericMetadata.LicenseTypes = GetGroupedMetadataElementsForImportLanguages(syncGenericMetadata.License_types);
@@ -212,9 +216,10 @@ namespace Client.Providers.Impl
                 var asset = new SmintIoAsset()
                 {
                     LPTUuid = lpt.Uuid,
-                    CPTUuid = lpt.Cart_purchase_transaction_uuid,
+                    CPTUuid = lpt.Cart_purchase_transaction_uuid,                    
                     State = lpt.State,
                     Provider = lpt.Content_element.Provider,
+                    ContentType = lpt.Content_element.Content_type,
                     Name = GetValuesForImportLanguages(lpt.Content_element.Name),
                     Description = GetValuesForImportLanguages(lpt.Content_element.Description),
                     Keywords = GetGroupedValuesForImportLanguages(lpt.Content_element.Keywords),
@@ -241,10 +246,10 @@ namespace Client.Providers.Impl
 
                 if (lpt.Can_be_synced ?? false)
                 {
-                    var downloadUrls =
-                        await _clapicOpenApiClient.GetRawDownloadLicensePurchaseTransactionUrlsAsync(asset.CPTUuid, asset.LPTUuid);
+                    var syncBinaries =
+                        await _clapicOpenApiClient.GetLicensePurchaseTransactionBinariesForSyncAsync(asset.CPTUuid, asset.LPTUuid);
 
-                    asset.RawDownloadUrls = GetRawDownloadUrls(downloadUrls);
+                    asset.Binaries = GetBinaries(syncBinaries);
 
                     assets.Add(asset);
                 }
@@ -253,22 +258,27 @@ namespace Client.Providers.Impl
             return (assets, syncLptQueryResult.Continuation_uuid);
         }
 
-        private List<SmintIoRawDownloadUrl> GetRawDownloadUrls(IList<RawDownloadUrl> rawDownloadUrls)
+        private List<SmintIoBinary> GetBinaries(IList<SyncBinary> syncBinaries)
         {
-            List<SmintIoRawDownloadUrl> smintIoRawDownloadUrls = new List<SmintIoRawDownloadUrl>();
+            List<SmintIoBinary> smintIoBinaries = new List<SmintIoBinary>();
 
-            foreach (var rawDownloadUrl in rawDownloadUrls)
+            foreach (var syncBinary in syncBinaries)
             {
-                smintIoRawDownloadUrls.Add(new SmintIoRawDownloadUrl()
+                smintIoBinaries.Add(new SmintIoBinary()
                 {
-                    FileUuid = rawDownloadUrl.File_uuid,
-                    DownloadUrl = rawDownloadUrl.Download_url,
-                    RecommendedFileName = rawDownloadUrl.Recommended_file_name,
-                    Usage = GetValuesForImportLanguages(rawDownloadUrl.Usage)
+                    Uuid = syncBinary.Uuid,
+                    ContentType = syncBinary.Content_type,
+                    BinaryType = syncBinary.Binary_type,
+                    Name = GetValuesForImportLanguages(syncBinary.Name),
+                    Description = GetValuesForImportLanguages(syncBinary.Description),
+                    Usage = GetValuesForImportLanguages(syncBinary.Usage),
+                    DownloadUrl = syncBinary.Download_url,
+                    RecommendedFileName = syncBinary.Recommended_file_name,
+                    Version = syncBinary.Version ?? 1
                 });
             }
 
-            return smintIoRawDownloadUrls;
+            return smintIoBinaries;
         }
 
         private List<SmintIoLicenseOptions> GetLicenseOptions(SyncLicensePurchaseTransaction lpt)

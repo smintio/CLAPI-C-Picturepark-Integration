@@ -7,7 +7,7 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io License Option")]
     [PictureparkNameTranslation("en", "Smint.io License Option")]
     [PictureparkNameTranslation("de", "Smint.io Lizenzoption")]
-    public class LicenseOption
+    public class SmintIoLicenseOption
     {
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Name")]

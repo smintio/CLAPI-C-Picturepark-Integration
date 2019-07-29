@@ -72,6 +72,12 @@ namespace Client.Jobs.Impl
             var transformedContentProviders = TransformGenericMetadata(genericMetadata.ContentProviders);
             await _pictureparkClient.ImportContentProvidersAsync(transformedContentProviders);
 
+            var transformedContentTypes = TransformGenericMetadata(genericMetadata.ContentTypes);
+            await _pictureparkClient.ImportContentTypesAsync(transformedContentTypes);
+
+            var transformedBinaryTypes = TransformGenericMetadata(genericMetadata.BinaryTypes);
+            await _pictureparkClient.ImportBinaryTypesAsync(transformedBinaryTypes);
+
             var transformedContentCategories = TransformGenericMetadata(genericMetadata.ContentCategories);
             await _pictureparkClient.ImportContentCategoriesAsync(transformedContentCategories);
 
@@ -222,34 +228,38 @@ namespace Client.Jobs.Impl
             {
                 _logger.LogInformation($"Transforming Smint.io LPT {asset.LPTUuid}...");
 
-                var rawDownloadUrls = asset.RawDownloadUrls;
+                var binaries = asset.Binaries;
 
                 IList<PictureparkAsset> assetTargetAssets = new List<PictureparkAsset>();
 
-                foreach (var rawDownloadUrl in rawDownloadUrls)
+                foreach (var binary in binaries)
                 {
-                    var fileUuid = rawDownloadUrl.FileUuid;
-                    var downloadUrl = rawDownloadUrl.DownloadUrl;
-                    var recommendedFileName = rawDownloadUrl.RecommendedFileName;
-                    var usage = rawDownloadUrl.Usage;
+                    var binaryUuid = binary.Uuid;
+                    var binaryVersion = binary.Version;
+                    var downloadUrl = binary.DownloadUrl;
+                    var recommendedFileName = binary.RecommendedFileName;
+
+                    var name = binary.Name?.Count > 0 ? binary.Name : asset.Name;
+                    var usage = binary.Usage;
 
                     var targetAsset = new PictureparkAsset()
                     {
                         TransferId = transferIdentifier,
                         LPTUuid = asset.LPTUuid,
-                        FileUuid = fileUuid,
-                        FindAgainFileUuid = $"{asset.LPTUuid}_{fileUuid}",
+                        BinaryUuid = binaryUuid,
+                        BinaryVersion = binaryVersion,
+                        FindAgainFileUuid = $"{asset.LPTUuid}_{binaryUuid}",
                         IsCompoundAsset = false,
                         RecommendedFileName = recommendedFileName,
                         DownloadUrl = downloadUrl,
-                        Usage = usage,
-                        Name = asset.Name
+                        Name = name,
+                        Usage = usage
                     };
 
                     targetAsset.Metadata = new DataDictionary()
                     {
-                        { nameof(ContentLayer), await GetContentMetadataAsync(asset, fileUuid) },
-                        { nameof(LicenseLayer), await GetLicenseMetadataAsync(asset) }
+                        { nameof(SmintIoContentLayer), await GetContentMetadataAsync(asset, binary) },
+                        { nameof(SmintIoLicenseLayer), await GetLicenseMetadataAsync(asset) }
                     };
 
                     assetTargetAssets.Add(targetAsset);
@@ -266,14 +276,14 @@ namespace Client.Jobs.Impl
                         TransferId = transferIdentifier,
                         LPTUuid = asset.LPTUuid,
                         IsCompoundAsset = true,
-                        AssetParts = assetTargetAssets,
-                        Name = assetTargetAssets.First().Name
+                        Name = asset.Name,
+                        AssetParts = assetTargetAssets
                     };
 
                     targetCompoundAsset.Metadata = new DataDictionary()
                     {
-                        { nameof(ContentLayer), await GetContentMetadataAsync(asset, null) },
-                        { nameof(LicenseLayer), await GetLicenseMetadataAsync(asset) }
+                        { nameof(SmintIoContentLayer), await GetContentMetadataAsync(asset, null) },
+                        { nameof(SmintIoLicenseLayer), await GetLicenseMetadataAsync(asset) }
                     };
 
                     targetAssets.Add(targetCompoundAsset);
@@ -285,17 +295,22 @@ namespace Client.Jobs.Impl
             return targetAssets;
         }
 
-        private async Task<DataDictionary> GetContentMetadataAsync(SmintIoAsset asset, string fileUuid)
+        private async Task<DataDictionary> GetContentMetadataAsync(SmintIoAsset asset, SmintIoBinary binary)
         {
             var keywords = JoinValues(asset.Keywords);
 
             var contentProvider = await GetContentProviderPictureparkKeyAsync(asset.Provider);
-            var contentCategory = await GetContentCategoryPictureparkKeyAsync(asset.Category);
+
+            var contentTypeString = !string.IsNullOrEmpty(binary?.ContentType) ? binary.ContentType : asset.ContentType;
+            var contentType = await GetContentTypePictureparkKeyAsync(contentTypeString);
+
+            var contentCategoryString = !string.IsNullOrEmpty(binary?.Category) ? binary.Category : asset.Category;
+            var contentCategory = await GetContentCategoryPictureparkKeyAsync(contentCategoryString);
 
             var dataDictionary = new DataDictionary
             {
                 { "contentProvider", new { _refId = contentProvider } },
-                { "name", asset.Name },
+                { "contentType", new { _refId = contentType } },
                 { "category", new { _refId = contentCategory } },
                 { "smintIoUrl", asset.SmintIoUrl },
                 { "purchasedAt", asset.PurchasedAt },
@@ -303,6 +318,23 @@ namespace Client.Jobs.Impl
                 { "licensePurchaseTransactionUuid", asset.LPTUuid },
                 { "cartPurchaseTransactionUuid", asset.CPTUuid }
             };
+
+            if (!string.IsNullOrEmpty(binary?.BinaryType))
+            {
+                var binaryType = await GetBinaryTypePictureparkKeyAsync(binary.BinaryType);
+
+                dataDictionary.Add("binaryType", new { _refId = binaryType });
+            }
+
+            if (binary?.Name?.Count > 0)
+                dataDictionary.Add("name", binary.Name);
+            else if (asset.Name?.Count > 0)
+                dataDictionary.Add("name", asset.Name);
+
+            if (binary?.Name?.Count > 0)
+                dataDictionary.Add("description", binary.Description);
+            else if (asset.Description?.Count > 0)
+                dataDictionary.Add("description", asset.Description);
 
             if (!string.IsNullOrEmpty(asset.ProjectUuid))
                 dataDictionary.Add("projectUuid", asset.ProjectUuid);
@@ -319,14 +351,14 @@ namespace Client.Jobs.Impl
             if (asset.Keywords?.Count > 0)
                 dataDictionary.Add("keywords", keywords);
 
-            if (asset.Description?.Count > 0)
-                dataDictionary.Add("description", asset.Description);
-
             if (asset.CopyrightNotices?.Count > 0)
                 dataDictionary.Add("copyrightNotices", asset.CopyrightNotices);
 
-            if (!string.IsNullOrEmpty(fileUuid))
-                dataDictionary.Add("fileUuid", fileUuid);
+            if (binary != null)
+            {
+                dataDictionary.Add("binaryUuid", binary.Uuid);
+                dataDictionary.Add("binaryVersion", binary.Version);
+            }
 
             return dataDictionary;
         }
@@ -336,6 +368,20 @@ namespace Client.Jobs.Impl
             var contentProviderListItems = await _pictureparkClient.GetContentProvidersAsync();
 
             return contentProviderListItems.First(contentProviderListItem => string.Equals(contentProviderListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
+        }
+
+        private async Task<string> GetContentTypePictureparkKeyAsync(string smintIoKey)
+        {
+            var contentTypeListItems = await _pictureparkClient.GetContentTypesAsync();
+
+            return contentTypeListItems.First(contentTypeListItem => string.Equals(contentTypeListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
+        }
+
+        private async Task<string> GetBinaryTypePictureparkKeyAsync(string smintIoKey)
+        {
+            var binaryTypeListItems = await _pictureparkClient.GetBinaryTypesAsync();
+
+            return binaryTypeListItems.First(binaryTypeListItem => string.Equals(binaryTypeListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
         }
 
         private async Task<string> GetContentCategoryPictureparkKeyAsync(string smintIoKey)
@@ -406,7 +452,7 @@ namespace Client.Jobs.Impl
             return dataDictionary;
         }
 
-        private async Task<DataDictionary[]> GetUsageConstraintsAsync(IList<SmintIoUsageConstraints> usageContraints)
+        private async Task<DataDictionary[]> GetUsageConstraintsAsync(IList<Contracts.SmintIoUsageConstraints> usageContraints)
         {
             var dataDictionaries = new List<DataDictionary>();
 
@@ -567,7 +613,7 @@ namespace Client.Jobs.Impl
                 .ToList();
         }
 
-        private DataDictionary GetDownloadConstraints(SmintIoDownloadConstraints downloadConstraints)
+        private DataDictionary GetDownloadConstraints(Contracts.SmintIoDownloadConstraints downloadConstraints)
         {
             if (downloadConstraints == null)
             {
@@ -588,7 +634,7 @@ namespace Client.Jobs.Impl
             return dataDictionary;
         }
 
-        private async Task<DataDictionary> GetReleaseDetailsMetadataAsync(SmintIoReleaseDetails releaseDetails)
+        private async Task<DataDictionary> GetReleaseDetailsMetadataAsync(Contracts.SmintIoReleaseDetails releaseDetails)
         {
             var modelReleaseState = await GetReleaseStatePictureparkKeyAsync(releaseDetails.ModelReleaseState);
             var propertyReleaseState = await GetReleaseStatePictureparkKeyAsync(releaseDetails.PropertyReleaseState);

@@ -5,11 +5,11 @@ namespace Client.Contracts.Picturepark
 {
     [PictureparkReference]
     [PictureparkSchema(SchemaType.List)]
-    [PictureparkNameTranslation("x-default", "Smint.io Content Category")]
-	[PictureparkNameTranslation("en", "Smint.io Content Category")]
-    [PictureparkNameTranslation("de", "Smint.io Content-Kategorie")]
-    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.contentCategory.name | translate}}")]
-    public class ContentCategory : ReferenceObject
+    [PictureparkNameTranslation("x-default", "Smint.io License Geography")]
+    [PictureparkNameTranslation("en", "Smint.io License Geography")]
+    [PictureparkNameTranslation("de", "Smint.io Lizenz Region")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIoLicenseGeography.name | translate}}")]
+    public class SmintIoLicenseGeography : ReferenceObject
     {
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Key")]

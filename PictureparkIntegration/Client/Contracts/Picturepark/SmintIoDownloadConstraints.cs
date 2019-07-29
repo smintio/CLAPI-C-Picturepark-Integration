@@ -7,7 +7,7 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io Download Contraints")]
     [PictureparkNameTranslation("en", "Smint.io Download Constraints")]
     [PictureparkNameTranslation("de", "Smint.io Download-Bedingungen")]
-    public class DownloadConstraints
+    public class SmintIoDownloadConstraints
     {
         [PictureparkNameTranslation("x-default", "Download Limit")]
         [PictureparkNameTranslation("en", "Download Limit")]

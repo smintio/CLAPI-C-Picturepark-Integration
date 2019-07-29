@@ -8,14 +8,25 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io Asset")]
     [PictureparkNameTranslation("en", "Smint.io Asset")]
     [PictureparkNameTranslation("de", "Smint.io Asset")]
-    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIo.name}} {% if data.smintIo.effectiveIsEditorialUse == true %} WARNING: This asset is for editorial use only!{% endif %}")]
-    public class ContentLayer
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIoContentLayer.name}} {% if data.smintIoContentLayer.effectiveIsEditorialUse == true %} WARNING: This asset is for editorial use only!{% endif %}")]
+    public class SmintIoContentLayer
     {
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Content Provider")]
-        [PictureparkNameTranslation("en", "Content-Quelle")]
+        [PictureparkNameTranslation("en", "Content Provider")]
         [PictureparkNameTranslation("de", "Content-Quelle")]
-        public ContentProvider ContentProvider { get; set; }
+        public SmintIoContentProvider ContentProvider { get; set; }
+
+        [PictureparkRequired]
+        [PictureparkNameTranslation("x-default", "Content Type")]
+        [PictureparkNameTranslation("en", "Content Type")]
+        [PictureparkNameTranslation("de", "Content-Typ")]
+        public SmintIoContentType ContentType { get; set; }
+
+        [PictureparkNameTranslation("x-default", "Binary Type")]
+        [PictureparkNameTranslation("en", "Binary Type")]
+        [PictureparkNameTranslation("de", "Datei-Typ")]
+        public SmintIoBinaryType BinaryType { get; set; }
 
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Name")]
@@ -31,7 +42,7 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Category")]
         [PictureparkNameTranslation("en", "Category")]
         [PictureparkNameTranslation("de", "Kategorie")]
-        public ContentCategory Category { get; set; }
+        public SmintIoContentCategory Category { get; set; }
 
         [PictureparkNameTranslation("x-default", "Keywords")]
         [PictureparkNameTranslation("en", "Keywords")]
@@ -95,9 +106,15 @@ namespace Client.Contracts.Picturepark
         public string CartPurchaseTransactionUuid { get; set; }
 
         // Not required for compound assets
-        [PictureparkNameTranslation("x-default", "File ID")]
-        [PictureparkNameTranslation("en", "File ID")]
+        [PictureparkNameTranslation("x-default", "Binary ID")]
+        [PictureparkNameTranslation("en", "Binary ID")]
         [PictureparkNameTranslation("de", "ID der Datei")]
-        public string FileUuid { get; set; }
+        public string BinaryUuid { get; set; }
+
+        // Not required for compound assets
+        [PictureparkNameTranslation("x-default", "Binary Version")]
+        [PictureparkNameTranslation("en", "Binary Version")]
+        [PictureparkNameTranslation("de", "Version der Datei")]
+        public int BinaryVersion { get; set; }
     }
 }

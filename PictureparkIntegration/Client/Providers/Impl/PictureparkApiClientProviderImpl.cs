@@ -34,6 +34,10 @@ namespace Client.Providers.Impl
         private bool _disposed;
 
         private IList<PictureparkListItem> _contentProviderCache;
+
+        private IList<PictureparkListItem> _contentTypeCache;
+        private IList<PictureparkListItem> _binaryTypeCache;
+
         private IList<PictureparkListItem> _contentCategoryCache;
 
         private IList<PictureparkListItem> _licenseTypeCache;
@@ -109,6 +113,10 @@ namespace Client.Providers.Impl
         public void ClearCache()
         {
             _contentProviderCache = null;
+
+            _contentTypeCache = null;
+            _binaryTypeCache = null;
+
             _contentCategoryCache = null;
 
             _licenseTypeCache = null;
@@ -127,18 +135,56 @@ namespace Client.Providers.Impl
             if (_contentProviderCache != null)
                 return _contentProviderCache;
 
-            _contentProviderCache = await GetListItemsAsync(nameof(ContentProvider));
+            _contentProviderCache = await GetListItemsAsync(nameof(SmintIoContentProvider));
 
             return _contentProviderCache;
         }
-        
+
+        public async Task<IList<PictureparkListItem>> GetContentTypesAsync()
+        {
+            if (_contentTypeCache != null)
+                return _contentTypeCache;
+
+            _contentTypeCache = await GetListItemsAsync(nameof(SmintIoContentType));
+
+            return _contentTypeCache;
+        }
+
+        public async Task<IList<PictureparkListItem>> GetBinaryTypesAsync()
+        {
+            if (_binaryTypeCache != null)
+                return _binaryTypeCache;
+
+            _binaryTypeCache = await GetListItemsAsync(nameof(SmintIoBinaryType));
+
+            return _binaryTypeCache;
+        }
+
         public async Task ImportContentProvidersAsync(IList<PictureparkListItem> contentProviders)
         {
             _logger.LogInformation("Importing content providers to Picturepark...");
 
-            await ImportListItemsAsync(nameof(ContentProvider), contentProviders);
+            await ImportListItemsAsync(nameof(SmintIoContentProvider), contentProviders);
 
             _logger.LogInformation($"Imported {contentProviders.Count()} content providers to Picturepark");
+        }
+
+        public async Task ImportContentTypesAsync(IList<PictureparkListItem> contentTypes)
+        {
+            _logger.LogInformation("Importing content types to Picturepark...");
+
+            await ImportListItemsAsync(nameof(SmintIoContentType), contentTypes);
+
+            _logger.LogInformation($"Imported {contentTypes.Count()} content types to Picturepark");
+        }
+
+        public async Task ImportBinaryTypesAsync(IList<PictureparkListItem> binaryTypes)
+        {
+            _logger.LogInformation("Importing binary types to Picturepark...");
+
+            await ImportListItemsAsync(nameof(SmintIoBinaryType), binaryTypes);
+
+            _logger.LogInformation($"Imported {binaryTypes.Count()} binary types to Picturepark");
         }
 
         public async Task<IList<PictureparkListItem>> GetContentCategoriesAsync()
@@ -146,7 +192,7 @@ namespace Client.Providers.Impl
             if (_contentCategoryCache != null)
                 return _contentCategoryCache;
 
-            _contentCategoryCache = await GetListItemsAsync(nameof(ContentCategory));
+            _contentCategoryCache = await GetListItemsAsync(nameof(SmintIoContentCategory));
 
             return _contentCategoryCache;
         }
@@ -155,7 +201,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing content categories to Picturepark...");
 
-            await ImportListItemsAsync(nameof(ContentCategory), contentCategories);
+            await ImportListItemsAsync(nameof(SmintIoContentCategory), contentCategories);
 
             _logger.LogInformation($"Imported {contentCategories.Count()} content categories to Picturepark");
         }
@@ -165,7 +211,7 @@ namespace Client.Providers.Impl
             if (_licenseTypeCache != null)
                 return _licenseTypeCache;
 
-            _licenseTypeCache = await GetListItemsAsync(nameof(LicenseType));
+            _licenseTypeCache = await GetListItemsAsync(nameof(SmintIoLicenseType));
 
             return _licenseTypeCache;
         }
@@ -174,7 +220,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing license types to Picturepark...");
 
-            await ImportListItemsAsync(nameof(LicenseType), licenseTypes);
+            await ImportListItemsAsync(nameof(SmintIoLicenseType), licenseTypes);
 
             _logger.LogInformation($"Imported {licenseTypes.Count()} license types to Picturepark");
         }
@@ -184,7 +230,7 @@ namespace Client.Providers.Impl
             if (_releaseStateCache != null)
                 return _releaseStateCache;
 
-            _releaseStateCache = await GetListItemsAsync(nameof(ReleaseState));
+            _releaseStateCache = await GetListItemsAsync(nameof(SmintIoReleaseState));
 
             return _releaseStateCache;
         }
@@ -193,7 +239,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing release states to Picturepark...");
 
-            await ImportListItemsAsync(nameof(ReleaseState), releaseStates);
+            await ImportListItemsAsync(nameof(SmintIoReleaseState), releaseStates);
 
             _logger.LogInformation($"Imported {releaseStates.Count()} release states to Picturepark");
         }
@@ -203,7 +249,7 @@ namespace Client.Providers.Impl
             if (_licenseUsageCache != null)
                 return _licenseUsageCache;
 
-            _licenseUsageCache = await GetListItemsAsync(nameof(LicenseUsage));
+            _licenseUsageCache = await GetListItemsAsync(nameof(SmintIoLicenseUsage));
 
             return _licenseUsageCache;
         }
@@ -212,7 +258,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing license usages to Picturepark...");
 
-            await ImportListItemsAsync(nameof(LicenseUsage), licenseUsages);
+            await ImportListItemsAsync(nameof(SmintIoLicenseUsage), licenseUsages);
 
             _logger.LogInformation($"Imported {licenseUsages.Count()} license usages to Picturepark");
         }
@@ -222,7 +268,7 @@ namespace Client.Providers.Impl
             if (_licenseSizeCache != null)
                 return _licenseSizeCache;
 
-            _licenseSizeCache = await GetListItemsAsync(nameof(LicenseSize));
+            _licenseSizeCache = await GetListItemsAsync(nameof(SmintIoLicenseSize));
 
             return _licenseSizeCache;
         }
@@ -231,7 +277,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing license sizes to Picturepark...");
 
-            await ImportListItemsAsync(nameof(LicenseSize), licenseSizes);
+            await ImportListItemsAsync(nameof(SmintIoLicenseSize), licenseSizes);
 
             _logger.LogInformation($"Imported {licenseSizes.Count()} license sizes to Picturepark");
         }
@@ -241,7 +287,7 @@ namespace Client.Providers.Impl
             if (_licensePlacementCache != null)
                 return _licensePlacementCache;
 
-            _licensePlacementCache = await GetListItemsAsync(nameof(LicensePlacement));
+            _licensePlacementCache = await GetListItemsAsync(nameof(SmintIoLicensePlacement));
 
             return _licensePlacementCache;
         }
@@ -250,7 +296,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing license placements to Picturepark...");
 
-            await ImportListItemsAsync(nameof(LicensePlacement), licensePlacements);
+            await ImportListItemsAsync(nameof(SmintIoLicensePlacement), licensePlacements);
 
             _logger.LogInformation($"Imported {licensePlacements.Count()} license placements to Picturepark");
         }
@@ -260,7 +306,7 @@ namespace Client.Providers.Impl
             if (_licenseDistributionCache != null)
                 return _licenseDistributionCache;
 
-            _licenseDistributionCache = await GetListItemsAsync(nameof(LicenseDistribution));
+            _licenseDistributionCache = await GetListItemsAsync(nameof(SmintIoLicenseDistribution));
 
             return _licenseDistributionCache;
         }
@@ -269,7 +315,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing license distributions to Picturepark...");
 
-            await ImportListItemsAsync(nameof(LicenseDistribution), licenseDistributions);
+            await ImportListItemsAsync(nameof(SmintIoLicenseDistribution), licenseDistributions);
 
             _logger.LogInformation($"Imported {licenseDistributions.Count()} license distributions to Picturepark");
         }
@@ -279,7 +325,7 @@ namespace Client.Providers.Impl
             if (_licenseGeographyCache != null)
                 return _licenseGeographyCache;
 
-            _licenseGeographyCache = await GetListItemsAsync(nameof(LicenseGeography));
+            _licenseGeographyCache = await GetListItemsAsync(nameof(SmintIoLicenseGeography));
 
             return _licenseGeographyCache;
         }
@@ -288,7 +334,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing license geographies to Picturepark...");
 
-            await ImportListItemsAsync(nameof(LicenseGeography), licenseGeographies);
+            await ImportListItemsAsync(nameof(SmintIoLicenseGeography), licenseGeographies);
 
             _logger.LogInformation($"Imported {licenseGeographies.Count()} license geographies to Picturepark");
         }
@@ -298,7 +344,7 @@ namespace Client.Providers.Impl
             if (_licenseVerticalCache != null)
                 return _licenseVerticalCache;
 
-            _licenseVerticalCache = await GetListItemsAsync(nameof(LicenseVertical));
+            _licenseVerticalCache = await GetListItemsAsync(nameof(SmintIoLicenseVertical));
 
             return _licenseVerticalCache;
         }
@@ -307,7 +353,7 @@ namespace Client.Providers.Impl
         {
             _logger.LogInformation("Importing license verticals to Picturepark...");
 
-            await ImportListItemsAsync(nameof(LicenseVertical), licenseVerticals);
+            await ImportListItemsAsync(nameof(SmintIoLicenseVertical), licenseVerticals);
 
             _logger.LogInformation($"Imported {licenseVerticals.Count()} license verticals to Picturepark");
         }
@@ -422,7 +468,7 @@ namespace Client.Providers.Impl
                 var assetsForUpdate = assets.Where(asset => !asset.IsCompoundAsset && asset.PictureparkContentId != null).ToList();
 
                 await CreateNewAssetsAsync(folderName, transferIdentifier, assetsForCreation);
-                await UpdateAssetsAsync(assetsForUpdate);
+                await UpdateAssetsAsync(folderName, assetsForUpdate);
 
                 var compoundAssets = assets.Where(asset => asset.IsCompoundAsset).ToList();
 
@@ -446,14 +492,14 @@ namespace Client.Providers.Impl
             {
                 var filters = new List<FilterBase>
                     {
-                        FilterBase.FromExpression<Content>(i => i.LayerSchemaIds, new string[] { nameof(ContentLayer) }),
-                        FilterBase.FromExpression<ContentLayer>(i => i.LicensePurchaseTransactionUuid, new string[] { asset.LPTUuid })
+                        FilterBase.FromExpression<Content>(i => i.LayerSchemaIds, new string[] { nameof(SmintIoContentLayer) }),
+                        FilterBase.FromExpression<SmintIoContentLayer>(i => i.LicensePurchaseTransactionUuid, new string[] { asset.LPTUuid })
                     };
 
                 if (asset.IsCompoundAsset)
-                    filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(CompoundAsset) }));
+                    filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(SmintIoCompoundAsset) }));
                 else
-                    filters.Add(FilterBase.FromExpression<ContentLayer>(i => i.FileUuid, new string[] { asset.FileUuid }));
+                    filters.Add(FilterBase.FromExpression<SmintIoContentLayer>(i => i.BinaryUuid, new string[] { asset.BinaryUuid }));
                     
                 var contentSearchRequest = new ContentSearchRequest()
                 {
@@ -500,8 +546,8 @@ namespace Client.Providers.Impl
                 {
                     FileId = file.Id,
                     LayerSchemaIds = new[] {
-                            nameof(ContentLayer),
-                            nameof(LicenseLayer)
+                            nameof(SmintIoContentLayer),
+                            nameof(SmintIoLicenseLayer)
                         },
                     Metadata = assetForCreation.Metadata
                 };
@@ -563,10 +609,30 @@ namespace Client.Providers.Impl
             }
         }
 
-        private async Task UpdateAssetsAsync(IList<PictureparkAsset> assetsForUpdate)
+        private async Task UpdateAssetsAsync(string folderName, IList<PictureparkAsset> assetsForUpdate)
         {
             if (!assetsForUpdate.Any())
                 return;
+
+            foreach (PictureparkAsset assetForUpdate in assetsForUpdate)
+            {
+                var contentDetail = await  _client.Content.GetAsync(assetForUpdate.PictureparkContentId, new ContentResolveBehavior[] { ContentResolveBehavior.Metadata });
+
+                var smintIoContentLayer = contentDetail.Metadata.Get("smintIoContentLayer");
+                var binaryVersion = (long?)smintIoContentLayer.GetValueOrDefault("binaryVersion");
+
+                if (binaryVersion != assetForUpdate.BinaryVersion)
+                {
+                    await DownloadFilesAsync(folderName, new List<PictureparkAsset>() { assetForUpdate });
+
+                    var transferResult = await UpdateFileTransferAsync(assetForUpdate);
+
+                    await _client.Content.UpdateFileAsync(assetForUpdate.PictureparkContentId, new ContentFileUpdateRequest()
+                    {
+                        FileTransferId = transferResult.Transfer.Id
+                    });                    
+                }
+            }
 
             var contentMetadataUpdateManyRequest = new ContentMetadataUpdateManyRequest();
 
@@ -576,8 +642,8 @@ namespace Client.Providers.Impl
                 {
                     Id = assetForUpdate.PictureparkContentId,
                     LayerSchemaIds = new[] {
-                            nameof(ContentLayer),
-                            nameof(LicenseLayer)
+                            nameof(SmintIoContentLayer),
+                            nameof(SmintIoLicenseLayer)
                         },
                     Metadata = assetForUpdate.Metadata,
                     LayerSchemasUpdateOptions = UpdateOption.Merge,
@@ -605,11 +671,11 @@ namespace Client.Providers.Impl
                 {
                     var contentCreateRequest = new ContentCreateRequest()
                     {
-                        ContentSchemaId = nameof(CompoundAsset),
+                        ContentSchemaId = nameof(SmintIoCompoundAsset),
                         Content = GetCompoundAssetsMetadata(asset, assetParts),
                         LayerSchemaIds = new[] {
-                                nameof(ContentLayer),
-                                nameof(LicenseLayer)
+                                nameof(SmintIoContentLayer),
+                                nameof(SmintIoLicenseLayer)
                             },
                         Metadata = asset.Metadata
                     };
@@ -622,8 +688,8 @@ namespace Client.Providers.Impl
                     {
                         Content = GetCompoundAssetsMetadata(asset, assetParts),
                         LayerSchemaIds = new[] {
-                            nameof(ContentLayer),
-                            nameof(LicenseLayer)
+                            nameof(SmintIoContentLayer),
+                            nameof(SmintIoLicenseLayer)
                         },
                         Metadata = asset.Metadata,
                         LayerSchemasUpdateOptions = UpdateOption.Merge,
@@ -720,19 +786,19 @@ namespace Client.Providers.Impl
 
             _logger.LogInformation("Initializing Picturepark compound asset schema...");
 
-            await InitSchemaAsync(typeof(CompoundAsset));
+            await InitSchemaAsync(typeof(SmintIoCompoundAsset));
 
             _logger.LogInformation("Initialized Picturepark compound asset schema");
 
             _logger.LogInformation("Initializing Picturepark content layer schema...");
 
-            await InitSchemaAsync(typeof(ContentLayer));
+            await InitSchemaAsync(typeof(SmintIoContentLayer));
 
             _logger.LogInformation("Initialized Picturepark content layer schema");
 
             _logger.LogInformation("Initializing Picturepark license layer schema...");
 
-            await InitSchemaAsync(typeof(LicenseLayer));
+            await InitSchemaAsync(typeof(SmintIoLicenseLayer));
 
             _logger.LogInformation("Initialized Picturepark license layer schema");
 
@@ -766,13 +832,13 @@ namespace Client.Providers.Impl
 
                 foreach (var schema in schemasToCreate)
                 {
-                    if (schema.Id == nameof(ContentLayer))
+                    if (schema.Id == nameof(SmintIoContentLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(ContentLayer));
+                        await AddSchemaToFileTypes(nameof(SmintIoContentLayer));
                     }
-                    else if (schema.Id == nameof(LicenseLayer))
+                    else if (schema.Id == nameof(SmintIoLicenseLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(LicenseLayer));
+                        await AddSchemaToFileTypes(nameof(SmintIoLicenseLayer));
                     }
                 }
             }
@@ -783,13 +849,13 @@ namespace Client.Providers.Impl
                 {
                     await _client.Schema.UpdateAsync(schema, false);
 
-                    if (schema.Id == nameof(ContentLayer))
+                    if (schema.Id == nameof(SmintIoContentLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(ContentLayer));
+                        await AddSchemaToFileTypes(nameof(SmintIoContentLayer));
                     }
-                    else if (schema.Id == nameof(LicenseLayer))
+                    else if (schema.Id == nameof(SmintIoLicenseLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(LicenseLayer));
+                        await AddSchemaToFileTypes(nameof(SmintIoLicenseLayer));
                     }
                 }
             }
@@ -811,7 +877,7 @@ namespace Client.Providers.Impl
                 await _client.Schema.UpdateAsync(typeData, false);
             }
 
-            var compoundTypeData = await _client.Schema.GetAsync(nameof(CompoundAsset));
+            var compoundTypeData = await _client.Schema.GetAsync(nameof(SmintIoCompoundAsset));
 
             if (compoundTypeData.LayerSchemaIds == null)
             {
@@ -856,6 +922,39 @@ namespace Client.Providers.Impl
                 {
                     FileName = asset.RecommendedFileName
                 }).ToList()
+            };
+
+            var uploadOptions = new UploadOptions
+            {
+                ChunkSize = 1024 * 1024,
+                ConcurrentUploads = 4,
+                SuccessDelegate = Console.WriteLine,
+                ErrorDelegate = Console.WriteLine,
+                WaitForTransferCompletion = true
+            };
+
+            return await _client.Transfer.UploadFilesAsync(transferIdentifier, filePaths, uploadOptions);
+        }
+
+        private async Task<CreateTransferResult> UpdateFileTransferAsync(PictureparkAsset asset)
+        {
+            var transferIdentifier = $"Smint.io Update Import {Guid.NewGuid().ToString()}";
+
+            var filePaths = new FileLocations[]
+            {
+                new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.FindAgainFileUuid)
+            };
+            
+            var request = new CreateTransferRequest
+            {
+                Name = transferIdentifier,
+                TransferType = TransferType.FileUpload,
+                Files = new TransferUploadFile[] {
+                    new TransferUploadFile()
+                    {
+                        FileName = asset.RecommendedFileName
+                    }
+                }
             };
 
             var uploadOptions = new UploadOptions

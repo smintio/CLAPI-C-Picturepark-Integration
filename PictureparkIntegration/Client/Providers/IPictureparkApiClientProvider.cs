@@ -13,6 +13,12 @@ namespace Client.Providers
         Task<IList<PictureparkListItem>> GetContentProvidersAsync();
         Task ImportContentProvidersAsync(IList<PictureparkListItem> contentProviders);
 
+        Task<IList<PictureparkListItem>> GetContentTypesAsync();
+        Task ImportContentTypesAsync(IList<PictureparkListItem> contentTypes);
+
+        Task<IList<PictureparkListItem>> GetBinaryTypesAsync();
+        Task ImportBinaryTypesAsync(IList<PictureparkListItem> binaryTypes);
+
         Task<IList<PictureparkListItem>> GetContentCategoriesAsync();
         Task ImportContentCategoriesAsync(IList<PictureparkListItem> contentCategories);
 
