@@ -364,10 +364,13 @@ namespace Client.Providers.Impl
             {
                 var schemaIds = new[] { schemaId };
 
+                // very likely we'll not have > 1000 items per key
+
                 var searchResult = await _client.ListItem.SearchAsync(new ListItemSearchRequest()
                 {
                     SchemaIds = schemaIds,
-                    IncludeContentData = true
+                    IncludeContentData = true,
+                    Limit = 1000
                 });
 
                 return searchResult.Results.Select(searchResultInner =>
