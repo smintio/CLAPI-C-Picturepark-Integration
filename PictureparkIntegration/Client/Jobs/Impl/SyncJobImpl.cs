@@ -316,7 +316,8 @@ namespace Client.Jobs.Impl
                 { "purchasedAt", asset.PurchasedAt },
                 { "createdAt", asset.CreatedAt },
                 { "licensePurchaseTransactionUuid", asset.LPTUuid },
-                { "cartPurchaseTransactionUuid", asset.CPTUuid }
+                { "cartPurchaseTransactionUuid", asset.CPTUuid },
+                { "hasBeenCancelled", asset.State == SmintIo.CLAPI.Consumer.Client.Generated.LicensePurchaseTransactionStateEnum.Cancelled }
             };
 
             if (!string.IsNullOrEmpty(binary?.BinaryType))
@@ -359,6 +360,12 @@ namespace Client.Jobs.Impl
                 dataDictionary.Add("binaryUuid", binary.Uuid);
                 dataDictionary.Add("binaryVersion", binary.Version);
             }
+
+            if (asset.EffectiveIsEditorialUse != null)
+                dataDictionary.Add("effectiveIsEditorialUse", asset.EffectiveIsEditorialUse);
+
+            if (asset.EffectiveHasLicenseUsageConstraints != null)
+                dataDictionary.Add("effectiveHasLicenseUsageConstraints", asset.EffectiveHasLicenseUsageConstraints);
 
             return dataDictionary;
         }
@@ -420,6 +427,9 @@ namespace Client.Jobs.Impl
 
             if (asset.EffectiveIsEditorialUse != null)
                 dataDictionary.Add("effectiveIsEditorialUse", asset.EffectiveIsEditorialUse);
+
+            if (asset.EffectiveHasLicenseUsageConstraints != null)
+                dataDictionary.Add("effectiveHasLicenseUsageConstraints", asset.EffectiveHasLicenseUsageConstraints);
 
             return dataDictionary;
         }

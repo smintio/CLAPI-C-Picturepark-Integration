@@ -104,7 +104,32 @@ As mentioned in the Smint.io Integration Guide, it is important to use an Expone
 
 *UI indicators*
 
-The UI indicators that are **mandatory** as mentioned in the Smint.io Integration Guide (e.g. editorial use or license constraint warnings) have not yet been implemented in this example. We are working on it.
+The UI indicators that are mentioned in the Smint.io Integration Guide (e.g. editorial use or license constraint warnings) have been implemented through Picturepark name and thumbnail display patterns.
+
+The license constraint warning flag has been pre-calculated during import, considering all relevant constraints that could cause problems for the user. Please check out [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs) from line `193` for more information.
+
+For the Smint.io specific layers, the name display pattern set-up is done through the layer schema definitions in code. For compound assets, the thumbnail display pattern set-up is done through the virtual content type definition in code as well.
+
+For the thumbnail views for Picturepark file types, it is necessary to modify the Picturepark file type thumbnail display patterns manually:
+
+- File
+- Image
+- Video
+- Audio
+- Document
+
+Add this code to the Picturepark file type thumbnail display patterns to display the Smint.io logo and a warning icon for all assets that are either for editorial use only or that are subject to license usage constraints:
+
+```
+{% if data.smintIoContentLayer %}
+   &nbsp;<img src="https://www.smint.io/images/favicon.png" width="16"/>
+{% endif %}
+
+{% if data.smintIoLicenseLayer.effectiveIsEditorialUse or 
+   data.smintIoLicenseLayer.effectiveHasLicenseUsageConstraints %} 
+   &nbsp;<font color="#ff9800"><i class="material-icons icon-alert md-16"></i></font>
+{% endif %}
+```
 
 *Study the Smint.io Integration Guide*
 

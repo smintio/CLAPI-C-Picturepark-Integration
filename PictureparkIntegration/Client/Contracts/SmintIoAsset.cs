@@ -45,6 +45,7 @@ namespace Client.Contracts
         public SmintIoDownloadConstraints DownloadConstraints { get; set; }
 
         public bool? EffectiveIsEditorialUse { get; set; }
+        public bool? EffectiveHasLicenseUsageConstraints { get; set; }
 
         public List<SmintIoBinary> Binaries { get; set; }
 

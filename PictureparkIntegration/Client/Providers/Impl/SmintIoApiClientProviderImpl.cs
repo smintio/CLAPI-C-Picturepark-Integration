@@ -188,6 +188,7 @@ namespace Client.Providers.Impl
             foreach (var lpt in syncLptQueryResult.License_purchase_transactions)
             {
                 bool? isEditorialUse = null;
+                bool? hasLicenseUsageConstraints = false;
 
                 foreach (var license_usage_constraint in lpt.License_usage_constraints)
                 {
@@ -209,6 +210,18 @@ namespace Client.Providers.Impl
                                 isEditorialUse = false;
                         }
                     }
+                    
+                    hasLicenseUsageConstraints |=
+                        license_usage_constraint.Effective_restricted_usages?.Count > 0 ||
+                        license_usage_constraint.Effective_restricted_sizes?.Count > 0 ||
+                        license_usage_constraint.Effective_restricted_placements?.Count > 0 ||
+                        license_usage_constraint.Effective_restricted_distributions?.Count > 0 ||
+                        license_usage_constraint.Effective_restricted_geographies?.Count > 0 ||
+                        license_usage_constraint.Effective_restricted_verticals?.Count > 0 ||
+                        (license_usage_constraint.Effective_valid_from != null && license_usage_constraint.Effective_valid_from > DateTimeOffset.Now) ||
+                        license_usage_constraint.Effective_valid_until != null ||
+                        license_usage_constraint.Effective_to_be_used_until != null ||
+                        (license_usage_constraint.Effective_is_editorial_use ?? false);
                 }
 
                 string url = $"https://{_options.TenantId}.smint.io/project/{lpt.Project_uuid}/content-element/{lpt.Content_element.Uuid}";
@@ -238,6 +251,7 @@ namespace Client.Providers.Impl
                     UsageConstraints = GetUsageConstraints(lpt),
                     DownloadConstraints = GetDownloadConstraints(lpt),
                     EffectiveIsEditorialUse = isEditorialUse,
+                    EffectiveHasLicenseUsageConstraints = hasLicenseUsageConstraints,
                     SmintIoUrl = url,
                     PurchasedAt = lpt.Purchased_at,
                     CreatedAt = lpt.Created_at,
