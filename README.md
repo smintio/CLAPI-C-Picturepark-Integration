@@ -24,7 +24,6 @@ If you want to integrate Smint.io to your software system, you should provide a 
 Some things are still missing in the implementation and will come up soon (the example is complete on Smint.io side, the issues still open all solely apply to the Picturepark side of things):
 
 - Automatically parse keywords to Picturepark taxononmy
-- All UI indicators finalized
 
 *Generic set-up*
 
