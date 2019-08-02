@@ -46,10 +46,11 @@ The on-demand scheduling is implemented in [PusherService.cs](https://github.com
 Whenever generic metadata needs to be synchronized, we first query the generic metadata from Smint.io using the Smint.io `getGenericMetadataSync` API. It gives back a lot of generic metadata, in different languages, with one call. The most important metadata is listed here:
 
 - Content providers
+- Content types
+- Binary types
 - Content categories
 - License types
 - Release states
-- License URLs
 - License usages
 - License sizes
 - License placements
