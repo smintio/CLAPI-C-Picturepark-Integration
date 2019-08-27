@@ -22,9 +22,8 @@ namespace Client.Providers.Impl
     {
         private const int MaxRetryAttempts = 5;
 
-        private readonly IAuthDataProvider _authDataProvider;
-
-        private readonly PictureparkAppOptions _options;
+        private readonly PictureparkAppOptions _appOptions;
+        private readonly PictureparkAuthOptions _authOptions;
 
         private readonly AsyncRetryPolicy _retryPolicy;
 
@@ -53,12 +52,12 @@ namespace Client.Providers.Impl
         private readonly ILogger _logger;
 
         public PictureparkApiClientProviderImpl(
-            IOptionsMonitor<PictureparkAppOptions> optionsAccessor,
-            ILogger<PictureparkApiClientProviderImpl> logger,
-            IAuthDataProvider authDataProvider)
+            IOptionsMonitor<PictureparkAppOptions> appOptionsAccessor,
+            IOptionsMonitor<PictureparkAuthOptions> authOptionsAccessor,
+            ILogger<PictureparkApiClientProviderImpl> logger)
         {
-            _options = optionsAccessor.CurrentValue;
-            _authDataProvider = authDataProvider;
+            _appOptions = appOptionsAccessor.CurrentValue;
+            _authOptions = authOptionsAccessor.CurrentValue;
 
             _disposed = false;
 
@@ -776,7 +775,7 @@ namespace Client.Providers.Impl
 
         public async Task InitSchemasAsync()
         {
-            bool updateSchemaOnStart = _options.UpdateSchemaOnStart;
+            bool updateSchemaOnStart = _appOptions.UpdateSchemaOnStart;
 
             if (!updateSchemaOnStart)
             {
@@ -866,7 +865,7 @@ namespace Client.Providers.Impl
 
         private async Task AddSchemaToFileTypes(string schemaName)
         {
-            foreach (var type in _options.PictureparkFileTypes)
+            foreach (var type in _appOptions.PictureparkFileTypes)
             {
                 var typeData = await _client.Schema.GetAsync(type);
 
@@ -974,9 +973,9 @@ namespace Client.Providers.Impl
 
         private void InitPictureparkService()
         {
-            string accessToken = _authDataProvider.Picturepark.AccessToken;
+            string accessToken = _authOptions.AccessToken;
 
-            var authClient = new AccessTokenAuthClient(_options.ApiBaseUrl, accessToken, _options.CustomerAlias);
+            var authClient = new AccessTokenAuthClient(_appOptions.ApiBaseUrl, accessToken, _appOptions.CustomerAlias);
 
             var settings = new PictureparkServiceSettings(authClient);
 

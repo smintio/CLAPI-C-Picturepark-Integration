@@ -26,4 +26,8 @@
     <Content Include="**\*.json" Exclude="bin\**\*;obj\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\CLAPI-C-Integration-Core\NetCore\CLAPI-C-Integration-Core.csproj" />
+  </ItemGroup>
+
 </Project>

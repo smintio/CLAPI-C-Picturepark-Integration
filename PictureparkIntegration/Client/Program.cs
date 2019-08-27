@@ -1,16 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Client.Jobs;
-using Client.Jobs.Impl;
 using Client.Options;
 using Client.Providers;
 using Client.Providers.Impl;
-using Client.Services;
+using Client.Target.Impl;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SmintIo.CLAPI.Consumer.Integration.Core.Authenticator;
+using SmintIo.CLAPI.Consumer.Integration.Core.Authenticator.Impl;
+using SmintIo.CLAPI.Consumer.Integration.Core.Database;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 
 namespace Client
 {
@@ -49,21 +51,23 @@ namespace Client
                         var smintIoSection = hostContext.Configuration.GetSection("SmintIo");
                         var ppSection = hostContext.Configuration.GetSection("Picturepark");
 
-                        services.Configure<SmintIoAppOptions>(smintIoSection.GetSection("App"));
                         services.Configure<PictureparkAppOptions>(ppSection.GetSection("App"));
-
-                        services.Configure<SmintIoAuthOptions>(smintIoSection.GetSection("Auth"));
                         services.Configure<PictureparkAuthOptions>(ppSection.GetSection("Auth"));
 
-                        services.AddSingleton<ISmintIoApiClientProvider, SmintIoApiClientProviderImpl>();
-                        services.AddSingleton<ISyncJob, SyncJobImpl>();
                         services.AddSingleton<IPictureparkApiClientProvider, PictureparkApiClientProviderImpl>();
-                        services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
-                        services.AddSingleton<IAuthDataProvider, AuthDataProviderImpl>();
-                        services.AddSingleton<IAuthenticator, AuthenticatorImpl>();
 
-                        services.AddHostedService<TimedSynchronizerService>();
-                        services.AddHostedService<PusherService>();
+                        services.Configure<SmintIoAppOptions>(smintIoSection.GetSection("App"));
+                        services.Configure<SmintIoAuthOptions>(smintIoSection.GetSection("Auth"));
+                        
+                        services.AddSingleton<ISettingsDatabaseProvider, SettingsDatabaseProviderImpl>();
+                        services.AddSingleton<ITokenDatabaseProvider, TokenDatabaseProviderImpl>();
+                        services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
+
+                        services.AddSingleton<ISmintIoAuthenticator, SmintIoSystemBrowserAuthenticatorImpl>();
+
+                        services.AddSingleton<ISyncTarget, PictureparkSyncTargetImpl>();
+
+                        services.AddSmintIoClapicIntegrationCore();
                     })
                     .ConfigureLogging((hostContext, configLogging) =>
                     {
@@ -73,11 +77,11 @@ namespace Client
                     .UseConsoleLifetime()
                     .Build();
 
-                IAuthDataProvider authData = host.Services.GetService<IAuthDataProvider>();
-                IAuthenticator auth = host.Services.GetService<IAuthenticator>();
+                var authenticator = host.Services.GetRequiredService<ISmintIoAuthenticator>();
 
-                authData.SmintIo = await auth.AuthenticateSmintIoAsync();
-                authData.Picturepark = auth.AuthenticatePicturepark();
+                // we have a system browser based authenticator here, which will work synchronously
+
+                await authenticator.InitSmintIoAuthenticationAsync();
 
                 IPictureparkApiClientProvider pictureparkApiClientProvider = host.Services.GetService<IPictureparkApiClientProvider>();
 

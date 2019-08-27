@@ -1,113 +1,103 @@
-﻿using Client.Providers;
+﻿using Client.Contracts;
+using Client.Contracts.Picturepark;
+using Client.Providers;
 using Microsoft.Extensions.Logging;
 using Picturepark.SDK.V1.Contract;
+using SmintIo.CLAPI.Consumer.Integration.Core.Contracts;
+using SmintIo.CLAPI.Consumer.Integration.Core.Exceptions;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Client.Contracts;
-using System.IO;
-using Client.Contracts.Picturepark;
-using Client.Providers.Impl.Models;
 
-namespace Client.Jobs.Impl
+namespace Client.Target.Impl
 {
-    public class SyncJobImpl: ISyncJob
+    public class PictureparkSyncTargetImpl : ISyncTarget
     {
-        private const string Folder = "temp";
-
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
-
-        private readonly ISyncDatabaseProvider _syncDatabaseProvider;
-
-        private readonly ISmintIoApiClientProvider _smintIoClient;
         private readonly IPictureparkApiClientProvider _pictureparkClient;
 
-        private readonly ILogger _logger;
+        private readonly ILogger<PictureparkSyncTargetImpl> _logger;
 
-        public SyncJobImpl(
-            ISyncDatabaseProvider syncDatabaseProvider,
-            ISmintIoApiClientProvider smintIoClient,
+        public PictureparkSyncTargetImpl(
             IPictureparkApiClientProvider pictureparkClient,
-            ILogger<SyncJobImpl> logger)
+            ILogger<PictureparkSyncTargetImpl> logger)
         {
-            _syncDatabaseProvider = syncDatabaseProvider;
-
-            _smintIoClient = smintIoClient;
             _pictureparkClient = pictureparkClient;
 
             _logger = logger;
         }
 
-        public async Task SynchronizeAsync(bool synchronizeGenericMetadata)
+        public async Task ImportContentProvidersAsync(IList<SmintIoMetadataElement> contentProviders)
         {
-            await Semaphore.WaitAsync();
-
-            try
-            {
-                if (synchronizeGenericMetadata)
-                {
-                    await SynchronizeGenericMetadataAsync();
-                }
-
-                await SynchronizeAssetsAsync();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error in sync job");
-            }
-            finally
-            {
-                Semaphore.Release();
-            }
+            var transformedContentProviders = TransformGenericMetadata(contentProviders);
+            await _pictureparkClient.ImportContentProvidersAsync(transformedContentProviders);
         }
 
-        private async Task SynchronizeGenericMetadataAsync()
+        public async Task ImportContentTypesAsync(IList<SmintIoMetadataElement> contentTypes)
         {
-            _logger.LogInformation("Starting Smint.io generic metadata synchronization...");
-
-            var genericMetadata = await _smintIoClient.GetGenericMetadataAsync();
-
-            var transformedContentProviders = TransformGenericMetadata(genericMetadata.ContentProviders);
-            await _pictureparkClient.ImportContentProvidersAsync(transformedContentProviders);
-
-            var transformedContentTypes = TransformGenericMetadata(genericMetadata.ContentTypes);
+            var transformedContentTypes = TransformGenericMetadata(contentTypes);
             await _pictureparkClient.ImportContentTypesAsync(transformedContentTypes);
+        }
 
-            var transformedBinaryTypes = TransformGenericMetadata(genericMetadata.BinaryTypes);
+        public async Task ImportBinaryTypesAsync(IList<SmintIoMetadataElement> binaryTypes)
+        {
+            var transformedBinaryTypes = TransformGenericMetadata(binaryTypes);
             await _pictureparkClient.ImportBinaryTypesAsync(transformedBinaryTypes);
+        }
 
-            var transformedContentCategories = TransformGenericMetadata(genericMetadata.ContentCategories);
+        public async Task ImportContentCategoriesAsync(IList<SmintIoMetadataElement> contentCategories)
+        {
+            var transformedContentCategories = TransformGenericMetadata(contentCategories);
             await _pictureparkClient.ImportContentCategoriesAsync(transformedContentCategories);
+        }
 
-            var transformedLicenseTypes = TransformGenericMetadata(genericMetadata.LicenseTypes);
+        public async Task ImportLicenseTypesAsync(IList<SmintIoMetadataElement> licenseTypes)
+        {
+            var transformedLicenseTypes = TransformGenericMetadata(licenseTypes);
             await _pictureparkClient.ImportLicenseTypesAsync(transformedLicenseTypes);
+        }
 
-            var transformedReleaseStates = TransformGenericMetadata(genericMetadata.ReleaseStates);
+        public async Task ImportReleaseStatesAsync(IList<SmintIoMetadataElement> releaseStates)
+        {
+            var transformedReleaseStates = TransformGenericMetadata(releaseStates);
             await _pictureparkClient.ImportReleaseStatesAsync(transformedReleaseStates);
+        }
 
-            var transformedLicenseUsages = TransformGenericMetadata(genericMetadata.LicenseUsages);
+        public async Task ImportLicenseUsagesAsync(IList<SmintIoMetadataElement> licenseUsages)
+        {
+            var transformedLicenseUsages = TransformGenericMetadata(licenseUsages);
             await _pictureparkClient.ImportLicenseUsagesAsync(transformedLicenseUsages);
+        }
 
-            var transformedLicenseSizes = TransformGenericMetadata(genericMetadata.LicenseSizes);
+        public async Task ImportLicenseSizesAsync(IList<SmintIoMetadataElement> licenseSizes)
+        {
+            var transformedLicenseSizes = TransformGenericMetadata(licenseSizes);
             await _pictureparkClient.ImportLicenseSizesAsync(transformedLicenseSizes);
+        }
 
-            var transformedLicensePlacements = TransformGenericMetadata(genericMetadata.LicensePlacements);
+        public async Task ImportLicensePlacementsAsync(IList<SmintIoMetadataElement> licensePlacements)
+        {
+            var transformedLicensePlacements = TransformGenericMetadata(licensePlacements);
             await _pictureparkClient.ImportLicensePlacementsAsync(transformedLicensePlacements);
+        }
 
-            var transformedLicenseDistributions = TransformGenericMetadata(genericMetadata.LicenseDistributions);
+        public async Task ImportLicenseDistributionsAsync(IList<SmintIoMetadataElement> licenseDistributions)
+        {
+            var transformedLicenseDistributions = TransformGenericMetadata(licenseDistributions);
             await _pictureparkClient.ImportLicenseDistributionsAsync(transformedLicenseDistributions);
+        }
 
-            var transformedLicenseGeographies = TransformGenericMetadata(genericMetadata.LicenseGeographies);
+        public async Task ImportLicenseGeographiesAsync(IList<SmintIoMetadataElement> licenseGeographies)
+        {
+            var transformedLicenseGeographies = TransformGenericMetadata(licenseGeographies);
             await _pictureparkClient.ImportLicenseGeographiesAsync(transformedLicenseGeographies);
+        }
 
-            var transformedLicenseVerticals = TransformGenericMetadata(genericMetadata.LicenseVerticals);
+        public async Task ImportLicenseVerticalsAsync(IList<SmintIoMetadataElement> licenseVerticals)
+        {
+            var transformedLicenseVerticals = TransformGenericMetadata(licenseVerticals);
             await _pictureparkClient.ImportLicenseVerticalsAsync(transformedLicenseVerticals);
-
-            _pictureparkClient.ClearCache();
-
-            _logger.LogInformation("Finished Smint.io generic metadata synchronization");
         }
 
         private IList<PictureparkListItem> TransformGenericMetadata(IList<SmintIoMetadataElement> smintIoGenericMetadataElements)
@@ -126,75 +116,19 @@ namespace Client.Jobs.Impl
             }).ToList();
         }
 
-        private async Task SynchronizeAssetsAsync()
+        public async Task ImportAssetsAsync(string folderName, IList<SmintIoAsset> assets)
         {
-            _logger.LogInformation("Starting Smint.io asset synchronization...");
+            var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
 
-            var folderName = Folder + new Random().Next(1000000, 9999999);
+            var transformedAssets = await TransformAssetsAsync(assets, transferIdentifier);
 
-            var syncDatabaseModel = _syncDatabaseProvider.GetSyncDatabaseModel();
-
-            string continuationUuid = null;
-
-            if (syncDatabaseModel != null)
-            {
-                // get last committed state
-
-                continuationUuid = syncDatabaseModel.ContinuationUuid;
-            }
-
-            try
-            {
-                IList<SmintIoAsset> assets = null;
-
-                do
-                {
-                    (assets, continuationUuid) = await _smintIoClient.GetAssetsAsync(continuationUuid);
-
-                    if (assets != null && assets.Any())
-                    {
-                        CreateTempFolder(folderName);
-
-                        var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
-
-                        var transformedAssets = await TransformAssetsAsync(assets, transferIdentifier);
-
-                        await _pictureparkClient.ImportAssetsAsync(folderName, transformedAssets);
-
-                        // store committed data
-
-                        _syncDatabaseProvider.SetSyncDatabaseModel(new SyncDatabaseModel()
-                        {
-                            ContinuationUuid = continuationUuid
-                        });
-                    }
-
-                    _logger.LogInformation($"Synchronized {assets.Count()} Smint.io assets");
-                } while (assets != null && assets.Any());
-
-                _logger.LogInformation("Finished Smint.io asset synchronization");
-            }
-            finally
-            {
-                RemoveTempFolder(folderName);
-            }
-        }
-
-        private void CreateTempFolder(string folderName)
-        {
-            Directory.CreateDirectory(folderName);
-        }
-
-        private void RemoveTempFolder(string folderName)
-        {
-            if (Directory.Exists(folderName))
-                Directory.Delete(folderName, true);
+            await _pictureparkClient.ImportAssetsAsync(folderName, transformedAssets);
         }
 
         /*
-         * Directly transfer the asset binary data from Smint.io to Picturepark
-         * This is not working currently, some error occurs on Picturepark side
-         */
+        * Directly transfer the asset binary data from Smint.io to Picturepark
+        * This is not working currently, some error occurs on Picturepark side
+        */
 
         /* private IList<PictureparkAsset> TransformAssetsWeb(IList<SmintIoAsset> assets, string folderName)
         {
@@ -226,7 +160,7 @@ namespace Client.Jobs.Impl
 
             foreach (var asset in assets)
             {
-                _logger.LogInformation($"Transforming Smint.io LPT {asset.LPTUuid}...");
+                _logger.LogInformation($"Transforming Smint.io LPT {asset.LicensePurchaseTransactionUuid}...");
 
                 var binaries = asset.Binaries;
 
@@ -245,10 +179,10 @@ namespace Client.Jobs.Impl
                     var targetAsset = new PictureparkAsset()
                     {
                         TransferId = transferIdentifier,
-                        LPTUuid = asset.LPTUuid,
+                        LPTUuid = asset.LicensePurchaseTransactionUuid,
                         BinaryUuid = binaryUuid,
                         BinaryVersion = binaryVersion,
-                        FindAgainFileUuid = $"{asset.LPTUuid}_{binaryUuid}",
+                        FindAgainFileUuid = $"{asset.LicensePurchaseTransactionUuid}_{binaryUuid}",
                         IsCompoundAsset = false,
                         RecommendedFileName = recommendedFileName,
                         DownloadUrl = downloadUrl,
@@ -274,7 +208,7 @@ namespace Client.Jobs.Impl
                     var targetCompoundAsset = new PictureparkAsset()
                     {
                         TransferId = transferIdentifier,
-                        LPTUuid = asset.LPTUuid,
+                        LPTUuid = asset.LicensePurchaseTransactionUuid,
                         IsCompoundAsset = true,
                         Name = asset.Name,
                         AssetParts = assetTargetAssets
@@ -289,7 +223,7 @@ namespace Client.Jobs.Impl
                     targetAssets.Add(targetCompoundAsset);
                 }
 
-                _logger.LogInformation($"Transformed Smint.io LPT {asset.LPTUuid}");
+                _logger.LogInformation($"Transformed Smint.io LPT {asset.LicensePurchaseTransactionUuid}");
             }
 
             return targetAssets;
@@ -315,8 +249,8 @@ namespace Client.Jobs.Impl
                 { "smintIoUrl", asset.SmintIoUrl },
                 { "purchasedAt", asset.PurchasedAt },
                 { "createdAt", asset.CreatedAt },
-                { "licensePurchaseTransactionUuid", asset.LPTUuid },
-                { "cartPurchaseTransactionUuid", asset.CPTUuid },
+                { "licensePurchaseTransactionUuid", asset.LicensePurchaseTransactionUuid },
+                { "cartPurchaseTransactionUuid", asset.CartPurchaseTransactionUuid },
                 { "hasBeenCancelled", asset.State == SmintIo.CLAPI.Consumer.Client.Generated.LicensePurchaseTransactionStateEnum.Cancelled }
             };
 
@@ -462,7 +396,7 @@ namespace Client.Jobs.Impl
             return dataDictionary;
         }
 
-        private async Task<DataDictionary[]> GetUsageConstraintsAsync(IList<Contracts.SmintIoUsageConstraints> usageContraints)
+        private async Task<DataDictionary[]> GetUsageConstraintsAsync(IList<SmintIo.CLAPI.Consumer.Integration.Core.Contracts.SmintIoUsageConstraints> usageContraints)
         {
             var dataDictionaries = new List<DataDictionary>();
 
@@ -623,7 +557,7 @@ namespace Client.Jobs.Impl
                 .ToList();
         }
 
-        private DataDictionary GetDownloadConstraints(Contracts.SmintIoDownloadConstraints downloadConstraints)
+        private DataDictionary GetDownloadConstraints(SmintIo.CLAPI.Consumer.Integration.Core.Contracts.SmintIoDownloadConstraints downloadConstraints)
         {
             if (downloadConstraints == null)
             {
@@ -644,7 +578,7 @@ namespace Client.Jobs.Impl
             return dataDictionary;
         }
 
-        private async Task<DataDictionary> GetReleaseDetailsMetadataAsync(Contracts.SmintIoReleaseDetails releaseDetails)
+        private async Task<DataDictionary> GetReleaseDetailsMetadataAsync(SmintIo.CLAPI.Consumer.Integration.Core.Contracts.SmintIoReleaseDetails releaseDetails)
         {
             var modelReleaseState = await GetReleaseStatePictureparkKeyAsync(releaseDetails.ModelReleaseState);
             var propertyReleaseState = await GetReleaseStatePictureparkKeyAsync(releaseDetails.PropertyReleaseState);
@@ -677,6 +611,25 @@ namespace Client.Jobs.Impl
             var releaseStateListItems = await _pictureparkClient.GetReleaseStatesAsync();
 
             return releaseStateListItems.First(releaseStateListItem => string.Equals(releaseStateListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
+        }
+
+#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
+        public async Task HandleAuthenticatorExceptionAsync(SmintIoAuthenticatorException exception)
+#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
+        {
+            _logger.LogError(exception, "Error in Smint.io authenticator");
+        }
+
+#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
+        public async Task HandleSyncJobExceptionAsync(SmintIoSyncJobException exception)
+#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
+        {
+            _logger.LogError(exception, "Error in Smint.io sync job");
+        }
+
+        public void ClearCaches()
+        {
+            _pictureparkClient.ClearCache();
         }
 
         private IDictionary<string, string> JoinValues(IDictionary<string, string[]> dictionary)
