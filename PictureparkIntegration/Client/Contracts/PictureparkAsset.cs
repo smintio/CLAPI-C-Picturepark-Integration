@@ -8,6 +8,7 @@ namespace Client.Contracts
         public string TransferId { get; set; }
 
         public string LPTUuid { get; set; }
+
         public string BinaryUuid { get; set; }
         public int BinaryVersion { get; set; }
 

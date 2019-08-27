@@ -170,6 +170,7 @@ namespace Client.Target.Impl
                 {
                     var binaryUuid = binary.Uuid;
                     var binaryVersion = binary.Version;
+
                     var downloadUrl = binary.DownloadUrl;
                     var recommendedFileName = binary.RecommendedFileName;
 
@@ -292,6 +293,11 @@ namespace Client.Target.Impl
             if (binary != null)
             {
                 dataDictionary.Add("binaryUuid", binary.Uuid);
+
+                var binaryCulture = binary.Culture;
+                if (!string.IsNullOrEmpty(binaryCulture))
+                    dataDictionary.Add("binaryCulture", binaryCulture);
+
                 dataDictionary.Add("binaryVersion", binary.Version);
             }
 

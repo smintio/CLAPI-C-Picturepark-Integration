@@ -114,6 +114,12 @@ namespace Client.Contracts.Picturepark
         public string BinaryUuid { get; set; }
 
         // Not required for compound assets
+        [PictureparkNameTranslation("x-default", "Binary Culture")]
+        [PictureparkNameTranslation("en", "Binary Culture")]
+        [PictureparkNameTranslation("de", "Kultur der Datei")]
+        public int BinaryCulture { get; set; }
+
+        // Not required for compound assets
         [PictureparkNameTranslation("x-default", "Binary Version")]
         [PictureparkNameTranslation("en", "Binary Version")]
         [PictureparkNameTranslation("de", "Version der Datei")]
