@@ -29,17 +29,19 @@ Some things are still missing in the implementation and will come up soon (the e
 
 The example is set up in .NET Core, using [HostBuilder](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-2.2). This gives us all benefits of ASP.NET Core (like dependency injection), without all the web based overhead that we do not need.
 
+It is based on the [Smint.io Consumer Integration Core package for .NET Core](https://github.com/smintio/CLAPI-C-Integration-Core) that we also use for our production integrations and that you can reuse in your projects as well.
+
 *Regular scheduling*
 
 We regularily schedule our sync job. This makes sure that in all cases, at some point in time the assets from Smint.io end up in Picturepark. Upon the regularily running sync, we also synchronize generic metadata (see below).
 
-The regular scheduling is implemented in [TimedSynchronizerService.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Services/TimedSynchronizerService.cs).
+The regular scheduling is implemented in [TimedSynchronizerService.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Services/TimedSynchronizerService.cs).
 
 *On-demand scheduling*
 
 A synchronization also runs on demand, whenever an asset is being purchased on Smint.io. The notification about the purchase is received through the Pusher channel. The on-demand sync does NOT synchronize generic metadata, because this takes some time and would delay the purchased assets streaming into Picturepark in near real-time.
 
-The on-demand scheduling is implemented in [PusherService.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Services/PusherService.cs).
+The on-demand scheduling is implemented in [PusherService.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Services/PusherService.cs).
 
 *Synchronizing generic metadata*
 
@@ -62,17 +64,17 @@ We then transform the metadata to `(key) -> {culture, name}` representation and 
 
 The values are also cached locally for further reference, as Picturepark maintains proprietary ID values that we'll need to lookup when synchronizing assets from Smint.io to Picturepark.
 
-Reading generic and transforming generic metadata from Smint.io is implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs).
+Reading generic and transforming generic metadata from Smint.io is implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Providers/Impl/SmintIoApiClientProviderImpl.cs).
 
 *Getting assets for synchronization*
 
 When synchronizing assets from Smint.io, you need to query so-called *license purchase transactions* by using the `getLicensePurchaseTransactionsForSync` API. It has just two optional parameters. One is the number of records given in `limit` and the `continuationUuid` parameter.
 
-We first check if we had a previous synchronization run. From previous runs we always remember the `continuationUuid` value that we received in the query result of the last run, and use it as the `continuationUuid` parameter when the next synchronization runs (see `SynchronizeAssetsAsync` in [SyncJobImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Jobs/Impl/SyncJobImpl.cs)).
+We first check if we had a previous synchronization run. From previous runs we always remember the `continuationUuid` value that we received in the query result of the last run, and use it as the `continuationUuid` parameter when the next synchronization runs (see `SynchronizeAssetsAsync` in [SyncJobImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Jobs/Impl/SyncJobImpl.cs)).
 
 *Interpreting data*
 
-Please look at `LoadAssetsAsync` in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs), and also study the Smint.io Integration Guide which has been provided to you when you signed up as a Smint.io Solution Partner.
+Please look at `LoadAssetsAsync` in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Providers/Impl/SmintIoApiClientProviderImpl.cs), and also study the Smint.io Integration Guide which has been provided to you when you signed up as a Smint.io Solution Partner.
 
 **Warning: NEVER modify the meaning of data:** See e.g. the evaluation of the `isEditorialUse` variable in `LoadAssetsAsync`. We only assume state if the value is actually being set (not NULL) in the data received from Smint.io. If the value is not present this does NOT mean FALSE or TRUE or whatever. It simply means: *WE DO NOT KNOW*. It can be very dangerous for your users to rely on data that actually is not based on solid facts.
 
@@ -84,11 +86,11 @@ Find the Picturepark schema definitions [here](https://github.com/smintio/CLAPI-
 
 **Recommendation:** It is recommended that you build a similarily comprehensive structure in your system. Do not take any shortcuts - the data WILL be required by your users!
 
-The actual mapping is being done in [SyncJobImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Jobs/Impl/SyncJobImpl.cs).
+The actual mapping is being done in [PictureparkSyncTargetImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Target/Impl/PictureparkSyncTargetImpl.cs).
 
 *Downloading and storing the binaries*
 
-The download of the binaries is rathery easy. Once you got the license purchase transaction metadata downloaded, you can use the `GetLicensePurchaseTransactionBinariesForSyncAsync` to get the binaries that belong to the asset (implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs)).
+The download of the binaries is rathery easy. Once you got the license purchase transaction metadata downloaded, you can use the `GetLicensePurchaseTransactionBinariesForSyncAsync` to get the binaries that belong to the asset (implemented in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Providers/Impl/SmintIoApiClientProviderImpl.cs)).
 
 **Warning:** Please note that all binary download URLs are secured and will only stay valid for up to one hour. The download must start within that time interval to succeed.
 
@@ -100,13 +102,13 @@ The download of the binaries is rathery easy. Once you got the license purchase 
 
 *Exponential backoff*
 
-As mentioned in the Smint.io Integration Guide, it is important to use an Exponential Backoff Strategy when consuming foreign APIs. We use [Polly](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly) to do that in our example. Please check out `GetRetryStrategy` in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs) to learn more about how this can be done.
+As mentioned in the Smint.io Integration Guide, it is important to use an Exponential Backoff Strategy when consuming foreign APIs. We use [Polly](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly) to do that in our example. Please check out `GetRetryStrategy` in [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Providers/Impl/SmintIoApiClientProviderImpl.cs) to learn more about how this can be done.
 
 *UI indicators*
 
 The UI indicators that are mentioned in the Smint.io Integration Guide (e.g. editorial use or license constraint warnings) have been implemented through Picturepark name and thumbnail display patterns.
 
-The license constraint warning flag has been pre-calculated during import, considering all relevant constraints that could cause problems for the user. Please check out [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Providers/Impl/SmintIoApiClientProviderImpl.cs) from line `193` for more information.
+The license constraint warning flag has been pre-calculated during import, considering all relevant constraints that could cause problems for the user. Please check out [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Providers/Impl/SmintIoApiClientProviderImpl.cs) from line `198` for more information.
 
 For the Smint.io specific layers, the name display pattern set-up is done through the layer schema definitions in code. For compound assets, the thumbnail display pattern set-up is done through the virtual content type definition in code as well.
 
