@@ -470,6 +470,9 @@ namespace Client.Target.Impl
                 if (restrictedVerticals?.Count() > 0)
                     dataDictionary.Add("effectiveRestrictedVerticals", restrictedVerticals.Select(vertical => new { _refId = vertical }).ToArray());
 
+                if (usageConstraint.EffectiveMaxEditions != null)
+                    dataDictionary.Add("effectiveMaxEditions", usageConstraint.EffectiveMaxEditions);
+
                 if (usageConstraint.EffectiveValidUntil != null)
                     dataDictionary.Add("effectiveValidUntil", usageConstraint.EffectiveValidUntil);
 

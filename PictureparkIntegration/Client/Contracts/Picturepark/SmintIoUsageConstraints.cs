@@ -76,6 +76,11 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("de", "Nicht erlaubte Industrien")]
         public IList<SmintIoLicenseVertical> EffectiveRestrictedVerticals { get; set; }
 
+        [PictureparkNameTranslation("x-default", "Editions Limit")]
+        [PictureparkNameTranslation("en", "Editions Limit")]
+        [PictureparkNameTranslation("de", "Maximale Auflage")]
+        public int? EffectiveMaxEditions { get; set; }
+
         [PictureparkRequired]
         [PictureparkDateTime]
         [PictureparkNameTranslation("x-default", "Valid From")]
