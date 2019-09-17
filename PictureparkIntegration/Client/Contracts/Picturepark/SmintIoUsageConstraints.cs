@@ -11,98 +11,108 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("de", "Smint.io Nutzungsbedingungen")]
     public class SmintIoUsageConstraints
     {
-        [PictureparkNameTranslation("x-default", "Is Exclusive")]
-        [PictureparkNameTranslation("en", "Is Exclusive")]
-        [PictureparkNameTranslation("de", "Ist exklusiv")]
-        public IList<SmintIoLicenseUsage> EffectiveIsExclusive { get; set; }
+        [PictureparkNameTranslation("x-default", "Exclusivities")]
+        [PictureparkNameTranslation("en", "Exclusivities")]
+        [PictureparkNameTranslation("de", "Exklusivitäten")]
+        public IList<SmintIoLicenseUsage> Exclusivities { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Usages")]
         [PictureparkNameTranslation("en", "Allowed Usages")]
         [PictureparkNameTranslation("de", "Erlaubte Nutzungen")]
-        public IList<SmintIoLicenseUsage> EffectiveAllowedUsages { get; set; }
+        public IList<SmintIoLicenseUsage> AllowedUsages { get; set; }
 
         [PictureparkNameTranslation("x-default", "Restricted Usages")]
         [PictureparkNameTranslation("en", "Restricted Usages")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Nutzungen")]
-        public IList<SmintIoLicenseUsage> EffectiveRestrictedUsages { get; set; }
+        public IList<SmintIoLicenseUsage> RestrictedUsages { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Sizes")]
         [PictureparkNameTranslation("en", "Allowed Sizes")]
         [PictureparkNameTranslation("de", "Erlaubte Größen")]
-        public IList<SmintIoLicenseSize> EffectiveAllowedSizes { get; set; }
+        public IList<SmintIoLicenseSize> AllowedSizes { get; set; }
 
         [PictureparkNameTranslation("x-default", "Restricted Sizes")]
         [PictureparkNameTranslation("en", "Restricted Sizes")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Größen")]
-        public IList<SmintIoLicenseSize> EffectiveRestrictedSizes { get; set; }
+        public IList<SmintIoLicenseSize> RestrictedSizes { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Placements")]
         [PictureparkNameTranslation("en", "Allowed Placements")]
         [PictureparkNameTranslation("de", "Erlaubte Platzierungen")]
-        public IList<SmintIoLicensePlacement> EffectiveAllowedPlacements { get; set; }
+        public IList<SmintIoLicensePlacement> AllowedPlacements { get; set; }
 
         [PictureparkNameTranslation("x-default", "Restricted Placements")]
         [PictureparkNameTranslation("en", "Restricted Placements")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Platzierungen")]
-        public IList<SmintIoLicensePlacement> EffectiveRestrictedPlacements { get; set; }
+        public IList<SmintIoLicensePlacement> RestrictedPlacements { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Distributions")]
         [PictureparkNameTranslation("en", "Allowed Distributions")]
         [PictureparkNameTranslation("de", "Erlaubte Verteilungen")]
-        public IList<SmintIoLicenseDistribution> EffectiveAllowedDistributions { get; set; }
+        public IList<SmintIoLicenseDistribution> AllowedDistributions { get; set; }
 
         [PictureparkNameTranslation("x-default", "Restricted Distributions")]
         [PictureparkNameTranslation("en", "Restricted Distributions")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Verteilungen")]
-        public IList<SmintIoLicenseDistribution> EffectiveRestrictedDistributions { get; set; }
+        public IList<SmintIoLicenseDistribution> RestrictedDistributions { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Geographies")]
         [PictureparkNameTranslation("en", "Allowed Geographies")]
         [PictureparkNameTranslation("de", "Erlaubte Regionen")]
-        public IList<SmintIoLicenseGeography> EffectiveAllowedGeographies { get; set; }
+        public IList<SmintIoLicenseGeography> AllowedGeographies { get; set; }
 
         [PictureparkNameTranslation("x-default", "Restricted Geographies")]
         [PictureparkNameTranslation("en", "Restricted Geographies")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Regionen")]
-        public IList<SmintIoLicenseGeography> EffectiveRestrictedGeographies { get; set; }
+        public IList<SmintIoLicenseGeography> RestrictedGeographies { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Verticals")]
         [PictureparkNameTranslation("en", "Allowed Verticals")]
         [PictureparkNameTranslation("de", "Erlaubte Industrien")]
-        public IList<SmintIoLicenseVertical> EffectiveAllowedVerticals { get; set; }
+        public IList<SmintIoLicenseVertical> AllowedVerticals { get; set; }
 
         [PictureparkNameTranslation("x-default", "Restricted Verticals")]
         [PictureparkNameTranslation("en", "Restricted Verticals")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Industrien")]
-        public IList<SmintIoLicenseVertical> EffectiveRestrictedVerticals { get; set; }
+        public IList<SmintIoLicenseVertical> RestrictedVerticals { get; set; }
+
+        [PictureparkNameTranslation("x-default", "Allowed Languages")]
+        [PictureparkNameTranslation("en", "Allowed Languages")]
+        [PictureparkNameTranslation("de", "Erlaubte Sprachen")]
+        public IList<SmintIoLicenseLanguage> AllowedLanguages { get; set; }
+
+        [PictureparkNameTranslation("x-default", "Restricted Languages")]
+        [PictureparkNameTranslation("en", "Restricted Languages")]
+        [PictureparkNameTranslation("de", "Nicht erlaubte Sprachen")]
+        public IList<SmintIoLicenseLanguage> RestrictedLanguages { get; set; }
 
         [PictureparkNameTranslation("x-default", "Editions Limit")]
         [PictureparkNameTranslation("en", "Editions Limit")]
         [PictureparkNameTranslation("de", "Maximale Auflage")]
-        public int? EffectiveMaxEditions { get; set; }
+        public int? MaxEditions { get; set; }
 
         [PictureparkRequired]
         [PictureparkDateTime]
         [PictureparkNameTranslation("x-default", "Valid From")]
         [PictureparkNameTranslation("en", "Valid From")]
         [PictureparkNameTranslation("de", "Gültig ab")]
-        public DateTimeOffset? EffectiveValidFrom { get; set; }
+        public DateTimeOffset? ValidFrom { get; set; }
 
         [PictureparkDateTime]
         [PictureparkNameTranslation("x-default", "Valid Until")]
         [PictureparkNameTranslation("en", "Valid Until")]
         [PictureparkNameTranslation("de", "Gültig bis")]
-        public DateTimeOffset? EffectiveValidUntil { get; set; }
+        public DateTimeOffset? ValidUntil { get; set; }
         [PictureparkDateTime]
 
         [PictureparkNameTranslation("x-default", "To Be Used Until")]
         [PictureparkNameTranslation("en", "To Be Used Until")]
         [PictureparkNameTranslation("de", "Lizenznutzung bis")]
-        public DateTimeOffset? EffectiveToBeUsedUntil { get; set; }
+        public DateTimeOffset? ToBeUsedUntil { get; set; }
 
         [PictureparkNameTranslation("x-default", "For Editorial Use Only")]
         [PictureparkNameTranslation("en", "For Editorial Use Only")]
         [PictureparkNameTranslation("de", "Nur für redaktionelle Nutzung")]
-        public bool? EffectiveIsEditorialUse { get; set; }
+        public bool? IsEditorialUse { get; set; }
     }
 }

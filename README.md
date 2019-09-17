@@ -53,12 +53,14 @@ Whenever generic metadata needs to be synchronized, we first query the generic m
 - Content categories
 - License types
 - Release states
+- License exclusivities
 - License usages
 - License sizes
 - License placements
 - License distributions
 - License geographies
 - License verticals
+- License languages
 
 We then transform the metadata to `(key) -> {culture, name}` representation and push it to Picturepark as translated value lists. 
 
@@ -127,8 +129,8 @@ Add this code to the Picturepark file type thumbnail display patterns to display
    &nbsp;<img src="https://www.smint.io/images/favicon.png" width="16"/>
 {% endif %}
 
-{% if data.smintIoLicenseLayer.effectiveIsEditorialUse or 
-   data.smintIoLicenseLayer.effectiveHasLicenseUsageConstraints %} 
+{% if data.smintIoLicenseLayer.isEditorialUse or 
+   data.smintIoLicenseLayer.hasLicenseUsageConstraints %} 
    &nbsp;<font color="#ff9800"><i class="material-icons icon-alert md-16"></i></font>
 {% endif %}
 ```

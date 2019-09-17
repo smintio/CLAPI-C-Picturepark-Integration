@@ -28,6 +28,9 @@ namespace Client.Providers
         Task<IList<PictureparkListItem>> GetReleaseStatesAsync();
         Task ImportReleaseStatesAsync(IList<PictureparkListItem> releaseStates);
 
+        Task<IList<PictureparkListItem>> GetLicenseExclusivitiesAsync();
+        Task ImportLicenseExclusivitiesAsync(IList<PictureparkListItem> licenseExclusivities);
+
         Task<IList<PictureparkListItem>> GetLicenseUsagesAsync();
         Task ImportLicenseUsagesAsync(IList<PictureparkListItem> licenseUsages);
 
@@ -45,6 +48,9 @@ namespace Client.Providers
 
         Task<IList<PictureparkListItem>> GetLicenseVerticalsAsync();
         Task ImportLicenseVerticalsAsync(IList<PictureparkListItem> licenseVerticals);
+
+        Task<IList<PictureparkListItem>> GetLicenseLanguagesAsync();
+        Task ImportLicenseLanguagesAsync(IList<PictureparkListItem> licenseLanguages);
 
         Task ImportAssetsAsync(string folderName, IList<PictureparkAsset> assets);
     }

@@ -12,16 +12,16 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Download Limit")]
         [PictureparkNameTranslation("en", "Download Limit")]
         [PictureparkNameTranslation("de", "Download-Limit")]
-        public int? EffectiveMaxDownloads { get; set; }
+        public int? MaxDownloads { get; set; }
 
         [PictureparkNameTranslation("x-default", "User Limit")]
         [PictureparkNameTranslation("en", "User Limit")]
         [PictureparkNameTranslation("de", "Benutzer-Limit")]
-        public int? EffectiveMaxUsers { get; set; }
+        public int? MaxUsers { get; set; }
 
         [PictureparkNameTranslation("x-default", "Reuse Limit")]
         [PictureparkNameTranslation("en", "Reuse Limit")]
         [PictureparkNameTranslation("de", "Wiederverwendungs-Limit")]
-        public int? EffectiveMaxReuses { get; set; }
+        public int? MaxReuses { get; set; }
     }
 }

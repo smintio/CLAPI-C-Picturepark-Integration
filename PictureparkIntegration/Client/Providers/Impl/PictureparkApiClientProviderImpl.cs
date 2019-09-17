@@ -42,12 +42,14 @@ namespace Client.Providers.Impl
         private IList<PictureparkListItem> _licenseTypeCache;
         private IList<PictureparkListItem> _releaseStateCache;
 
+        private IList<PictureparkListItem> _licenseExclusivityCache;
         private IList<PictureparkListItem> _licenseUsageCache;
         private IList<PictureparkListItem> _licenseSizeCache;
         private IList<PictureparkListItem> _licensePlacementCache;
         private IList<PictureparkListItem> _licenseDistributionCache;
         private IList<PictureparkListItem> _licenseGeographyCache;
         private IList<PictureparkListItem> _licenseVerticalCache;
+        private IList<PictureparkListItem> _licenseLanguageCache;
 
         private readonly ILogger _logger;
 
@@ -121,12 +123,14 @@ namespace Client.Providers.Impl
             _licenseTypeCache = null;
             _releaseStateCache = null;
 
+            _licenseExclusivityCache = null;
             _licenseUsageCache = null;
             _licenseSizeCache = null;
             _licensePlacementCache = null;
             _licenseDistributionCache = null;
             _licenseGeographyCache = null;
             _licenseVerticalCache = null;
+            _licenseLanguageCache = null;
         }
 
         public async Task<IList<PictureparkListItem>> GetContentProvidersAsync()
@@ -243,6 +247,25 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {releaseStates.Count()} release states to Picturepark");
         }
 
+        public async Task<IList<PictureparkListItem>> GetLicenseExclusivitiesAsync()
+        {
+            if (_licenseExclusivityCache != null)
+                return _licenseExclusivityCache;
+
+            _licenseExclusivityCache = await GetListItemsAsync(nameof(SmintIoLicenseExclusivity));
+
+            return _licenseExclusivityCache;
+        }
+
+        public async Task ImportLicenseExclusivitiesAsync(IList<PictureparkListItem> licenseExclusivities)
+        {
+            _logger.LogInformation("Importing license exclusivities to Picturepark...");
+
+            await ImportListItemsAsync(nameof(SmintIoLicenseExclusivity), licenseExclusivities);
+
+            _logger.LogInformation($"Imported {licenseExclusivities.Count()} license exclusivities to Picturepark");
+        }
+
         public async Task<IList<PictureparkListItem>> GetLicenseUsagesAsync()
         {
             if (_licenseUsageCache != null)
@@ -357,6 +380,25 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseVerticals.Count()} license verticals to Picturepark");
         }
 
+        public async Task<IList<PictureparkListItem>> GetLicenseLanguagesAsync()
+        {
+            if (_licenseLanguageCache != null)
+                return _licenseLanguageCache;
+
+            _licenseLanguageCache = await GetListItemsAsync(nameof(SmintIoLicenseLanguage));
+
+            return _licenseLanguageCache;
+        }
+
+        public async Task ImportLicenseLanguagesAsync(IList<PictureparkListItem> licenseLanguages)
+        {
+            _logger.LogInformation("Importing license languages to Picturepark...");
+
+            await ImportListItemsAsync(nameof(SmintIoLicenseLanguage), licenseLanguages);
+
+            _logger.LogInformation($"Imported {licenseLanguages.Count()} license languages to Picturepark");
+        }
+
         private async Task<IList<PictureparkListItem>> GetListItemsAsync(string schemaId)
         {
             try
@@ -368,7 +410,7 @@ namespace Client.Providers.Impl
                 var searchResult = await _client.ListItem.SearchAsync(new ListItemSearchRequest()
                 {
                     SchemaIds = schemaIds,
-                    IncludeContentData = true,
+                    ResolveBehaviors = new[] { ListItemResolveBehavior.Content },
                     Limit = 1000
                 });
 
