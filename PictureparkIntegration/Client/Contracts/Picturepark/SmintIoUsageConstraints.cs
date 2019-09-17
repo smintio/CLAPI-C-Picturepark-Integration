@@ -14,7 +14,7 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Exclusivities")]
         [PictureparkNameTranslation("en", "Exclusivities")]
         [PictureparkNameTranslation("de", "Exklusivitäten")]
-        public IList<SmintIoLicenseUsage> Exclusivities { get; set; }
+        public IList<SmintIoLicenseExclusivity> Exclusivities { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Usages")]
         [PictureparkNameTranslation("en", "Allowed Usages")]
