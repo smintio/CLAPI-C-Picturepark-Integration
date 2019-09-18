@@ -11,6 +11,16 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("de", "Smint.io Nutzungsbedingungen")]
     public class SmintIoUsageConstraints
     {
+        [PictureparkNameTranslation("x-default", "Sequence Number")]
+        [PictureparkNameTranslation("en", "Sequence Number")]
+        [PictureparkNameTranslation("de", "Sequenznummer")]
+        public int? SequenceNumber { get; set; }
+
+        [PictureparkNameTranslation("x-default", "Name")]
+        [PictureparkNameTranslation("en", "Name")]
+        [PictureparkNameTranslation("de", "Name")]
+        public TranslatedStringDictionary Name { get; set; }
+
         [PictureparkNameTranslation("x-default", "Exclusivities")]
         [PictureparkNameTranslation("en", "Exclusivities")]
         [PictureparkNameTranslation("de", "Exklusivitäten")]

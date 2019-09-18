@@ -448,6 +448,12 @@ namespace Client.Target.Impl
                     { "validFrom", usageConstraint.ValidFrom }
                 };
 
+                if (usageConstraint.SequenceNumber != null)
+                    dataDictionary.Add("sequenceNumber", usageConstraint.SequenceNumber);
+
+                if (usageConstraint.Name?.Count > 0)
+                    dataDictionary.Add("name", usageConstraint.Name);
+
                 if (exclusivities?.Count() > 0)
                     dataDictionary.Add("exclusivities", exclusivities.Select(exclusivity => new { _refId = exclusivity }).ToArray());
 
