@@ -76,13 +76,13 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("de", "Nicht erlaubte Regionen")]
         public IList<SmintIoLicenseGeography> RestrictedGeographies { get; set; }
 
-        [PictureparkNameTranslation("x-default", "Allowed Verticals")]
-        [PictureparkNameTranslation("en", "Allowed Verticals")]
+        [PictureparkNameTranslation("x-default", "Allowed Industries")]
+        [PictureparkNameTranslation("en", "Allowed Industries")]
         [PictureparkNameTranslation("de", "Erlaubte Industrien")]
         public IList<SmintIoLicenseVertical> AllowedVerticals { get; set; }
 
-        [PictureparkNameTranslation("x-default", "Restricted Verticals")]
-        [PictureparkNameTranslation("en", "Restricted Verticals")]
+        [PictureparkNameTranslation("x-default", "Restricted Industries")]
+        [PictureparkNameTranslation("en", "Restricted Industries")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Industrien")]
         public IList<SmintIoLicenseVertical> RestrictedVerticals { get; set; }
 
