@@ -100,16 +100,22 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseGeographiesAsync(transformedLicenseGeographies);
         }
 
-        public async Task ImportLicenseVerticalsAsync(IList<SmintIoMetadataElement> licenseVerticals)
+        public async Task ImportLicenseIndustriesAsync(IList<SmintIoMetadataElement> licenseIndustries)
         {
-            var transformedLicenseVerticals = TransformGenericMetadata(licenseVerticals);
-            await _pictureparkClient.ImportLicenseVerticalsAsync(transformedLicenseVerticals);
+            var transformedLicenseIndustries = TransformGenericMetadata(licenseIndustries);
+            await _pictureparkClient.ImportLicenseIndustriesAsync(transformedLicenseIndustries);
         }
 
         public async Task ImportLicenseLanguagesAsync(IList<SmintIoMetadataElement> licenseLanguages)
         {
             var transformedLicenseLanguages = TransformGenericMetadata(licenseLanguages);
             await _pictureparkClient.ImportLicenseLanguagesAsync(transformedLicenseLanguages);
+        }
+
+        public async Task ImportLicenseUsageLimitsAsync(IList<SmintIoMetadataElement> licenseUsageLimits)
+        {
+            var transformedLicenseUsageLimits = TransformGenericMetadata(licenseUsageLimits);
+            await _pictureparkClient.ImportLicenseUsageLimitsAsync(transformedLicenseUsageLimits);
         }
 
         private IList<PictureparkListItem> TransformGenericMetadata(IList<SmintIoMetadataElement> smintIoGenericMetadataElements)
@@ -316,8 +322,8 @@ namespace Client.Target.Impl
             if (asset.IsEditorialUse != null)
                 dataDictionary.Add("isEditorialUse", asset.IsEditorialUse);
 
-            if (asset.HasLicenseUsageConstraints != null)
-                dataDictionary.Add("hasLicenseUsageConstraints", asset.HasLicenseUsageConstraints);
+            if (asset.HasLicenseTerms != null)
+                dataDictionary.Add("hasLicenseTerms", asset.HasLicenseTerms);
 
             return dataDictionary;
         }
@@ -368,8 +374,8 @@ namespace Client.Target.Impl
             if (asset.LicenseOptions?.Count > 0)
                 dataDictionary.Add("licenseOptions", GetLicenseOptions(asset.LicenseOptions));
 
-            if (asset.UsageConstraints?.Count > 0)
-                dataDictionary.Add("usageConstraints", await GetUsageConstraintsAsync(asset.UsageConstraints));
+            if (asset.LicenseTerms?.Count > 0)
+                dataDictionary.Add("licenseTerms", await GetLicenseTermsAsync(asset.LicenseTerms));
 
             if (asset.DownloadConstraints != null)
                 dataDictionary.Add("downloadConstraints", GetDownloadConstraints(asset.DownloadConstraints));
@@ -380,8 +386,8 @@ namespace Client.Target.Impl
             if (asset.IsEditorialUse != null)
                 dataDictionary.Add("isEditorialUse", asset.IsEditorialUse);
 
-            if (asset.HasLicenseUsageConstraints != null)
-                dataDictionary.Add("hasLicenseUsageConstraints", asset.HasLicenseUsageConstraints);
+            if (asset.HasLicenseTerms != null)
+                dataDictionary.Add("hasLicenseTerms", asset.HasLicenseTerms);
 
             return dataDictionary;
         }
@@ -414,45 +420,47 @@ namespace Client.Target.Impl
             return dataDictionary;
         }
 
-        private async Task<DataDictionary[]> GetUsageConstraintsAsync(IList<SmintIo.CLAPI.Consumer.Integration.Core.Contracts.SmintIoUsageConstraints> usageContraints)
+        private async Task<DataDictionary[]> GetLicenseTermsAsync(IList<SmintIo.CLAPI.Consumer.Integration.Core.Contracts.SmintIoLicenseTerm> licenseTerms)
         {
             var dataDictionaries = new List<DataDictionary>();
 
-            foreach (var usageConstraint in usageContraints)
+            foreach (var licenseTerm in licenseTerms)
             {
-                var exclusivities = await GetLicenseExclusivitiesPictureparkKeysAsync(usageConstraint.Exclusivities);
+                var exclusivities = await GetLicenseExclusivitiesPictureparkKeysAsync(licenseTerm.Exclusivities);
 
-                var allowedUsages = await GetLicenseUsagesPictureparkKeysAsync(usageConstraint.AllowedUsages);
-                var restrictedUsages = await GetLicenseUsagesPictureparkKeysAsync(usageConstraint.RestrictedUsages);
+                var allowedUsages = await GetLicenseUsagesPictureparkKeysAsync(licenseTerm.AllowedUsages);
+                var restrictedUsages = await GetLicenseUsagesPictureparkKeysAsync(licenseTerm.RestrictedUsages);
 
-                var allowedSizes = await GetLicenseSizesPictureparkKeysAsync(usageConstraint.AllowedSizes);
-                var restrictedSizes = await GetLicenseSizesPictureparkKeysAsync(usageConstraint.RestrictedSizes);
+                var allowedSizes = await GetLicenseSizesPictureparkKeysAsync(licenseTerm.AllowedSizes);
+                var restrictedSizes = await GetLicenseSizesPictureparkKeysAsync(licenseTerm.RestrictedSizes);
 
-                var allowedPlacements = await GetLicensePlacementsPictureparkKeysAsync(usageConstraint.AllowedPlacements);
-                var restrictedPlacements = await GetLicensePlacementsPictureparkKeysAsync(usageConstraint.RestrictedPlacements);
+                var allowedPlacements = await GetLicensePlacementsPictureparkKeysAsync(licenseTerm.AllowedPlacements);
+                var restrictedPlacements = await GetLicensePlacementsPictureparkKeysAsync(licenseTerm.RestrictedPlacements);
 
-                var allowedDistributions = await GetLicenseDistributionsPictureparkKeysAsync(usageConstraint.AllowedDistributions);
-                var restrictedDistributions = await GetLicenseDistributionsPictureparkKeysAsync(usageConstraint.RestrictedDistributions);
+                var allowedDistributions = await GetLicenseDistributionsPictureparkKeysAsync(licenseTerm.AllowedDistributions);
+                var restrictedDistributions = await GetLicenseDistributionsPictureparkKeysAsync(licenseTerm.RestrictedDistributions);
 
-                var allowedGeographies = await GetLicenseGeographiesPictureparkKeysAsync(usageConstraint.AllowedGeographies);
-                var restrictedGeographies = await GetLicenseGeographiesPictureparkKeysAsync(usageConstraint.RestrictedGeographies);
+                var allowedGeographies = await GetLicenseGeographiesPictureparkKeysAsync(licenseTerm.AllowedGeographies);
+                var restrictedGeographies = await GetLicenseGeographiesPictureparkKeysAsync(licenseTerm.RestrictedGeographies);
 
-                var allowedVerticals = await GetLicenseVerticalsPictureparkKeysAsync(usageConstraint.AllowedVerticals);
-                var restrictedVerticals = await GetLicenseVerticalsPictureparkKeysAsync(usageConstraint.RestrictedVerticals);
+                var allowedIndustries = await GetLicenseIndustriesPictureparkKeysAsync(licenseTerm.AllowedIndustries);
+                var restrictedIndustries = await GetLicenseIndustriesPictureparkKeysAsync(licenseTerm.RestrictedIndustries);
 
-                var allowedLanguages = await GetLicenseLanguagesPictureparkKeysAsync(usageConstraint.AllowedLanguages);
-                var restrictedLanguages = await GetLicenseLanguagesPictureparkKeysAsync(usageConstraint.RestrictedLanguages);
+                var allowedLanguages = await GetLicenseLanguagesPictureparkKeysAsync(licenseTerm.AllowedLanguages);
+                var restrictedLanguages = await GetLicenseLanguagesPictureparkKeysAsync(licenseTerm.RestrictedLanguages);
+
+                var usageLimits = await GetLicenseUsageLimitsPictureparkKeysAsync(licenseTerm.UsageLimits);
 
                 var dataDictionary = new DataDictionary()
                 {
-                    { "validFrom", usageConstraint.ValidFrom }
+                    { "validFrom", licenseTerm.ValidFrom }
                 };
 
-                if (usageConstraint.SequenceNumber != null)
-                    dataDictionary.Add("sequenceNumber", usageConstraint.SequenceNumber);
+                if (licenseTerm.SequenceNumber != null)
+                    dataDictionary.Add("sequenceNumber", licenseTerm.SequenceNumber);
 
-                if (usageConstraint.Name?.Count > 0)
-                    dataDictionary.Add("name", usageConstraint.Name);
+                if (licenseTerm.Name?.Count > 0)
+                    dataDictionary.Add("name", licenseTerm.Name);
 
                 if (exclusivities?.Count() > 0)
                     dataDictionary.Add("exclusivities", exclusivities.Select(exclusivity => new { _refId = exclusivity }).ToArray());
@@ -487,11 +495,11 @@ namespace Client.Target.Impl
                 if (restrictedGeographies?.Count() > 0)
                     dataDictionary.Add("restrictedGeographies", restrictedGeographies.Select(geography => new { _refId = geography }).ToArray());
 
-                if (allowedVerticals?.Count() > 0)
-                    dataDictionary.Add("allowedVerticals", allowedVerticals.Select(vertical => new { _refId = vertical }).ToArray());
+                if (allowedIndustries?.Count() > 0)
+                    dataDictionary.Add("allowedIndustries", allowedIndustries.Select(industry => new { _refId = industry }).ToArray());
 
-                if (restrictedVerticals?.Count() > 0)
-                    dataDictionary.Add("restrictedVerticals", restrictedVerticals.Select(vertical => new { _refId = vertical }).ToArray());
+                if (restrictedIndustries?.Count() > 0)
+                    dataDictionary.Add("restrictedIndustries", restrictedIndustries.Select(industry => new { _refId = industry }).ToArray());
 
                 if (allowedLanguages?.Count() > 0)
                     dataDictionary.Add("allowedLanguages", allowedLanguages.Select(language => new { _refId = language }).ToArray());
@@ -499,17 +507,17 @@ namespace Client.Target.Impl
                 if (restrictedLanguages?.Count() > 0)
                     dataDictionary.Add("restrictedLanguages", restrictedLanguages.Select(language => new { _refId = language }).ToArray());
 
-                if (usageConstraint.MaxEditions != null)
-                    dataDictionary.Add("maxEditions", usageConstraint.MaxEditions);
+                if (usageLimits?.Count() > 0)
+                    dataDictionary.Add("usageLimits", usageLimits.Select(usageLimit => new { _refId = usageLimit }).ToArray());
 
-                if (usageConstraint.ValidUntil != null)
-                    dataDictionary.Add("validUntil", usageConstraint.ValidUntil);
+                if (licenseTerm.ValidUntil != null)
+                    dataDictionary.Add("validUntil", licenseTerm.ValidUntil);
 
-                if (usageConstraint.ToBeUsedUntil != null)
-                    dataDictionary.Add("toBeUsedUntil", usageConstraint.ToBeUsedUntil);
+                if (licenseTerm.ToBeUsedUntil != null)
+                    dataDictionary.Add("toBeUsedUntil", licenseTerm.ToBeUsedUntil);
 
-                if (usageConstraint.IsEditorialUse != null)
-                    dataDictionary.Add("isEditorialUse", usageConstraint.IsEditorialUse);
+                if (licenseTerm.IsEditorialUse != null)
+                    dataDictionary.Add("isEditorialUse", licenseTerm.IsEditorialUse);
 
                 dataDictionaries.Add(dataDictionary);
             }
@@ -595,16 +603,16 @@ namespace Client.Target.Impl
                 .ToList();
         }
 
-        private async Task<IList<string>> GetLicenseVerticalsPictureparkKeysAsync(IList<string> smintIoKeys)
+        private async Task<IList<string>> GetLicenseIndustriesPictureparkKeysAsync(IList<string> smintIoKeys)
         {
             if (smintIoKeys == null || !smintIoKeys.Any())
                 return null;
 
-            var licenseVerticalsListItems = await _pictureparkClient.GetLicenseVerticalsAsync();
+            var licenseIndustriesListItems = await _pictureparkClient.GetLicenseIndustriesAsync();
 
-            return licenseVerticalsListItems
-                .Where(licenseVerticalListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseVerticalListItem.SmintIoKey, smintIoKey)))
-                .Select(licenseVerticalListItem => licenseVerticalListItem.PictureparkListItemId)
+            return licenseIndustriesListItems
+                .Where(licenseIndustryListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseIndustryListItem.SmintIoKey, smintIoKey)))
+                .Select(licenseIndustryListItem => licenseIndustryListItem.PictureparkListItemId)
                 .ToList();
         }
 
@@ -618,6 +626,19 @@ namespace Client.Target.Impl
             return licenseLanguagesListItems
                 .Where(licenseLanguageListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseLanguageListItem.SmintIoKey, smintIoKey)))
                 .Select(licenseLanguageListItem => licenseLanguageListItem.PictureparkListItemId)
+                .ToList();
+        }
+
+        private async Task<IList<string>> GetLicenseUsageLimitsPictureparkKeysAsync(IList<string> smintIoKeys)
+        {
+            if (smintIoKeys == null || !smintIoKeys.Any())
+                return null;
+
+            var licenseUsageLimitsListItems = await _pictureparkClient.GetLicenseUsageLimitsAsync();
+
+            return licenseUsageLimitsListItems
+                .Where(licenseUsageLimitListItem => smintIoKeys.Any(smintIoKey => string.Equals(licenseUsageLimitListItem.SmintIoKey, smintIoKey)))
+                .Select(licenseUsageLimitListItem => licenseUsageLimitListItem.PictureparkListItemId)
                 .ToList();
         }
 

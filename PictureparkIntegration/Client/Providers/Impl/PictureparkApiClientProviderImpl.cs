@@ -48,8 +48,9 @@ namespace Client.Providers.Impl
         private IList<PictureparkListItem> _licensePlacementCache;
         private IList<PictureparkListItem> _licenseDistributionCache;
         private IList<PictureparkListItem> _licenseGeographyCache;
-        private IList<PictureparkListItem> _licenseVerticalCache;
+        private IList<PictureparkListItem> _licenseIndustryCache;
         private IList<PictureparkListItem> _licenseLanguageCache;
+        private IList<PictureparkListItem> _licenseUsageLimitCache;
 
         private readonly ILogger _logger;
 
@@ -129,8 +130,9 @@ namespace Client.Providers.Impl
             _licensePlacementCache = null;
             _licenseDistributionCache = null;
             _licenseGeographyCache = null;
-            _licenseVerticalCache = null;
+            _licenseIndustryCache = null;
             _licenseLanguageCache = null;
+            _licenseUsageLimitCache = null;
         }
 
         public async Task<IList<PictureparkListItem>> GetContentProvidersAsync()
@@ -361,23 +363,23 @@ namespace Client.Providers.Impl
             _logger.LogInformation($"Imported {licenseGeographies.Count()} license geographies to Picturepark");
         }
 
-        public async Task<IList<PictureparkListItem>> GetLicenseVerticalsAsync()
+        public async Task<IList<PictureparkListItem>> GetLicenseIndustriesAsync()
         {
-            if (_licenseVerticalCache != null)
-                return _licenseVerticalCache;
+            if (_licenseIndustryCache != null)
+                return _licenseIndustryCache;
 
-            _licenseVerticalCache = await GetListItemsAsync(nameof(SmintIoLicenseVertical));
+            _licenseIndustryCache = await GetListItemsAsync(nameof(SmintIoLicenseIndustry));
 
-            return _licenseVerticalCache;
+            return _licenseIndustryCache;
         }
 
-        public async Task ImportLicenseVerticalsAsync(IList<PictureparkListItem> licenseVerticals)
+        public async Task ImportLicenseIndustriesAsync(IList<PictureparkListItem> licenseIndustries)
         {
-            _logger.LogInformation("Importing license verticals to Picturepark...");
+            _logger.LogInformation("Importing license industries to Picturepark...");
 
-            await ImportListItemsAsync(nameof(SmintIoLicenseVertical), licenseVerticals);
+            await ImportListItemsAsync(nameof(SmintIoLicenseIndustry), licenseIndustries);
 
-            _logger.LogInformation($"Imported {licenseVerticals.Count()} license verticals to Picturepark");
+            _logger.LogInformation($"Imported {licenseIndustries.Count()} license Industries to Picturepark");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseLanguagesAsync()
@@ -397,6 +399,25 @@ namespace Client.Providers.Impl
             await ImportListItemsAsync(nameof(SmintIoLicenseLanguage), licenseLanguages);
 
             _logger.LogInformation($"Imported {licenseLanguages.Count()} license languages to Picturepark");
+        }
+
+        public async Task<IList<PictureparkListItem>> GetLicenseUsageLimitsAsync()
+        {
+            if (_licenseUsageLimitCache != null)
+                return _licenseUsageLimitCache;
+
+            _licenseUsageLimitCache = await GetListItemsAsync(nameof(SmintIoLicenseUsageLimit));
+
+            return _licenseUsageLimitCache;
+        }
+
+        public async Task ImportLicenseUsageLimitsAsync(IList<PictureparkListItem> licenseUsageLimits)
+        {
+            _logger.LogInformation("Importing license usage limits to Picturepark...");
+
+            await ImportListItemsAsync(nameof(SmintIoLicenseUsageLimit), licenseUsageLimits);
+
+            _logger.LogInformation($"Imported {licenseUsageLimits.Count()} license usage limits to Picturepark");
         }
 
         private async Task<IList<PictureparkListItem>> GetListItemsAsync(string schemaId)

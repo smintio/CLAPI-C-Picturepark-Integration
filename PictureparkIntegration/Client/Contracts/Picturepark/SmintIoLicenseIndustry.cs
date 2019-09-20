@@ -8,8 +8,8 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io License Industry")]
     [PictureparkNameTranslation("en", "Smint.io License Industry")]
     [PictureparkNameTranslation("de", "Smint.io Lizenz Industrie")]
-    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIoLicenseVertical.name | translate}}")]
-    public class SmintIoLicenseVertical : ReferenceObject
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{{data.smintIoLicenseIndustry.name | translate}}")]
+    public class SmintIoLicenseIndustry : ReferenceObject
     {
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Key")]

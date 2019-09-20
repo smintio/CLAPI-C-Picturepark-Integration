@@ -46,11 +46,14 @@ namespace Client.Providers
         Task<IList<PictureparkListItem>> GetLicenseGeographiesAsync();
         Task ImportLicenseGeographiesAsync(IList<PictureparkListItem> licenseGeographies);
 
-        Task<IList<PictureparkListItem>> GetLicenseVerticalsAsync();
-        Task ImportLicenseVerticalsAsync(IList<PictureparkListItem> licenseVerticals);
+        Task<IList<PictureparkListItem>> GetLicenseIndustriesAsync();
+        Task ImportLicenseIndustriesAsync(IList<PictureparkListItem> licenseIndustries);
 
         Task<IList<PictureparkListItem>> GetLicenseLanguagesAsync();
         Task ImportLicenseLanguagesAsync(IList<PictureparkListItem> licenseLanguages);
+
+        Task<IList<PictureparkListItem>> GetLicenseUsageLimitsAsync();
+        Task ImportLicenseUsageLimitsAsync(IList<PictureparkListItem> licenseUsageLimits);
 
         Task ImportAssetsAsync(string folderName, IList<PictureparkAsset> assets);
     }

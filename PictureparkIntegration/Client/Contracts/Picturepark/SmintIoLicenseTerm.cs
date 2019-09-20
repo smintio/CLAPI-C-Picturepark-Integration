@@ -6,10 +6,10 @@ using Picturepark.SDK.V1.Contract.Attributes;
 namespace Client.Contracts.Picturepark
 {
     [PictureparkSchema(SchemaType.Struct)]
-    [PictureparkNameTranslation("x-default", "Smint.io Usage Constraints")]
-    [PictureparkNameTranslation("en", "Smint.io Usage Constraints")]
-    [PictureparkNameTranslation("de", "Smint.io Nutzungsbedingungen")]
-    public class SmintIoUsageConstraints
+    [PictureparkNameTranslation("x-default", "Smint.io License Terms")]
+    [PictureparkNameTranslation("en", "Smint.io License Terms")]
+    [PictureparkNameTranslation("de", "Smint.io Lizenz-Bedingungen")]
+    public class SmintIoLicenseTerms
     {
         [PictureparkNameTranslation("x-default", "Sequence Number")]
         [PictureparkNameTranslation("en", "Sequence Number")]
@@ -79,12 +79,12 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Allowed Industries")]
         [PictureparkNameTranslation("en", "Allowed Industries")]
         [PictureparkNameTranslation("de", "Erlaubte Industrien")]
-        public IList<SmintIoLicenseVertical> AllowedVerticals { get; set; }
+        public IList<SmintIoLicenseIndustry> AllowedIndustries { get; set; }
 
         [PictureparkNameTranslation("x-default", "Restricted Industries")]
         [PictureparkNameTranslation("en", "Restricted Industries")]
         [PictureparkNameTranslation("de", "Nicht erlaubte Industrien")]
-        public IList<SmintIoLicenseVertical> RestrictedVerticals { get; set; }
+        public IList<SmintIoLicenseIndustry> RestrictedIndustries { get; set; }
 
         [PictureparkNameTranslation("x-default", "Allowed Languages")]
         [PictureparkNameTranslation("en", "Allowed Languages")]
@@ -96,10 +96,10 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("de", "Nicht erlaubte Sprachen")]
         public IList<SmintIoLicenseLanguage> RestrictedLanguages { get; set; }
 
-        [PictureparkNameTranslation("x-default", "Editions Limit")]
-        [PictureparkNameTranslation("en", "Editions Limit")]
-        [PictureparkNameTranslation("de", "Maximale Auflage")]
-        public int? MaxEditions { get; set; }
+        [PictureparkNameTranslation("x-default", "Usage Limits")]
+        [PictureparkNameTranslation("en", "Usage Limits")]
+        [PictureparkNameTranslation("de", "Nutzungs-Limits")]
+        public IList<SmintIoLicenseUsageLimit> RestrictedUsageLimits { get; set; }
 
         [PictureparkRequired]
         [PictureparkDateTime]
