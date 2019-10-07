@@ -431,8 +431,7 @@ namespace Client.Providers.Impl
                 var searchResult = await _client.ListItem.SearchAsync(new ListItemSearchRequest()
                 {
                     SchemaIds = schemaIds,
-                    // ResolveBehaviors = new[] { ListItemResolveBehavior.Content },
-                    IncludeContentData = true,
+                    ResolveBehaviors = new[] { ListItemResolveBehavior.Content},
                     Limit = 1000
                 });
 
