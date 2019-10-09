@@ -6,6 +6,7 @@ using Picturepark.SDK.V1.Contract;
 using SmintIo.CLAPI.Consumer.Integration.Core.Contracts;
 using SmintIo.CLAPI.Consumer.Integration.Core.Exceptions;
 using SmintIo.CLAPI.Consumer.Integration.Core.Target;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace Client.Target.Impl
 {
     public class PictureparkSyncTargetImpl : ISyncTarget
     {
+        private static readonly ISyncTargetCapabilities Capabilities = new SyncTargetCapabilitiesImpl(SyncTargetCapabilitiesEnum.MultiLanguageEnum);
+
         private readonly IPictureparkApiClientProvider _pictureparkClient;
 
         private readonly ILogger<PictureparkSyncTargetImpl> _logger;
@@ -26,6 +29,11 @@ namespace Client.Target.Impl
             _pictureparkClient = pictureparkClient;
 
             _logger = logger;
+        }
+
+        public ISyncTargetCapabilities GetCapabilities()
+        {
+            return Capabilities;
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
