@@ -112,7 +112,7 @@ namespace Client.Providers.Impl
                     });
         }
 
-        public void ClearCache()
+        public void ClearGenericMetadataCache()
         {
             _contentProviderCache = null;
 

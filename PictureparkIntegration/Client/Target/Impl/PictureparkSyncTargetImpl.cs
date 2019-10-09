@@ -28,6 +28,13 @@ namespace Client.Target.Impl
             _logger = logger;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<bool> BeforeSyncAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            return true;
+        }
+
         public async Task ImportContentProvidersAsync(IList<SmintIoMetadataElement> contentProviders)
         {
             var transformedContentProviders = TransformGenericMetadata(contentProviders);
@@ -712,9 +719,16 @@ namespace Client.Target.Impl
             _logger.LogError(exception, "Error in Smint.io sync job");
         }
 
-        public void ClearCaches()
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task AfterSyncAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            _pictureparkClient.ClearCache();
+            
+        }
+
+        public void ClearGenericMetadataCaches()
+        {
+            _pictureparkClient.ClearGenericMetadataCache();
         }
 
         private IDictionary<string, string> JoinValues(IDictionary<string, string[]> dictionary)
