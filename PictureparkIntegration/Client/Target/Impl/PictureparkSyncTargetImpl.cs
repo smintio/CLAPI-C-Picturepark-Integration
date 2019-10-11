@@ -43,6 +43,14 @@ namespace Client.Target.Impl
             return true;
         }
 
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<bool> BeforeGenericMetadataSyncAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            return true;
+        }
+
         public async Task ImportContentProvidersAsync(IList<SmintIoMetadataElement> contentProviders)
         {
             var transformedContentProviders = TransformGenericMetadata(contentProviders);
@@ -147,6 +155,20 @@ namespace Client.Target.Impl
                     }
                 };
             }).ToList();
+        }
+
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task AfterGenericMetadataSyncAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<bool> BeforeAssetsSyncAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            return true;
         }
 
         public async Task ImportAssetsAsync(string folderName, IList<SmintIoAsset> assets)
@@ -713,6 +735,20 @@ namespace Client.Target.Impl
             return releaseStateListItems.First(releaseStateListItem => string.Equals(releaseStateListItem.SmintIoKey, smintIoKey)).PictureparkListItemId;
         }
 
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task AfterAssetsSyncAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+        }
+
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task AfterSyncAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+        }
+
 #pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         public async Task HandleAuthenticatorExceptionAsync(SmintIoAuthenticatorException exception)
 #pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
@@ -725,13 +761,6 @@ namespace Client.Target.Impl
 #pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         {
             _logger.LogError(exception, "Error in Smint.io sync job");
-        }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task AfterSyncAsync()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            
         }
 
         public void ClearGenericMetadataCaches()
