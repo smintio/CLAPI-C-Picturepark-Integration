@@ -7,6 +7,7 @@ using Client.Providers.Impl;
 using Client.Target.Impl;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SmintIo.CLAPI.Consumer.Integration.Core.Authenticator;
@@ -63,11 +64,13 @@ namespace Client
                         services.AddSingleton<ITokenDatabaseProvider, TokenDatabaseProviderImpl>();
                         services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
 
-                        services.AddSingleton<ISmintIoAuthenticator, SmintIoSystemBrowserAuthenticatorImpl>();
-
                         services.AddSingleton<ISyncTarget, PictureparkSyncTargetImpl>();
 
                         services.AddSmintIoClapicIntegrationCore();
+
+                        var descriptor = new ServiceDescriptor(typeof(ISmintIoAuthenticator), typeof(SmintIoSystemBrowserAuthenticatorImpl), ServiceLifetime.Singleton);
+
+                        services.Replace(descriptor);
                     })
                     .ConfigureLogging((hostContext, configLogging) =>
                     {
@@ -81,7 +84,7 @@ namespace Client
 
                 // we have a system browser based authenticator here, which will work synchronously
 
-                await authenticator.InitSmintIoAuthenticationAsync();
+                await ((SmintIoSystemBrowserAuthenticatorImpl)authenticator).InitSmintIoAuthenticationAsync();
 
                 IPictureparkApiClientProvider pictureparkApiClientProvider = host.Services.GetService<IPictureparkApiClientProvider>();
 
