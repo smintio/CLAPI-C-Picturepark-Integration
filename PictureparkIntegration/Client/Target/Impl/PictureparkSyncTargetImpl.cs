@@ -16,7 +16,10 @@ namespace Client.Target.Impl
 {
     public class PictureparkSyncTargetImpl : ISyncTarget
     {
-        private static readonly ISyncTargetCapabilities Capabilities = new SyncTargetCapabilitiesImpl(SyncTargetCapabilitiesEnum.MultiLanguageEnum);
+        private static readonly ISyncTargetCapabilities Capabilities = new SyncTargetCapabilitiesImpl(
+            SyncTargetCapabilitiesEnum.MultiLanguageEnum,
+            SyncTargetCapabilitiesEnum.CompoundAssetsEnum,
+            SyncTargetCapabilitiesEnum.BinaryUpdatesEnum);
 
         private readonly IPictureparkApiClientProvider _pictureparkClient;
 
@@ -219,7 +222,7 @@ namespace Client.Target.Impl
 
                 var binaries = asset.Binaries;
 
-                IList<PictureparkAsset> assetTargetAssets = new List<PictureparkAsset>();
+                IList<PictureparkAsset> assetPartAssets = new List<PictureparkAsset>();
 
                 foreach (var binary in binaries)
                 {
@@ -252,14 +255,14 @@ namespace Client.Target.Impl
                         { nameof(SmintIoLicenseLayer), await GetLicenseMetadataAsync(asset) }
                     };
 
-                    assetTargetAssets.Add(targetAsset);
+                    assetPartAssets.Add(targetAsset);
 
                     targetAssets.Add(targetAsset);
                 }
 
-                if (assetTargetAssets.Count > 1)
+                if (assetPartAssets.Count > 1)
                 {
-                    // we have a compound asset
+                    // we have a compound asset, consisting of more than one asset part
 
                     var targetCompoundAsset = new PictureparkAsset()
                     {
@@ -267,7 +270,7 @@ namespace Client.Target.Impl
                         LPTUuid = asset.LicensePurchaseTransactionUuid,
                         IsCompoundAsset = true,
                         Name = asset.Name,
-                        AssetParts = assetTargetAssets
+                        AssetParts = assetPartAssets
                     };
 
                     targetCompoundAsset.Metadata = new DataDictionary()
@@ -294,8 +297,7 @@ namespace Client.Target.Impl
             var contentTypeString = !string.IsNullOrEmpty(binary?.ContentType) ? binary.ContentType : asset.ContentType;
             var contentType = await GetContentTypePictureparkKeyAsync(contentTypeString);
 
-            var contentCategoryString = !string.IsNullOrEmpty(binary?.Category) ? binary.Category : asset.Category;
-            var contentCategory = await GetContentCategoryPictureparkKeyAsync(contentCategoryString);
+            var contentCategory = await GetContentCategoryPictureparkKeyAsync(asset.Category);
 
             var dataDictionary = new DataDictionary
             {
