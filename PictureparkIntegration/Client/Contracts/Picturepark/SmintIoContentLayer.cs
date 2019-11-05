@@ -100,6 +100,12 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("de", "Erzeugt")]
         public DateTimeOffset CreatedAt { get; set; }
 
+        [PictureparkDateTime]
+        [PictureparkNameTranslation("x-default", "Last Updated At")]
+        [PictureparkNameTranslation("en", "Last Updated At")]
+        [PictureparkNameTranslation("de", "Aktualisiert")]
+        public DateTimeOffset LastUpdatedAt { get; set; }
+
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Transaction ID")]
         [PictureparkNameTranslation("en", "Transaction ID")]

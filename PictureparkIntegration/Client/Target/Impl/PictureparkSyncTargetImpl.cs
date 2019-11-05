@@ -320,6 +320,9 @@ namespace Client.Target.Impl
                 dataDictionary.Add("binaryType", new { _refId = binaryType });
             }
 
+            if (asset.LastUpdatedAt != null)
+                dataDictionary.Add("lastUpdatedAt", asset.LastUpdatedAt);
+
             if (binary?.Name?.Count > 0)
                 dataDictionary.Add("name", binary.Name);
             else if (asset.Name?.Count > 0)
