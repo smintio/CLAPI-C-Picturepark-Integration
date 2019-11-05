@@ -301,6 +301,7 @@ namespace Client.Target.Impl
 
             var dataDictionary = new DataDictionary
             {
+                { "contentElementUuid", asset.ContentElementUuid },
                 { "contentProvider", new { _refId = contentProvider } },
                 { "contentType", new { _refId = contentType } },
                 { "category", new { _refId = contentCategory } },
@@ -324,7 +325,7 @@ namespace Client.Target.Impl
             else if (asset.Name?.Count > 0)
                 dataDictionary.Add("name", asset.Name);
 
-            if (binary?.Name?.Count > 0)
+            if (binary?.Description?.Count > 0)
                 dataDictionary.Add("description", binary.Description);
             else if (asset.Description?.Count > 0)
                 dataDictionary.Add("description", asset.Description);

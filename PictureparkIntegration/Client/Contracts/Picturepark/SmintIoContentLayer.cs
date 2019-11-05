@@ -13,6 +13,11 @@ namespace Client.Contracts.Picturepark
     [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{% if data.smintIoContentLayer.isEditorialUse %} WARNUNG: Dieses Asset ist nur für redaktionelle Nutzung geeignet! {% elsif data.smintIoContentLayer.hasLicenseTerms %} WARNUNG: Die Nutzung dieses Assets ist durch Lizenz-Bedingungen eingeschränkt! {% endif %}", "de")]
     public class SmintIoContentLayer
     {
+        [PictureparkNameTranslation("x-default", "Asset ID")]
+        [PictureparkNameTranslation("en", "Asset ID")]
+        [PictureparkNameTranslation("de", "Asset-ID")]
+        public string ContentElementUuid { get; set; }
+
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Content Provider")]
         [PictureparkNameTranslation("en", "Content Provider")]
