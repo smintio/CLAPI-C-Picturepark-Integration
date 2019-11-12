@@ -1,32 +1,226 @@
-﻿using Picturepark.SDK.V1.Contract;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Client.Contracts.Picturepark;
+using Picturepark.SDK.V1.Contract;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
 
 namespace Client.Contracts
 {
-    public sealed class PictureparkAsset
+    public class PictureparkAsset : SyncAssetImpl<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
     {
-        public string TransferId { get; set; }
+        private DataDictionary _contentMetadata;
+        private DataDictionary _licenseMetadata;
 
-        public string LPTUuid { get; set; }
+        public PictureparkAsset()
+        {
+            _contentMetadata = new DataDictionary();
+            _licenseMetadata = new DataDictionary();
+        }
 
-        public string BinaryUuid { get; set; }
-        public int BinaryVersion { get; set; }
+        public DataDictionary GetMetadata()
+        {
+            return new DataDictionary()
+            {
+                { nameof(SmintIoContentLayer), _contentMetadata },
+                { nameof(SmintIoLicenseLayer), _licenseMetadata }
+            };
+        }
 
-        public string FindAgainFileUuid { get; set; }
-        public string PictureparkContentId { get; set; }
+        public override void SetContentElementUuid(string contentElementUuid)
+        {
+            _contentMetadata.Add("contentElementUuid", contentElementUuid);
+        }
 
-        public DataDictionary Metadata { get; set; }
+        public override void SetContentType(string contentTypeKey)
+        {
+            _contentMetadata.Add("contentType", new { _refId = contentTypeKey });
+        }
 
-        public bool IsCompoundAsset { get; set; }
+        public override void SetContentProvider(string contentProviderKey)
+        {
+            _contentMetadata.Add("contentProvider", new { _refId = contentProviderKey });
+        }
 
-        public IList<PictureparkAsset> AssetParts { get; set; }
+        public override void SetContentCategory(string contentCategoryKey)
+        {
+            _contentMetadata.Add("category", new { _refId = contentCategoryKey });
+        }
 
-        public string RecommendedFileName { get; set; }
+        public override void SetName(IDictionary<string, string> name)
+        {
+            _contentMetadata.Add("name", name);
+        }
 
-        public string DownloadUrl { get; set; }
-        public string LocalFileName { get; set; }
+        public override void SetDescription(IDictionary<string, string> description)
+        {
+            _contentMetadata.Add("description", description);
+        }
 
-        public IDictionary<string, string> Name { get; set; }
-        public IDictionary<string, string> Usage { get; set; }
+        public override void SetSmintIoUrl(string smintIoUrl)
+        {
+            _contentMetadata.Add("smintIoUrl", smintIoUrl);
+        }
+
+        public override void SetCreatedAt(DateTimeOffset createdAt)
+        {
+            _contentMetadata.Add("createdAt", createdAt);
+        }
+
+        public override void SetLastUpdatedAt(DateTimeOffset lastUpdatedAt)
+        {
+            _contentMetadata.Add("lastUpdatedAt", lastUpdatedAt);
+        }
+
+        public override void SetPurchasedAt(DateTimeOffset purchasedAt)
+        {
+            _contentMetadata.Add("purchasedAt", purchasedAt);
+        }
+
+        public override void SetCartPurchaseTransactionUuid(string cartPurchaseTransactionUuid)
+        {
+            _contentMetadata.Add("cartPurchaseTransactionUuid", cartPurchaseTransactionUuid);
+        }
+
+        public override void SetLicensePurchaseTransactionUuid(string licensePurchaseTransactionUuid)
+        {
+            _contentMetadata.Add("licensePurchaseTransactionUuid", licensePurchaseTransactionUuid);
+        }
+
+        public override void SetHasBeenCancelled(bool hasBeenCancelled)
+        {
+            _contentMetadata.Add("hasBeenCancelled", hasBeenCancelled);
+            _licenseMetadata.Add("hasBeenCancelled", hasBeenCancelled);
+        }
+
+        public override void SetBinaryUuid(string binaryUuid)
+        {
+            _contentMetadata.Add("binaryUuid", binaryUuid);
+        }
+
+        public override void SetBinaryType(string binaryTypeKey)
+        {
+            _contentMetadata.Add("binaryType", new { _refId = binaryTypeKey });
+        }
+
+        public override void SetBinaryUsage(IDictionary<string, string> binaryUsage)
+        {
+            // only applicable to compound assets
+
+            BinaryUsage = binaryUsage;
+        }
+
+        public override void SetBinaryCulture(string binaryCulture)
+        {
+            _contentMetadata.Add("binaryCulture", binaryCulture);
+        }
+
+        public override void SetBinaryVersion(int binaryVersion)
+        {
+            _contentMetadata.Add("binaryVersion", binaryVersion);
+        }
+
+        public override void SetProjectUuid(string projectUuid)
+        {
+            _contentMetadata.Add("projectUuid", projectUuid);
+        }
+
+        public override void SetProjectName(IDictionary<string, string> projectName)
+        {
+            _contentMetadata.Add("projectName", projectName);
+        }
+
+        public override void SetCollectionUuid(string collectionUuid)
+        {
+            _contentMetadata.Add("collectionUuid", collectionUuid);
+        }
+
+        public override void SetCollectionName(IDictionary<string, string> collectionName)
+        {
+            _contentMetadata.Add("collectionName", collectionName);
+        }
+
+        public override void SetKeywords(IDictionary<string, string[]> keywords)
+        {
+            var joinedKeywords = JoinValues(keywords);
+
+            _contentMetadata.Add("keywords", joinedKeywords);
+        }
+
+        public override void SetCopyrightNotices(IDictionary<string, string> copyrightNotices)
+        {
+            _contentMetadata.Add("copyrightNotices", copyrightNotices);
+        }
+
+        public override void SetIsEditorialUse(bool isEditorialUse)
+        {
+            _contentMetadata.Add("isEditorialUse", isEditorialUse);
+            _licenseMetadata.Add("isEditorialUse", isEditorialUse);
+        }
+
+        public override void SetHasLicenseTerms(bool hasLicenseTerms)
+        {
+            _contentMetadata.Add("hasLicenseTerms", hasLicenseTerms);
+            _licenseMetadata.Add("hasLicenseTerms", hasLicenseTerms);
+        }
+
+        public override void SetLicenseType(string licenseTypeKey)
+        {
+            _licenseMetadata.Add("licenseType", new { _refId = licenseTypeKey });
+        }
+
+        public override void SetLicenseeUuid(string licenseeUuid)
+        {
+            _licenseMetadata.Add("licenseeUuid", licenseeUuid);
+        }
+
+        public override void SetLicenseeName(string licenseeName)
+        {
+            _licenseMetadata.Add("licenseeName", licenseeName);
+        }
+
+        public override void SetLicenseText(IDictionary<string, string> licenseText)
+        {
+            _licenseMetadata.Add("licenseText", licenseText);
+        }
+
+        public override void SetDownloadConstraints(PictureparkDownloadConstraints downloadConstraints)
+        {
+            _licenseMetadata.Add("downloadConstraints", downloadConstraints.Metadata);
+        }
+
+        public override void SetReleaseDetails(PictureparkReleaseDetails releaseDetails)
+        {
+            _licenseMetadata.Add("releaseDetails", releaseDetails.Metadata);
+        }
+
+        public override void SetLicenseOptions(IList<PictureparkLicenseOption> licenseOptions)
+        {
+            _licenseMetadata.Add("licenseOptions", licenseOptions.Select(licenseOption => licenseOption.Metadata).ToArray());
+        }
+
+        public override void SetLicenseTerms(IList<PictureparkLicenseTerm> licenseTerms)
+        {
+            _licenseMetadata.Add("licenseTerms", licenseTerms.Select(licenseOption => licenseOption.Metadata).ToArray());
+        }
+
+        private IDictionary<string, string> JoinValues(IDictionary<string, string[]> dictionary)
+        {
+            if (dictionary == null || !dictionary.Any())
+            {
+                return null;
+            }
+
+            var result = new Dictionary<string, string>();
+
+            foreach (var (key, value) in dictionary)
+            {
+                string joinedValues = String.Join(", ", value);
+
+                result[key] = joinedValues;
+            }
+
+            return result;
+        }
     }
 }

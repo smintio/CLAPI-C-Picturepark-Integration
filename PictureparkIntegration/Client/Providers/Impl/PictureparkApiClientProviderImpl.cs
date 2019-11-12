@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Client.Contracts;
 using Client.Contracts.Picturepark;
 using System.Net;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 
 namespace Client.Providers.Impl
 {
@@ -504,44 +505,108 @@ namespace Client.Providers.Impl
             }
         }
 
-        public async Task ImportAssetsAsync(string folderName, IList<PictureparkAsset> assets)
+        public async Task<string> GetExistingAssetUuidAsync(string licensePurchaseTransactionUuid, string binaryUuid, bool isCompoundAsset)
         {
-            _logger.LogInformation("Importing assets to Picturepark...");
-
-            var assetsByTransfer = assets.GroupBy(asset => asset.TransferId).ToDictionary(group => group.Key, group => group.ToList());
-
-            foreach (var (key, value) in assetsByTransfer)
+            var filters = new List<FilterBase>
             {
-                await _retryPolicy.ExecuteAsync(async () =>
-                {
-                    await ImportByTransferAsync(folderName, key, value);
-                });
-            }
+                FilterBase.FromExpression<Content>(i => i.LayerSchemaIds, new string[] { nameof(SmintIoContentLayer) }),
+                FilterBase.FromExpression<SmintIoContentLayer>(i => i.LicensePurchaseTransactionUuid, new string[] { licensePurchaseTransactionUuid })
+            };
 
-            _logger.LogInformation($"Imported {assets.Count()} assets to Picturepark");
+            if (isCompoundAsset)
+                filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(SmintIoCompoundAsset) }));
+            else
+                filters.Add(FilterBase.FromExpression<SmintIoContentLayer>(i => i.BinaryUuid, new string[] { binaryUuid }));
+
+            var contentSearchRequest = new ContentSearchRequest()
+            {
+                Filter = new AndFilter
+                {
+                    Filters = filters
+                }
+            };
+
+            var searchResults = await _client.Content.SearchAsync(contentSearchRequest);
+
+            var count = searchResults.Results.Count;
+
+            if (count == 0)
+                return null;
+
+            if (count > 1)
+                throw new Exception($"Unexpected number of Picturepark asset search results ({searchResults.Results.Count} instead of 0 or 1)");
+
+            var searchResult = searchResults.Results.First();
+
+            return searchResult.Id;
         }
 
-        private async Task ImportByTransferAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> assets)
+        public async Task CreateAssetsAsync(string folderName, IList<PictureparkAsset> newTargetAssets)
+        {
+            _logger.LogInformation("Creating assets in Picturepark...");
+
+            var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
+
+            await _retryPolicy.ExecuteAsync(async () =>
+            {
+                await CreateAssetsByTransferAsync(folderName, transferIdentifier, newTargetAssets);
+            });
+
+            _logger.LogInformation($"Created {newTargetAssets.Count()} assets in Picturepark");
+        }
+
+        private async Task CreateAssetsByTransferAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> newTargetAssets)
         {
             try
             {
                 _logger.LogInformation($"Starting import of transfer {transferIdentifier}...");
 
-                await ResolveAlreadyExistingAssetsAsync(assets);
+                await DownloadFilesAsync(folderName, newTargetAssets);
 
-                var assetsForCreation = assets.Where(asset => !asset.IsCompoundAsset && asset.PictureparkContentId == null).ToList();
-                var assetsForUpdate = assets.Where(asset => !asset.IsCompoundAsset && asset.PictureparkContentId != null).ToList();
+                var fileTransfers = new List<FileTransferCreateItem>();
 
-                await CreateNewAssetsAsync(folderName, transferIdentifier, assetsForCreation);
-                await UpdateAssetsAsync(folderName, assetsForUpdate);
+                var transferResult = await CreateFileTransferAsync(transferIdentifier, newTargetAssets);
 
-                var compoundAssets = assets.Where(asset => asset.IsCompoundAsset).ToList();
+                var files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
 
-                await CreateOrUpdateCompoundAssetsAsync(compoundAssets);
+                foreach (FileTransfer file in files.Results)
+                {
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+
+                    var fileTransferCreateItem = new FileTransferCreateItem
+                    {
+                        FileId = file.Id,
+                        LayerSchemaIds = new[] {
+                            nameof(SmintIoContentLayer),
+                            nameof(SmintIoLicenseLayer)
+                        },
+                        Metadata = assetForCreation.GetMetadata()
+                    };
+
+                    fileTransfers.Add(fileTransferCreateItem);
+                }
+
+                var partialRequest = new ImportTransferPartialRequest()
+                {
+                    Items = fileTransfers
+                };
+
+                var importResult = await _client.Transfer.PartialImportAsync(transferResult.Transfer.Id, partialRequest);
+
+                await _client.BusinessProcess.WaitForCompletionAsync(importResult.BusinessProcessId);
+
+                files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
+
+                foreach (FileTransfer file in files.Results)
+                {
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+
+                    assetForCreation.SetTargetAssetUuid(file.ContentId);
+                }
 
                 _logger.LogInformation($"Finished import of transfer {transferIdentifier}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error importing files for transfer {transferIdentifier}");
 
@@ -551,91 +616,146 @@ namespace Client.Providers.Impl
             }
         }
 
-        private async Task ResolveAlreadyExistingAssetsAsync(IList<PictureparkAsset> assets)
+        public async Task UpdateAssetsAsync(string folderName, IList<PictureparkAsset> updatedTargetAssets)
         {
-            foreach (var asset in assets)
+            _logger.LogInformation("Updating assets in Picturepark...");
+
+            var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
+
+            await _retryPolicy.ExecuteAsync(async () =>
             {
-                var filters = new List<FilterBase>
-                    {
-                        FilterBase.FromExpression<Content>(i => i.LayerSchemaIds, new string[] { nameof(SmintIoContentLayer) }),
-                        FilterBase.FromExpression<SmintIoContentLayer>(i => i.LicensePurchaseTransactionUuid, new string[] { asset.LPTUuid })
-                    };
+                await UpdateAssetsByTransferAsync(folderName, transferIdentifier, updatedTargetAssets);
+            });
 
-                if (asset.IsCompoundAsset)
-                    filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(SmintIoCompoundAsset) }));
-                else
-                    filters.Add(FilterBase.FromExpression<SmintIoContentLayer>(i => i.BinaryUuid, new string[] { asset.BinaryUuid }));
-                    
-                var contentSearchRequest = new ContentSearchRequest()
-                {
-                    Filter = new AndFilter
-                    {
-                        Filters = filters
-                    }
-                };
-
-                var searchResults = await _client.Content.SearchAsync(contentSearchRequest);
-
-                var count = searchResults.Results.Count;
-
-                if (count == 0)
-                    continue;
-
-                if (count > 1)
-                    throw new Exception($"Unexpected number of Picturepark asset search results ({searchResults.Results.Count} instead of 0 or 1)");
-
-                var searchResult = searchResults.Results.First();
-
-                asset.PictureparkContentId = searchResult.Id;
-            }
+            _logger.LogInformation($"Updated {updatedTargetAssets.Count()} assets in Picturepark");
         }
 
-        private async Task CreateNewAssetsAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> assetsForCreation)
+        private async Task UpdateAssetsByTransferAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> updatedTargetAssets)
         {
-            if (!assetsForCreation.Any())
-                return;
-
-            await DownloadFilesAsync(folderName, assetsForCreation);
-
-            var fileTransfers = new List<FileTransferCreateItem>();
-
-            var transferResult = await CreateFileTransferAsync(transferIdentifier, assetsForCreation);
-
-            var files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
-
-            foreach (FileTransfer file in files.Results)
+            try
             {
-                var assetForCreation = assetsForCreation.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+                _logger.LogInformation($"Starting import of transfer {transferIdentifier}...");
 
-                var fileTransferCreateItem = new FileTransferCreateItem
+                foreach (PictureparkAsset updatedTargetAsset in updatedTargetAssets)
                 {
-                    FileId = file.Id,
-                    LayerSchemaIds = new[] {
+                    var contentDetail = await _client.Content.GetAsync(updatedTargetAsset.TargetAssetUuid, new ContentResolveBehavior[] { ContentResolveBehavior.Metadata });
+
+                    var smintIoContentLayer = contentDetail.Metadata.Get("smintIoContentLayer");
+                    var binaryVersion = (long?)smintIoContentLayer.GetValueOrDefault("binaryVersion");
+
+                    if (binaryVersion != updatedTargetAsset.BinaryVersion)
+                    {
+                        await DownloadFilesAsync(folderName, new List<PictureparkAsset>() { updatedTargetAsset });
+
+                        var transferResult = await UpdateFileTransferAsync(updatedTargetAsset);
+
+                        await _client.Content.UpdateFileAsync(updatedTargetAsset.TargetAssetUuid, new ContentFileUpdateRequest()
+                        {
+                            FileTransferId = transferResult.Transfer.Id
+                        });
+                    }
+                }
+
+                var contentMetadataUpdateManyRequest = new ContentMetadataUpdateManyRequest();
+
+                foreach (PictureparkAsset assetForUpdate in updatedTargetAssets)
+                {
+                    var contentMetadataUpdateItem = new ContentMetadataUpdateItem()
+                    {
+                        Id = assetForUpdate.TargetAssetUuid,
+                        LayerSchemaIds = new[] {
                             nameof(SmintIoContentLayer),
                             nameof(SmintIoLicenseLayer)
                         },
-                    Metadata = assetForCreation.Metadata
-                };
+                        Metadata = assetForUpdate.GetMetadata(),
+                        LayerSchemasUpdateOptions = UpdateOption.Merge,
+                        SchemaFieldsUpdateOptions = UpdateOption.Replace
+                    };
 
-                fileTransfers.Add(fileTransferCreateItem);
+                    contentMetadataUpdateManyRequest.Items.Add(contentMetadataUpdateItem);
+                }
+
+                var result = await _client.Content.UpdateMetadataManyAsync(contentMetadataUpdateManyRequest);
+
+                await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
+
+                _logger.LogInformation($"Finished import of transfer {transferIdentifier}");
             }
-
-            var partialRequest = new ImportTransferPartialRequest()
+            catch (Exception ex)
             {
-                Items = fileTransfers
-            };
+                _logger.LogError(ex, $"Error importing files for transfer {transferIdentifier}");
 
-            var importResult = await _client.Transfer.PartialImportAsync(transferResult.Transfer.Id, partialRequest);
+                await TryDeleteTransferAsync(transferIdentifier);
 
-            await _client.BusinessProcess.WaitForCompletionAsync(importResult.BusinessProcessId);
+                throw;
+            }
+        }
 
-            files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
+        public async Task CreateCompoundAssetsAsync(IList<PictureparkAsset> newTargetCompoundAssets)
+        {
+            _logger.LogInformation("Creating compound assets in Picturepark...");
 
-            foreach (FileTransfer file in files.Results)
+            var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
+
+            await _retryPolicy.ExecuteAsync(async () =>
             {
-                var assetForCreation = assetsForCreation.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+                await CreateCompoundAssetsByTransferAsync(transferIdentifier, newTargetCompoundAssets);
+            });
 
-                assetForCreation.PictureparkContentId = file.ContentId;
+            _logger.LogInformation($"Created {newTargetCompoundAssets.Count()} compound assets in Picturepark");
+        }
+
+        private async Task CreateCompoundAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> newTargetCompoundAssets)
+        {
+            try
+            {
+                _logger.LogInformation($"Starting import of transfer {transferIdentifier}...");
+
+                await CreateOrUpdateCompoundAssetsAsync(newTargetCompoundAssets);
+
+                _logger.LogInformation($"Finished import of transfer {transferIdentifier}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error importing files for transfer {transferIdentifier}");
+
+                await TryDeleteTransferAsync(transferIdentifier);
+
+                throw;
+            }
+        }
+
+        public async Task UpdateCompoundAssetsAsync(IList<PictureparkAsset> updatedTargetCompoundAssets)
+        {
+            _logger.LogInformation("Updating compound assets in Picturepark...");
+
+            var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
+
+            await _retryPolicy.ExecuteAsync(async () =>
+            {
+                await UpdateCompoundAssetsByTransferAsync(transferIdentifier, updatedTargetCompoundAssets);
+            });
+
+            _logger.LogInformation($"Updated {updatedTargetCompoundAssets.Count()} compound assets in Picturepark");
+        }
+
+        private async Task UpdateCompoundAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> updatedTargetCompoundAssets)
+        {
+            try
+            {
+                _logger.LogInformation($"Starting import of transfer {transferIdentifier}...");
+
+                await CreateOrUpdateCompoundAssetsAsync(updatedTargetCompoundAssets);
+
+                _logger.LogInformation($"Finished import of transfer {transferIdentifier}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error importing files for transfer {transferIdentifier}");
+
+                await TryDeleteTransferAsync(transferIdentifier);
+
+                throw;
             }
         }
 
@@ -674,75 +794,26 @@ namespace Client.Providers.Impl
             }
         }
 
-        private async Task UpdateAssetsAsync(string folderName, IList<PictureparkAsset> assetsForUpdate)
+        private async Task CreateOrUpdateCompoundAssetsAsync(IList<PictureparkAsset> targetAssets)
         {
-            if (!assetsForUpdate.Any())
-                return;
-
-            foreach (PictureparkAsset assetForUpdate in assetsForUpdate)
+            foreach (PictureparkAsset targetAsset in targetAssets)
             {
-                var contentDetail = await  _client.Content.GetAsync(assetForUpdate.PictureparkContentId, new ContentResolveBehavior[] { ContentResolveBehavior.Metadata });
+                var targetAssetParts = targetAsset.AssetParts;
 
-                var smintIoContentLayer = contentDetail.Metadata.Get("smintIoContentLayer");
-                var binaryVersion = (long?)smintIoContentLayer.GetValueOrDefault("binaryVersion");
-
-                if (binaryVersion != assetForUpdate.BinaryVersion)
-                {
-                    await DownloadFilesAsync(folderName, new List<PictureparkAsset>() { assetForUpdate });
-
-                    var transferResult = await UpdateFileTransferAsync(assetForUpdate);
-
-                    await _client.Content.UpdateFileAsync(assetForUpdate.PictureparkContentId, new ContentFileUpdateRequest()
-                    {
-                        FileTransferId = transferResult.Transfer.Id
-                    });                    
-                }
-            }
-
-            var contentMetadataUpdateManyRequest = new ContentMetadataUpdateManyRequest();
-
-            foreach (PictureparkAsset assetForUpdate in assetsForUpdate)
-            {
-                var contentMetadataUpdateItem = new ContentMetadataUpdateItem()
-                {
-                    Id = assetForUpdate.PictureparkContentId,
-                    LayerSchemaIds = new[] {
-                            nameof(SmintIoContentLayer),
-                            nameof(SmintIoLicenseLayer)
-                        },
-                    Metadata = assetForUpdate.Metadata,
-                    LayerSchemasUpdateOptions = UpdateOption.Merge,
-                    SchemaFieldsUpdateOptions = UpdateOption.Replace
-                };
-
-                contentMetadataUpdateManyRequest.Items.Add(contentMetadataUpdateItem);
-            }
-
-            var result = await _client.Content.UpdateMetadataManyAsync(contentMetadataUpdateManyRequest);
-
-            await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
-        }
-
-        private async Task CreateOrUpdateCompoundAssetsAsync(IList<PictureparkAsset> assets)
-        {
-            foreach (PictureparkAsset asset in assets)
-            {
-                var assetParts = asset.AssetParts;
-
-                if (assetParts.Count == 0)
+                if (targetAssetParts.Count == 0)
                     continue;
 
-                if (string.IsNullOrEmpty(asset.PictureparkContentId))
+                if (string.IsNullOrEmpty(targetAsset.TargetAssetUuid))
                 {
                     var contentCreateRequest = new ContentCreateRequest()
                     {
                         ContentSchemaId = nameof(SmintIoCompoundAsset),
-                        Content = GetCompoundAssetsMetadata(asset, assetParts),
+                        Content = GetCompoundAssetsMetadata(targetAsset, targetAssetParts),
                         LayerSchemaIds = new[] {
                                 nameof(SmintIoContentLayer),
                                 nameof(SmintIoLicenseLayer)
                             },
-                        Metadata = asset.Metadata
+                        Metadata = targetAsset.GetMetadata()
                     };
 
                     await _client.Content.CreateAsync(contentCreateRequest);
@@ -751,17 +822,17 @@ namespace Client.Providers.Impl
                 {
                     var contentUpdateRequest = new ContentMetadataUpdateRequest()
                     {
-                        Content = GetCompoundAssetsMetadata(asset, assetParts),
+                        Content = GetCompoundAssetsMetadata(targetAsset, targetAssetParts),
                         LayerSchemaIds = new[] {
                             nameof(SmintIoContentLayer),
                             nameof(SmintIoLicenseLayer)
                         },
-                        Metadata = asset.Metadata,
+                        Metadata = targetAsset.GetMetadata(),
                         LayerSchemasUpdateOptions = UpdateOption.Merge,
                         SchemaFieldsUpdateOptions = UpdateOption.Replace
                     };
 
-                    await _client.Content.UpdateMetadataAsync(asset.PictureparkContentId, contentUpdateRequest);
+                    await _client.Content.UpdateMetadataAsync(targetAsset.TargetAssetUuid, contentUpdateRequest);
                 }
             }
         }
@@ -784,11 +855,11 @@ namespace Client.Providers.Impl
                 { "_relationType", "CompoundAssetPart" },
                 { "_sourceDocType", "Content" },
                 { "_targetDocType", "Content" },
-                { "_targetId", assetPart.PictureparkContentId }
+                { "_targetId", assetPart.TargetAssetUuid }
             };
 
-            if (assetPart.Usage?.Count > 0)
-                dataDictionary.Add("usage", assetPart.Usage);
+            if (assetPart.BinaryUsage?.Count > 0)
+                dataDictionary.Add("usage", assetPart.BinaryUsage);
 
             return dataDictionary;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Client.Contracts;
 using Client.Options;
 using Client.Providers;
 using Client.Providers.Impl;
@@ -64,9 +65,9 @@ namespace Client
                         services.AddSingleton<ITokenDatabaseProvider, TokenDatabaseProviderImpl>();
                         services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
 
-                        services.AddSingleton<ISyncTarget, PictureparkSyncTargetImpl>();
+                        services.AddSingleton<ISyncTarget<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>, PictureparkSyncTargetImpl>();
 
-                        services.AddSmintIoClapicIntegrationCore();
+                        services.AddSmintIoClapicIntegrationCore<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>();
 
                         var descriptor = new ServiceDescriptor(typeof(ISmintIoAuthenticator), typeof(SmintIoSystemBrowserAuthenticatorImpl), ServiceLifetime.Singleton);
 
