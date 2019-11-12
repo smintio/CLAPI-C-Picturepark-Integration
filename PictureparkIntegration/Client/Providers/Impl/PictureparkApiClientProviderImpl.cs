@@ -766,7 +766,7 @@ namespace Client.Providers.Impl
                 var downloadUrl = assetForCreation.DownloadUrl;
                 var recommendedFileName = assetForCreation.RecommendedFileName;
                 
-                string localFileName = $"{folderName}/{recommendedFileName}";
+                string localFileName = $"{folderName}/{assetForCreation.FindAgainFileUuid}_{recommendedFileName}";
 
                 _logger.LogInformation($"Downloading file UUID {assetForCreation.FindAgainFileUuid} to {localFileName}...");
 
