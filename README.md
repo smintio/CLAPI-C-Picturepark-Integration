@@ -89,13 +89,19 @@ The Smint.io Consumer Integration Core package maps the asset metadata to our Pi
 
 **Warning: NEVER modify the meaning of data:** Please only assume state if the value is actually being set (not NULL) in the data received from Smint.io. If the value is not present this does NOT mean FALSE or TRUE or whatever. It simply means: *WE DO NOT KNOW*. It can be very dangerous for your users to rely on data that actually is not based on solid facts.
 
-Mapping data is specific to Picturepark, so we map the data to the Picturepark schemas:
+Mapping data is specific to Picturepark, so we map the data to the Picturepark schemas. 
 
-`PictureparkAsset` can contain one or more `PictureparkLicenseOption` instances, one or more `PictureparkLicenseTerm` instances, one `PictureparkReleaseDetails` instance and one `PictureparkDownloadConstraints` instance.
+Find the Picturepark schema definitions [here](https://github.com/smintio/CLAPI-C-Picturepark-Integration/tree/master/PictureparkIntegration/Client/Contracts/Picturepark). Those schema classes are being used to create the metadata schema structure in Picturepark.
 
-Find the Picturepark schema definitions [here](https://github.com/smintio/CLAPI-C-Picturepark-Integration/tree/master/PictureparkIntegration/Client/Contracts/Picturepark). 
+For receiving the data from the Smint.io Consumer Integration Core package, and to upload it to Picturepark, we then need to also provide the data classes:
 
-**Recommendation:** It is recommended that you build a similarily comprehensive structure in your system. Do not take any shortcuts - the data WILL be required by your users!
+- `PictureparkAsset` 
+- `PictureparkLicenseOption`
+- `PictureparkLicenseTerm`
+- `PictureparkReleaseDetails`
+- `PictureparkDownloadConstraints`
+
+**Recommendation:** It is recommended that you build a similar structure in your system. Do not take any shortcuts - the data WILL be required by your users!
 
 *Downloading and storing the binaries*
 
