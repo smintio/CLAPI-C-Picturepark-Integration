@@ -121,7 +121,7 @@ The Smint.io Consumer Integration Core package calls our `ISyncTarget` implement
 
 The UI indicators that are mentioned in the Smint.io Integration Guide (e.g. editorial use or license term warnings) have been implemented through Picturepark name and thumbnail display patterns.
 
-The license term warning flag considers all relevant terms that could cause problems for the user, and is precalculated and provided by the Smint.io Consumer Integration Core package logic. Please check out [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Providers/Impl/SmintIoApiClientProviderImpl.cs) from line `198` if you are interested in how the warning flag is being calculated.
+The license term warning flag considers all relevant terms that could cause problems for the user, and is precalculated and provided by the Smint.io Consumer Integration Core package logic. Please check out [SmintIoApiClientProviderImpl.cs](https://github.com/smintio/CLAPI-C-Integration-Core/blob/master/NetCore/Providers/Impl/SmintIoApiClientProviderImpl.cs) from line `240` if you are interested in how the warning flag is being calculated.
 
 For the Smint.io specific layers, the name display pattern set-up is done through the layer schema definitions in code. For compound assets, the thumbnail display pattern set-up is done through the virtual content type definition in code as well.
 
