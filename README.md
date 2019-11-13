@@ -103,7 +103,7 @@ For receiving the data from the Smint.io Consumer Integration Core package, and 
 
 **Recommendation:** It is recommended that you build a similar structure in your system. Do not take any shortcuts - the data WILL be required by your users!
 
-*Downloading and storing the binaries*
+*Storing metadata and binaries*
 
 The Smint.io Consumer Integration Core package calls our `ISyncTarget` implementation methods to store all metadata and binaries, and from there we are uploading the metadata and binaries to Picturepark.
 
