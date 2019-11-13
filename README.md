@@ -43,7 +43,7 @@ To use the Smint.io Consumer Integration Core package to our application, we pro
 
 - The sync target implementation based on  `ISyncTarget`
 
-- Different classes representing our target data structures, based on `PictureparkAsset`, `PictureparkLicenseOption`, `PictureparkLicenseTerm`, `PictureparkReleaseDetails` and `PictureparkDownloadConstraints`
+- Different classes representing our target data structures: `PictureparkAsset`, `PictureparkLicenseOption`, `PictureparkLicenseTerm`, `PictureparkReleaseDetails` and `PictureparkDownloadConstraints`
 
 The we need to register all library specific dependencies by calling `AddSmintIoClapicIntegrationCore` in [Program.cs](https://github.com/smintio/CLAPI-C-Picturepark-Integration/blob/master/PictureparkIntegration/Client/Program.cs)
 
