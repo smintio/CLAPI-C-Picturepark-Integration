@@ -302,9 +302,14 @@ namespace Client.Target.Impl
             return new PictureparkDownloadConstraints();
         }
 
-        public async Task<string> GetTargetAssetUuidAsync(string licensePurchaseTransactionUuid, string binaryUuid, bool isCompoundAsset)
+        public async Task<string> GetTargetCompoundAssetUuidAsync(string smintIoAssetUuid)
         {
-            return await _pictureparkClient.GetExistingAssetUuidAsync(licensePurchaseTransactionUuid, binaryUuid, isCompoundAsset);
+            return await _pictureparkClient.GetExistingPictureparkCompoundAssetUuid(smintIoAssetUuid);
+        }
+
+        public async Task<string> GetTargetAssetBinaryUuidAsync(string smintIoAssetUuid, string smintIoBinaryUuid)
+        {
+            return await _pictureparkClient.GetExistingPictureparkAssetBinaryUuid(smintIoAssetUuid, smintIoBinaryUuid);
         }
 
         public async Task CreateTargetAssetsAsync(string folderName, IList<PictureparkAsset> newTargetAssets)

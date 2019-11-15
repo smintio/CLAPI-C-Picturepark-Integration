@@ -505,7 +505,7 @@ namespace Client.Providers.Impl
             }
         }
 
-        public async Task<string> GetExistingAssetUuidAsync(string licensePurchaseTransactionUuid, string binaryUuid, bool isCompoundAsset)
+        public async Task<string> GetExistingPictureparkCompoundAssetUuid(string licensePurchaseTransactionUuid)
         {
             var filters = new List<FilterBase>
             {
@@ -513,11 +513,26 @@ namespace Client.Providers.Impl
                 FilterBase.FromExpression<SmintIoContentLayer>(i => i.LicensePurchaseTransactionUuid, new string[] { licensePurchaseTransactionUuid })
             };
 
-            if (isCompoundAsset)
-                filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(SmintIoCompoundAsset) }));
-            else
-                filters.Add(FilterBase.FromExpression<SmintIoContentLayer>(i => i.BinaryUuid, new string[] { binaryUuid }));
+            filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(SmintIoCompoundAsset) }));
 
+            return await GetFilterResultAsync(filters);
+        }
+
+        public async Task<string> GetExistingPictureparkAssetBinaryUuid(string licensePurchaseTransactionUuid, string binaryUuid)
+        {
+            var filters = new List<FilterBase>
+            {
+                FilterBase.FromExpression<Content>(i => i.LayerSchemaIds, new string[] { nameof(SmintIoContentLayer) }),
+                FilterBase.FromExpression<SmintIoContentLayer>(i => i.LicensePurchaseTransactionUuid, new string[] { licensePurchaseTransactionUuid })
+            };
+
+            filters.Add(FilterBase.FromExpression<SmintIoContentLayer>(i => i.BinaryUuid, new string[] { binaryUuid }));
+
+            return await GetFilterResultAsync(filters);
+        }
+
+        private async Task<string> GetFilterResultAsync(List<FilterBase> filters)
+        {
             var contentSearchRequest = new ContentSearchRequest()
             {
                 Filter = new AndFilter

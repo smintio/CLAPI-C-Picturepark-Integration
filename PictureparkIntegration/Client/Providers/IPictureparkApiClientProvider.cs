@@ -55,7 +55,8 @@ namespace Client.Providers
         Task<IList<PictureparkListItem>> GetLicenseUsageLimitsAsync();
         Task ImportLicenseUsageLimitsAsync(IList<PictureparkListItem> licenseUsageLimits);
 
-        Task<string> GetExistingAssetUuidAsync(string licensePurchaseTransactionUuid, string binaryUuid, bool isCompoundAsset);
+        Task<string> GetExistingPictureparkCompoundAssetUuid(string smintIoCompoundAssetUuid);
+        Task<string> GetExistingPictureparkAssetBinaryUuid(string smintIoAssetUuid, string smintIoBinaryUuid);
 
         Task CreateAssetsAsync(string folderName, IList<PictureparkAsset> newTargetAssets);
         Task UpdateAssetsAsync(string folderName, IList<PictureparkAsset> updatedTargetAssets);
