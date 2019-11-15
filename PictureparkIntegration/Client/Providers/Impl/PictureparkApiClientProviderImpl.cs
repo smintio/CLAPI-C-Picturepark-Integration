@@ -586,7 +586,7 @@ namespace Client.Providers.Impl
 
                 foreach (FileTransfer file in files.Results)
                 {
-                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.WorldwideUniqueBinaryUuid, file.Identifier));
 
                     var fileTransferCreateItem = new FileTransferCreateItem
                     {
@@ -614,7 +614,7 @@ namespace Client.Providers.Impl
 
                 foreach (FileTransfer file in files.Results)
                 {
-                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.FindAgainFileUuid, file.Identifier));
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.WorldwideUniqueBinaryUuid, file.Identifier));
 
                     assetForCreation.SetTargetAssetUuid(file.ContentId);
                 }
@@ -781,13 +781,13 @@ namespace Client.Providers.Impl
                 var downloadUrl = assetForCreation.DownloadUrl;
                 var recommendedFileName = assetForCreation.RecommendedFileName;
                 
-                string localFileName = $"{folderName}/{assetForCreation.FindAgainFileUuid}_{recommendedFileName}";
+                string localFileName = $"{folderName}/{assetForCreation.WorldwideUniqueBinaryUuid}_{recommendedFileName}";
 
-                _logger.LogInformation($"Downloading file UUID {assetForCreation.FindAgainFileUuid} to {localFileName}...");
+                _logger.LogInformation($"Downloading file UUID {assetForCreation.WorldwideUniqueBinaryUuid} to {localFileName}...");
 
                 await DownloadFileAsync(new Uri(downloadUrl), localFileName);
 
-                _logger.LogInformation($"Downloaded file UUID {assetForCreation.FindAgainFileUuid} to {localFileName}");
+                _logger.LogInformation($"Downloaded file UUID {assetForCreation.WorldwideUniqueBinaryUuid} to {localFileName}");
 
                 assetForCreation.LocalFileName = localFileName;
             }
@@ -1063,7 +1063,7 @@ namespace Client.Providers.Impl
         {
             var filePaths = assets
                 .Where(asset => !asset.IsCompoundAsset)
-                .Select(asset => new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.FindAgainFileUuid)).ToList();
+                .Select(asset => new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid)).ToList();
 
             var request = new CreateTransferRequest
             {
@@ -1093,7 +1093,7 @@ namespace Client.Providers.Impl
 
             var filePaths = new FileLocations[]
             {
-                new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.FindAgainFileUuid)
+                new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid)
             };
             
             var request = new CreateTransferRequest
