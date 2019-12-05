@@ -14,7 +14,7 @@ namespace Client.Target.Impl
 {
     public class PictureparkSyncTargetImpl : ISyncTarget<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
     {
-        private static readonly ISyncTargetCapabilities Capabilities = new SyncTargetCapabilitiesImpl(
+        private static readonly BaseSyncTargetCapabilities Capabilities = new BaseSyncTargetCapabilities(
             SyncTargetCapabilitiesEnum.MultiLanguageEnum,
             SyncTargetCapabilitiesEnum.CompoundAssetsEnum,
             SyncTargetCapabilitiesEnum.BinaryUpdatesEnum);
@@ -32,7 +32,7 @@ namespace Client.Target.Impl
             _logger = logger;
         }
 
-        public ISyncTargetCapabilities GetCapabilities()
+        public BaseSyncTargetCapabilities GetCapabilities()
         {
             return Capabilities;
         }
@@ -58,11 +58,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportContentProvidersAsync(transformedContentProviders);
         }
 
-        public async Task<string> GetContentProviderKeyAsync(string contentProvider)
+        public async Task<Dictionary<string, string>> GetContentProviderKeyMappingsAsync()
         {
             var contentProviderListItems = await _pictureparkClient.GetContentProvidersAsync();
 
-            return contentProviderListItems.First(contentProviderListItem => string.Equals(contentProviderListItem.SmintIoKey, contentProvider)).PictureparkListItemId;
+            return contentProviderListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportContentTypesAsync(IList<SmintIoMetadataElement> contentTypes)
@@ -71,11 +71,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportContentTypesAsync(transformedContentTypes);
         }
 
-        public async Task<string> GetContentTypeKeyAsync(string contentType)
+        public async Task<Dictionary<string, string>> GetContentTypeKeyMappingsAsync()
         {
             var contentTypeListItems = await _pictureparkClient.GetContentTypesAsync();
 
-            return contentTypeListItems.First(contentTypeListItem => string.Equals(contentTypeListItem.SmintIoKey, contentType)).PictureparkListItemId;
+            return contentTypeListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportBinaryTypesAsync(IList<SmintIoMetadataElement> binaryTypes)
@@ -84,11 +84,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportBinaryTypesAsync(transformedBinaryTypes);
         }
 
-        public async Task<string> GetBinaryTypeKeyAsync(string binaryType)
+        public async Task<Dictionary<string, string>> GetBinaryTypeKeyMappingsAsync()
         {
             var binaryTypeListItems = await _pictureparkClient.GetBinaryTypesAsync();
 
-            return binaryTypeListItems.First(binaryTypeListItem => string.Equals(binaryTypeListItem.SmintIoKey, binaryType)).PictureparkListItemId;
+            return binaryTypeListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportContentCategoriesAsync(IList<SmintIoMetadataElement> contentCategories)
@@ -97,11 +97,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportContentCategoriesAsync(transformedContentCategories);
         }
 
-        public async Task<string> GetContentCategoryKeyAsync(string contentCategory)
+        public async Task<Dictionary<string, string>> GetContentCategoryKeyMappingsAsync()
         {
             var contentCategoryListItems = await _pictureparkClient.GetContentCategoriesAsync();
 
-            return contentCategoryListItems.First(contentCategoryListItem => string.Equals(contentCategoryListItem.SmintIoKey, contentCategory)).PictureparkListItemId;
+            return contentCategoryListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseTypesAsync(IList<SmintIoMetadataElement> licenseTypes)
@@ -110,11 +110,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseTypesAsync(transformedLicenseTypes);
         }
 
-        public async Task<string> GetLicenseTypeKeyAsync(string licenseType)
+        public async Task<Dictionary<string, string>> GetLicenseTypeKeyMappingsAsync()
         {
             var licenseTypeListItems = await _pictureparkClient.GetLicenseTypesAsync();
 
-            return licenseTypeListItems.First(licenseTypeListItem => string.Equals(licenseTypeListItem.SmintIoKey, licenseType)).PictureparkListItemId;
+            return licenseTypeListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportReleaseStatesAsync(IList<SmintIoMetadataElement> releaseStates)
@@ -123,11 +123,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportReleaseStatesAsync(transformedReleaseStates);
         }
 
-        public async Task<string> GetReleaseStateKeyAsync(string releaseState)
+        public async Task<Dictionary<string, string>> GetReleaseStateKeyMappingsAsync()
         {
             var releaseStateListItems = await _pictureparkClient.GetReleaseStatesAsync();
 
-            return releaseStateListItems.First(releaseStateListItem => string.Equals(releaseStateListItem.SmintIoKey, releaseState)).PictureparkListItemId;
+            return releaseStateListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseExclusivitiesAsync(IList<SmintIoMetadataElement> licenseExclusivities)
@@ -136,11 +136,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseExclusivitiesAsync(transformedLicenseExclusivities);
         }
 
-        public async Task<string> GetLicenseExclusivityKeyAsync(string licenseExclusivity)
+        public async Task<Dictionary<string, string>> GetLicenseExclusivityKeyMappingsAsync()
         {
             var licenseExclusivityListItems = await _pictureparkClient.GetLicenseExclusivitiesAsync();
 
-            return licenseExclusivityListItems.First(licenseExclusivityListItem => string.Equals(licenseExclusivityListItem.SmintIoKey, licenseExclusivity)).PictureparkListItemId;
+            return licenseExclusivityListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseUsagesAsync(IList<SmintIoMetadataElement> licenseUsages)
@@ -149,11 +149,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseUsagesAsync(transformedLicenseUsages);
         }
 
-        public async Task<string> GetLicenseUsageKeyAsync(string licenseUsage)
+        public async Task<Dictionary<string, string>> GetLicenseUsageKeyMappingsAsync()
         {
             var licenseUsageListItems = await _pictureparkClient.GetLicenseUsagesAsync();
 
-            return licenseUsageListItems.First(licenseUsageListItem => string.Equals(licenseUsageListItem.SmintIoKey, licenseUsage)).PictureparkListItemId;
+            return licenseUsageListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseSizesAsync(IList<SmintIoMetadataElement> licenseSizes)
@@ -162,11 +162,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseSizesAsync(transformedLicenseSizes);
         }
 
-        public async Task<string> GetLicenseSizeKeyAsync(string licenseSize)
+        public async Task<Dictionary<string, string>> GetLicenseSizeKeyMappingsAsync()
         {
             var licenseSizeListItems = await _pictureparkClient.GetLicenseSizesAsync();
 
-            return licenseSizeListItems.First(licenseSizeListItem => string.Equals(licenseSizeListItem.SmintIoKey, licenseSize)).PictureparkListItemId;
+            return licenseSizeListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicensePlacementsAsync(IList<SmintIoMetadataElement> licensePlacements)
@@ -175,11 +175,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicensePlacementsAsync(transformedLicensePlacements);
         }
 
-        public async Task<string> GetLicensePlacementKeyAsync(string licensePlacement)
+        public async Task<Dictionary<string, string>> GetLicensePlacementKeyMappingsAsync()
         {
             var licensePlacementListItems = await _pictureparkClient.GetLicensePlacementsAsync();
 
-            return licensePlacementListItems.First(licensePlacementListItem => string.Equals(licensePlacementListItem.SmintIoKey, licensePlacement)).PictureparkListItemId;
+            return licensePlacementListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseDistributionsAsync(IList<SmintIoMetadataElement> licenseDistributions)
@@ -188,11 +188,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseDistributionsAsync(transformedLicenseDistributions);
         }
 
-        public async Task<string> GetLicenseDistributionKeyAsync(string licenseDistribution)
+        public async Task<Dictionary<string, string>> GetLicenseDistributionKeyMappingsAsync()
         {
             var licenseDistributionListItems = await _pictureparkClient.GetLicenseDistributionsAsync();
 
-            return licenseDistributionListItems.First(licenseDistributionListItem => string.Equals(licenseDistributionListItem.SmintIoKey, licenseDistribution)).PictureparkListItemId;
+            return licenseDistributionListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseGeographiesAsync(IList<SmintIoMetadataElement> licenseGeographies)
@@ -201,11 +201,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseGeographiesAsync(transformedLicenseGeographies);
         }
 
-        public async Task<string> GetLicenseGeographyKeyAsync(string licenseGeography)
+        public async Task<Dictionary<string, string>> GetLicenseGeographyKeyMappingsAsync()
         {
             var licenseGeographyListItems = await _pictureparkClient.GetLicenseGeographiesAsync();
 
-            return licenseGeographyListItems.First(licenseGeographyListItem => string.Equals(licenseGeographyListItem.SmintIoKey, licenseGeography)).PictureparkListItemId;
+            return licenseGeographyListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseIndustriesAsync(IList<SmintIoMetadataElement> licenseIndustries)
@@ -214,11 +214,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseIndustriesAsync(transformedLicenseIndustries);
         }
 
-        public async Task<string> GetLicenseIndustryKeyAsync(string licenseIndustry)
+        public async Task<Dictionary<string, string>> GetLicenseIndustryKeyMappingsAsync()
         {
             var licenseIndustryListItems = await _pictureparkClient.GetLicenseIndustriesAsync();
 
-            return licenseIndustryListItems.First(licenseIndustryListItem => string.Equals(licenseIndustryListItem.SmintIoKey, licenseIndustry)).PictureparkListItemId;
+            return licenseIndustryListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseLanguagesAsync(IList<SmintIoMetadataElement> licenseLanguages)
@@ -227,11 +227,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseLanguagesAsync(transformedLicenseLanguages);
         }
 
-        public async Task<string> GetLicenseLanguageKeyAsync(string licenseLanguage)
+        public async Task<Dictionary<string, string>> GetLicenseLanguageKeyMappingsAsync()
         {
             var licenseLanguageListItems = await _pictureparkClient.GetLicenseLanguagesAsync();
 
-            return licenseLanguageListItems.First(licenseLanguageListItem => string.Equals(licenseLanguageListItem.SmintIoKey, licenseLanguage)).PictureparkListItemId;
+            return licenseLanguageListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         public async Task ImportLicenseUsageLimitsAsync(IList<SmintIoMetadataElement> licenseUsageLimits)
@@ -240,11 +240,11 @@ namespace Client.Target.Impl
             await _pictureparkClient.ImportLicenseUsageLimitsAsync(transformedLicenseUsageLimits);
         }
 
-        public async Task<string> GetLicenseUsageLimitKeyAsync(string licenseUsageLimit)
+        public async Task<Dictionary<string, string>> GetLicenseUsageLimitKeyMappingsAsync()
         {
             var licenseUsageLimitListItems = await _pictureparkClient.GetLicenseUsageLimitsAsync();
 
-            return licenseUsageLimitListItems.First(licenseUsageLimitListItem => string.Equals(licenseUsageLimitListItem.SmintIoKey, licenseUsageLimit)).PictureparkListItemId;
+            return licenseUsageLimitListItems.ToDictionary(listItem => listItem.SmintIoKey, listItem => listItem.PictureparkListItemId);
         }
 
         private IList<PictureparkListItem> TransformGenericMetadata(IList<SmintIoMetadataElement> smintIoGenericMetadataElements)
@@ -386,11 +386,6 @@ namespace Client.Target.Impl
 #pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         {
             _logger.LogError(exception, "Error in Smint.io sync job");
-        }
-
-        public void ClearGenericMetadataCaches()
-        {
-            _pictureparkClient.ClearGenericMetadataCache();
         }
     }
 }

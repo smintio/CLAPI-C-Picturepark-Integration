@@ -8,8 +8,6 @@ namespace Client.Providers
     {
         Task InitSchemasAsync();
 
-        void ClearGenericMetadataCache();
-
         Task<IList<PictureparkListItem>> GetContentProvidersAsync();
         Task ImportContentProvidersAsync(IList<PictureparkListItem> contentProviders);
 

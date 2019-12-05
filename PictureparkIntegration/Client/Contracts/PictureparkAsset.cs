@@ -7,7 +7,7 @@ using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
 
 namespace Client.Contracts
 {
-    public class PictureparkAsset : SyncAssetImpl<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
+    public class PictureparkAsset : BaseSyncAsset<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
     {
         private DataDictionary _contentMetadata;
         private DataDictionary _licenseMetadata;
@@ -25,6 +25,11 @@ namespace Client.Contracts
                 { nameof(SmintIoContentLayer), _contentMetadata },
                 { nameof(SmintIoLicenseLayer), _licenseMetadata }
             };
+        }
+
+        public override void SetTransactionUuid(string transactionUuid)
+        {
+            _contentMetadata.Add("licensePurchaseTransactionUuid", transactionUuid);
         }
 
         public override void SetContentElementUuid(string contentElementUuid)
@@ -77,14 +82,9 @@ namespace Client.Contracts
             _contentMetadata.Add("purchasedAt", purchasedAt);
         }
 
-        public override void SetCartPurchaseTransactionUuid(string cartPurchaseTransactionUuid)
+        public override void SetCartUuid(string cartUuid)
         {
-            _contentMetadata.Add("cartPurchaseTransactionUuid", cartPurchaseTransactionUuid);
-        }
-
-        public override void SetLicensePurchaseTransactionUuid(string licensePurchaseTransactionUuid)
-        {
-            _contentMetadata.Add("licensePurchaseTransactionUuid", licensePurchaseTransactionUuid);
+            _contentMetadata.Add("cartPurchaseTransactionUuid", cartUuid);
         }
 
         public override void SetHasBeenCancelled(bool hasBeenCancelled)

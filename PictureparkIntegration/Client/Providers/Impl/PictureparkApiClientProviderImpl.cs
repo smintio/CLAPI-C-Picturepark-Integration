@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using Client.Contracts;
 using Client.Contracts.Picturepark;
 using System.Net;
-using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 
 namespace Client.Providers.Impl
 {
@@ -32,26 +31,6 @@ namespace Client.Providers.Impl
         private PictureparkService _client;
 
         private bool _disposed;
-
-        private IList<PictureparkListItem> _contentProviderCache;
-
-        private IList<PictureparkListItem> _contentTypeCache;
-        private IList<PictureparkListItem> _binaryTypeCache;
-
-        private IList<PictureparkListItem> _contentCategoryCache;
-
-        private IList<PictureparkListItem> _licenseTypeCache;
-        private IList<PictureparkListItem> _releaseStateCache;
-
-        private IList<PictureparkListItem> _licenseExclusivityCache;
-        private IList<PictureparkListItem> _licenseUsageCache;
-        private IList<PictureparkListItem> _licenseSizeCache;
-        private IList<PictureparkListItem> _licensePlacementCache;
-        private IList<PictureparkListItem> _licenseDistributionCache;
-        private IList<PictureparkListItem> _licenseGeographyCache;
-        private IList<PictureparkListItem> _licenseIndustryCache;
-        private IList<PictureparkListItem> _licenseLanguageCache;
-        private IList<PictureparkListItem> _licenseUsageLimitCache;
 
         private readonly ILogger _logger;
 
@@ -113,57 +92,19 @@ namespace Client.Providers.Impl
                     });
         }
 
-        public void ClearGenericMetadataCache()
-        {
-            _contentProviderCache = null;
-
-            _contentTypeCache = null;
-            _binaryTypeCache = null;
-
-            _contentCategoryCache = null;
-
-            _licenseTypeCache = null;
-            _releaseStateCache = null;
-
-            _licenseExclusivityCache = null;
-            _licenseUsageCache = null;
-            _licenseSizeCache = null;
-            _licensePlacementCache = null;
-            _licenseDistributionCache = null;
-            _licenseGeographyCache = null;
-            _licenseIndustryCache = null;
-            _licenseLanguageCache = null;
-            _licenseUsageLimitCache = null;
-        }
-
         public async Task<IList<PictureparkListItem>> GetContentProvidersAsync()
         {
-            if (_contentProviderCache != null)
-                return _contentProviderCache;
-
-            _contentProviderCache = await GetListItemsAsync(nameof(SmintIoContentProvider));
-
-            return _contentProviderCache;
+            return await GetListItemsAsync(nameof(SmintIoContentProvider));
         }
 
         public async Task<IList<PictureparkListItem>> GetContentTypesAsync()
         {
-            if (_contentTypeCache != null)
-                return _contentTypeCache;
-
-            _contentTypeCache = await GetListItemsAsync(nameof(SmintIoContentType));
-
-            return _contentTypeCache;
+            return await GetListItemsAsync(nameof(SmintIoContentType));
         }
 
         public async Task<IList<PictureparkListItem>> GetBinaryTypesAsync()
         {
-            if (_binaryTypeCache != null)
-                return _binaryTypeCache;
-
-            _binaryTypeCache = await GetListItemsAsync(nameof(SmintIoBinaryType));
-
-            return _binaryTypeCache;
+            return await GetListItemsAsync(nameof(SmintIoBinaryType));
         }
 
         public async Task ImportContentProvidersAsync(IList<PictureparkListItem> contentProviders)
@@ -195,12 +136,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetContentCategoriesAsync()
         {
-            if (_contentCategoryCache != null)
-                return _contentCategoryCache;
-
-            _contentCategoryCache = await GetListItemsAsync(nameof(SmintIoContentCategory));
-
-            return _contentCategoryCache;
+            return await GetListItemsAsync(nameof(SmintIoContentCategory));
         }
 
         public async Task ImportContentCategoriesAsync(IList<PictureparkListItem> contentCategories)
@@ -214,12 +150,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseTypesAsync()
         {
-            if (_licenseTypeCache != null)
-                return _licenseTypeCache;
-
-            _licenseTypeCache = await GetListItemsAsync(nameof(SmintIoLicenseType));
-
-            return _licenseTypeCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseType));
         }
 
         public async Task ImportLicenseTypesAsync(IList<PictureparkListItem> licenseTypes)
@@ -233,12 +164,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetReleaseStatesAsync()
         {
-            if (_releaseStateCache != null)
-                return _releaseStateCache;
-
-            _releaseStateCache = await GetListItemsAsync(nameof(SmintIoReleaseState));
-
-            return _releaseStateCache;
+            return await GetListItemsAsync(nameof(SmintIoReleaseState));
         }
 
         public async Task ImportReleaseStatesAsync(IList<PictureparkListItem> releaseStates)
@@ -252,12 +178,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseExclusivitiesAsync()
         {
-            if (_licenseExclusivityCache != null)
-                return _licenseExclusivityCache;
-
-            _licenseExclusivityCache = await GetListItemsAsync(nameof(SmintIoLicenseExclusivity));
-
-            return _licenseExclusivityCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseExclusivity));
         }
 
         public async Task ImportLicenseExclusivitiesAsync(IList<PictureparkListItem> licenseExclusivities)
@@ -271,12 +192,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseUsagesAsync()
         {
-            if (_licenseUsageCache != null)
-                return _licenseUsageCache;
-
-            _licenseUsageCache = await GetListItemsAsync(nameof(SmintIoLicenseUsage));
-
-            return _licenseUsageCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseUsage));
         }
 
         public async Task ImportLicenseUsagesAsync(IList<PictureparkListItem> licenseUsages)
@@ -290,12 +206,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseSizesAsync()
         {
-            if (_licenseSizeCache != null)
-                return _licenseSizeCache;
-
-            _licenseSizeCache = await GetListItemsAsync(nameof(SmintIoLicenseSize));
-
-            return _licenseSizeCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseSize));
         }
 
         public async Task ImportLicenseSizesAsync(IList<PictureparkListItem> licenseSizes)
@@ -309,12 +220,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicensePlacementsAsync()
         {
-            if (_licensePlacementCache != null)
-                return _licensePlacementCache;
-
-            _licensePlacementCache = await GetListItemsAsync(nameof(SmintIoLicensePlacement));
-
-            return _licensePlacementCache;
+            return await GetListItemsAsync(nameof(SmintIoLicensePlacement));
         }
 
         public async Task ImportLicensePlacementsAsync(IList<PictureparkListItem> licensePlacements)
@@ -328,12 +234,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseDistributionsAsync()
         {
-            if (_licenseDistributionCache != null)
-                return _licenseDistributionCache;
-
-            _licenseDistributionCache = await GetListItemsAsync(nameof(SmintIoLicenseDistribution));
-
-            return _licenseDistributionCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseDistribution));
         }
 
         public async Task ImportLicenseDistributionsAsync(IList<PictureparkListItem> licenseDistributions)
@@ -347,12 +248,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseGeographiesAsync()
         {
-            if (_licenseGeographyCache != null)
-                return _licenseGeographyCache;
-
-            _licenseGeographyCache = await GetListItemsAsync(nameof(SmintIoLicenseGeography));
-
-            return _licenseGeographyCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseGeography));
         }
 
         public async Task ImportLicenseGeographiesAsync(IList<PictureparkListItem> licenseGeographies)
@@ -366,12 +262,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseIndustriesAsync()
         {
-            if (_licenseIndustryCache != null)
-                return _licenseIndustryCache;
-
-            _licenseIndustryCache = await GetListItemsAsync(nameof(SmintIoLicenseIndustry));
-
-            return _licenseIndustryCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseIndustry));
         }
 
         public async Task ImportLicenseIndustriesAsync(IList<PictureparkListItem> licenseIndustries)
@@ -385,12 +276,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseLanguagesAsync()
         {
-            if (_licenseLanguageCache != null)
-                return _licenseLanguageCache;
-
-            _licenseLanguageCache = await GetListItemsAsync(nameof(SmintIoLicenseLanguage));
-
-            return _licenseLanguageCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseLanguage));
         }
 
         public async Task ImportLicenseLanguagesAsync(IList<PictureparkListItem> licenseLanguages)
@@ -404,12 +290,7 @@ namespace Client.Providers.Impl
 
         public async Task<IList<PictureparkListItem>> GetLicenseUsageLimitsAsync()
         {
-            if (_licenseUsageLimitCache != null)
-                return _licenseUsageLimitCache;
-
-            _licenseUsageLimitCache = await GetListItemsAsync(nameof(SmintIoLicenseUsageLimit));
-
-            return _licenseUsageLimitCache;
+            return await GetListItemsAsync(nameof(SmintIoLicenseUsageLimit));
         }
 
         public async Task ImportLicenseUsageLimitsAsync(IList<PictureparkListItem> licenseUsageLimits)
@@ -616,7 +497,7 @@ namespace Client.Providers.Impl
                 {
                     var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.WorldwideUniqueBinaryUuid, file.Identifier));
 
-                    assetForCreation.SetTargetAssetUuid(file.ContentId);
+                    assetForCreation.TargetAssetUuid = file.ContentId;
                 }
 
                 _logger.LogInformation($"Finished import of transfer {transferIdentifier}");

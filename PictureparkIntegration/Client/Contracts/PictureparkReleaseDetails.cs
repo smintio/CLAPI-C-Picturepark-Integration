@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Client.Contracts
 {
-    public class PictureparkReleaseDetails : SyncReleaseDetailsImpl
+    public class PictureparkReleaseDetails : BaseSyncReleaseDetails
     {
         public DataDictionary Metadata { get; set; }
 

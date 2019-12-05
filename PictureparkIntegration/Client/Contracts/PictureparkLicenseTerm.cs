@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Client.Contracts
 {
-    public class PictureparkLicenseTerm : SyncLicenseTermImpl
+    public class PictureparkLicenseTerm : BaseSyncLicenseTerm
     {
         public DataDictionary Metadata { get; set; }
 

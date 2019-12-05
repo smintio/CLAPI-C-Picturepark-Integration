@@ -3,7 +3,7 @@ using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
 
 namespace Client.Contracts
 {
-    public class PictureparkDownloadConstraints : SyncDownloadConstraintsImpl
+    public class PictureparkDownloadConstraints : BaseSyncDownloadConstraints
     {
         public DataDictionary Metadata { get; set; }
 
