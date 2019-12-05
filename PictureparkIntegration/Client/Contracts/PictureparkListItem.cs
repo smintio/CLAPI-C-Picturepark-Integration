@@ -1,4 +1,5 @@
 ﻿using Picturepark.SDK.V1.Contract;
+using SmintIo.CLAPI.Consumer.Integration.Core.Contracts;
 
 namespace Client.Contracts
 {
@@ -9,5 +10,7 @@ namespace Client.Contracts
         public string SmintIoKey { get; set; }
 
         public DataDictionary Content { get; set; }
+
+        public SmintIoMetadataElement SmintIoMetadataElement { get; set; }
     }
 }

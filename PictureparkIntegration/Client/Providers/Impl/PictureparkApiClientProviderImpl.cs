@@ -356,6 +356,8 @@ namespace Client.Providers.Impl
                         };
 
                         await _client.ListItem.UpdateAsync(existingListItem.PictureparkListItemId, listItemUpdateRequest);
+
+                        listItem.SmintIoMetadataElement.TargetMetadataUuid = existingListItem.PictureparkListItemId;
                     }
                     else
                     {
@@ -365,7 +367,9 @@ namespace Client.Providers.Impl
                             ContentSchemaId = schemaId
                         };
 
-                        await _client.ListItem.CreateAsync(listItemCreateRequest);
+                        var listItemDetail = await _client.ListItem.CreateAsync(listItemCreateRequest);
+
+                        listItem.SmintIoMetadataElement.TargetMetadataUuid = listItemDetail.Id;
                     }
                 }
 
