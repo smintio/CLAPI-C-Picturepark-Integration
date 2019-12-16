@@ -208,17 +208,17 @@ namespace Client.Target.Impl
             return await _pictureparkClient.GetExistingPictureparkAssetBinaryUuid(smintIoAssetUuid, smintIoBinaryUuid);
         }
 
-        public async Task CreateTargetAssetsAsync(string folderName, IList<PictureparkAsset> newTargetAssets)
+        public async Task ImportNewTargetAssetsAsync(IList<PictureparkAsset> newTargetAssets)
         {
-            await _pictureparkClient.CreateAssetsAsync(folderName, newTargetAssets);
+            await _pictureparkClient.CreateAssetsAsync(newTargetAssets);
         }
 
-        public async Task UpdateTargetAssetsAsync(string folderName, IList<PictureparkAsset> updatedTargetAssets)
+        public async Task UpdateTargetAssetsAsync(IList<PictureparkAsset> updatedTargetAssets)
         {
-            await _pictureparkClient.UpdateAssetsAsync(folderName, updatedTargetAssets);
+            await _pictureparkClient.UpdateAssetsAsync(updatedTargetAssets);
         }
 
-        public async Task CreateTargetCompoundAssetsAsync(IList<PictureparkAsset> newTargetCompoundAssets)
+        public async Task ImportNewTargetCompoundAssetsAsync(IList<PictureparkAsset> newTargetCompoundAssets)
         {
             await _pictureparkClient.CreateCompoundAssetsAsync(newTargetCompoundAssets); 
         }

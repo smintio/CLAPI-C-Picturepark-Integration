@@ -1,10 +1,10 @@
 ﻿using Picturepark.SDK.V1.Contract;
-using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 using System.Collections.Generic;
 
 namespace Client.Contracts
 {
-    public class PictureparkLicenseOption : BaseSyncLicenseOption
+    public class PictureparkLicenseOption : ISyncLicenseOption
     {
         public DataDictionary Metadata { get; set; }
 
@@ -13,12 +13,12 @@ namespace Client.Contracts
             Metadata = new DataDictionary();
         }
 
-        public override void SetName(IDictionary<string, string> name)
+        public void SetName(IDictionary<string, string> name)
         {
             Metadata.Add("optionName", name);
         }
 
-        public override void SetLicenseText(IDictionary<string, string> licenseText)
+        public void SetLicenseText(IDictionary<string, string> licenseText)
         {
             Metadata.Add("licenseText", licenseText);
         }

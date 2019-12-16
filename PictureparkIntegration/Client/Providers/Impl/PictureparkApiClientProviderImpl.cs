@@ -441,7 +441,7 @@ namespace Client.Providers.Impl
             return searchResult.Id;
         }
 
-        public async Task CreateAssetsAsync(string folderName, IList<PictureparkAsset> newTargetAssets)
+        public async Task CreateAssetsAsync(IList<PictureparkAsset> newTargetAssets)
         {
             _logger.LogInformation("Creating assets in Picturepark...");
 
@@ -449,19 +449,17 @@ namespace Client.Providers.Impl
 
             await _retryPolicy.ExecuteAsync(async () =>
             {
-                await CreateAssetsByTransferAsync(folderName, transferIdentifier, newTargetAssets);
+                await CreateAssetsByTransferAsync(transferIdentifier, newTargetAssets);
             });
 
             _logger.LogInformation($"Created {newTargetAssets.Count()} assets in Picturepark");
         }
 
-        private async Task CreateAssetsByTransferAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> newTargetAssets)
+        private async Task CreateAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> newTargetAssets)
         {
             try
             {
                 _logger.LogInformation($"Starting import of transfer {transferIdentifier}...");
-
-                await DownloadFilesAsync(folderName, newTargetAssets);
 
                 var fileTransfers = new List<FileTransferCreateItem>();
 
@@ -516,7 +514,7 @@ namespace Client.Providers.Impl
             }
         }
 
-        public async Task UpdateAssetsAsync(string folderName, IList<PictureparkAsset> updatedTargetAssets)
+        public async Task UpdateAssetsAsync(IList<PictureparkAsset> updatedTargetAssets)
         {
             _logger.LogInformation("Updating assets in Picturepark...");
 
@@ -524,13 +522,13 @@ namespace Client.Providers.Impl
 
             await _retryPolicy.ExecuteAsync(async () =>
             {
-                await UpdateAssetsByTransferAsync(folderName, transferIdentifier, updatedTargetAssets);
+                await UpdateAssetsByTransferAsync(transferIdentifier, updatedTargetAssets);
             });
 
             _logger.LogInformation($"Updated {updatedTargetAssets.Count()} assets in Picturepark");
         }
 
-        private async Task UpdateAssetsByTransferAsync(string folderName, string transferIdentifier, IList<PictureparkAsset> updatedTargetAssets)
+        private async Task UpdateAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> updatedTargetAssets)
         {
             try
             {
@@ -545,8 +543,6 @@ namespace Client.Providers.Impl
 
                     if (binaryVersion != updatedTargetAsset.BinaryVersion)
                     {
-                        await DownloadFilesAsync(folderName, new List<PictureparkAsset>() { updatedTargetAsset });
-
                         var transferResult = await UpdateFileTransferAsync(updatedTargetAsset);
 
                         await _client.Content.UpdateFileAsync(updatedTargetAsset.TargetAssetUuid, new ContentFileUpdateRequest()
@@ -654,41 +650,6 @@ namespace Client.Providers.Impl
                 _logger.LogError(ex, $"Error importing files for transfer {transferIdentifier}");
 
                 await TryDeleteTransferAsync(transferIdentifier);
-
-                throw;
-            }
-        }
-
-        private async Task DownloadFilesAsync(string folderName, IList<PictureparkAsset> assetsForCreation)
-        {
-            foreach (var assetForCreation in assetsForCreation)
-            {
-                var downloadUrl = assetForCreation.DownloadUrl;
-                var recommendedFileName = assetForCreation.RecommendedFileName;
-                
-                string localFileName = $"{folderName}/{assetForCreation.WorldwideUniqueBinaryUuid}_{recommendedFileName}";
-
-                _logger.LogInformation($"Downloading file UUID {assetForCreation.WorldwideUniqueBinaryUuid} to {localFileName}...");
-
-                await DownloadFileAsync(new Uri(downloadUrl), localFileName);
-
-                _logger.LogInformation($"Downloaded file UUID {assetForCreation.WorldwideUniqueBinaryUuid} to {localFileName}");
-
-                assetForCreation.LocalFileName = localFileName;
-            }
-        }
-
-        private async Task DownloadFileAsync(Uri uri, string fileName)
-        {
-            try
-            {
-                WebClient wc = new WebClient();
-
-                await wc.DownloadFileTaskAsync(uri, fileName);
-            }
-            catch (WebException we)
-            {
-                _logger.LogError(we, "Error downloading asset");
 
                 throw;
             }
@@ -946,9 +907,19 @@ namespace Client.Providers.Impl
 
         private async Task<CreateTransferResult> CreateFileTransferAsync(string transferIdentifier, IList<PictureparkAsset> assets)
         {
-            var filePaths = assets
-                .Where(asset => !asset.IsCompoundAsset)
-                .Select(asset => new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid)).ToList();
+            var filePaths = new List<FileLocations>();
+
+            foreach (var asset in assets)
+            {
+                if (asset.IsCompoundAsset)
+                    continue;
+
+                var localFile = await asset.GetDownloadedFileAsync();
+
+                var filePath = new FileLocations(localFile.FullName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid);
+
+                filePaths.Add(filePath);
+            }
 
             var request = new CreateTransferRequest
             {
@@ -976,9 +947,11 @@ namespace Client.Providers.Impl
         {
             var transferIdentifier = $"Smint.io Update Import {Guid.NewGuid().ToString()}";
 
+            var localFile = await asset.GetDownloadedFileAsync();
+
             var filePaths = new FileLocations[]
             {
-                new FileLocations(asset.LocalFileName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid)
+                new FileLocations(localFile.FullName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid)
             };
             
             var request = new CreateTransferRequest

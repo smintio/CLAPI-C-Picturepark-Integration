@@ -56,8 +56,8 @@ namespace Client.Providers
         Task<string> GetExistingPictureparkCompoundAssetUuid(string smintIoCompoundAssetUuid);
         Task<string> GetExistingPictureparkAssetBinaryUuid(string smintIoAssetUuid, string smintIoBinaryUuid);
 
-        Task CreateAssetsAsync(string folderName, IList<PictureparkAsset> newTargetAssets);
-        Task UpdateAssetsAsync(string folderName, IList<PictureparkAsset> updatedTargetAssets);
+        Task CreateAssetsAsync(IList<PictureparkAsset> newTargetAssets);
+        Task UpdateAssetsAsync(IList<PictureparkAsset> updatedTargetAssets);
 
         Task CreateCompoundAssetsAsync(IList<PictureparkAsset> newTargetCompoundAssets);
         Task UpdateCompoundAssetsAsync(IList<PictureparkAsset> updatedTargetCompoundAssets);

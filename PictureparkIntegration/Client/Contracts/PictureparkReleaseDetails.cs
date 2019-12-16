@@ -1,10 +1,10 @@
 ﻿using Picturepark.SDK.V1.Contract;
-using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 using System.Collections.Generic;
 
 namespace Client.Contracts
 {
-    public class PictureparkReleaseDetails : BaseSyncReleaseDetails
+    public class PictureparkReleaseDetails : ISyncReleaseDetails
     {
         public DataDictionary Metadata { get; set; }
 
@@ -13,27 +13,27 @@ namespace Client.Contracts
             Metadata = new DataDictionary();
         }
 
-        public override void SetModelReleaseState(string modelReleaseStateKey)
+        public void SetModelReleaseState(string modelReleaseStateKey)
         {
             Metadata.Add("modelReleaseState", new { _refId = modelReleaseStateKey });
         }
 
-        public override void SetPropertyReleaseState(string propertyReleaseStateKey)
+        public void SetPropertyReleaseState(string propertyReleaseStateKey)
         {
             Metadata.Add("propertyReleaseState", new { _refId = propertyReleaseStateKey });
         }
 
-        public override void SetProviderAllowedUseComment(IDictionary<string, string> providerAllowedUseComment)
+        public void SetProviderAllowedUseComment(IDictionary<string, string> providerAllowedUseComment)
         {
             Metadata.Add("providerAllowedUseComment", providerAllowedUseComment);
         }
 
-        public override void SetProviderReleaseComment(IDictionary<string, string> providerReleaseComment)
+        public void SetProviderReleaseComment(IDictionary<string, string> providerReleaseComment)
         {
             Metadata.Add("providerReleaseComment", providerReleaseComment);
         }
 
-        public override void SetProviderUsageConstraints(IDictionary<string, string> providerUsageConstraints)
+        public void SetProviderUsageConstraints(IDictionary<string, string> providerUsageConstraints)
         {
             Metadata.Add("providerUsageConstraints", providerUsageConstraints);
         }

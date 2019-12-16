@@ -1,9 +1,9 @@
 ﻿using Picturepark.SDK.V1.Contract;
-using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 
 namespace Client.Contracts
 {
-    public class PictureparkDownloadConstraints : BaseSyncDownloadConstraints
+    public class PictureparkDownloadConstraints : ISyncDownloadConstraints
     {
         public DataDictionary Metadata { get; set; }
 
@@ -12,17 +12,17 @@ namespace Client.Contracts
             Metadata = new DataDictionary();
         }
 
-        public override void SetMaxUsers(int maxUsers)
+        public void SetMaxUsers(int maxUsers)
         {
             Metadata.Add("maxUsers", maxUsers);
         }
 
-        public override void SetMaxDownloads(int maxDownloads)
+        public void SetMaxDownloads(int maxDownloads)
         {
             Metadata.Add("maxDownloads", maxDownloads);
         }
 
-        public override void SetMaxReuses(int maxReuses)
+        public void SetMaxReuses(int maxReuses)
         {
             Metadata.Add("maxReuses", maxReuses);
         }
