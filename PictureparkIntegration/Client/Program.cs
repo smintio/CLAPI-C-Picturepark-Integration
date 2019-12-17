@@ -66,6 +66,7 @@ namespace Client
                         services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
 
                         services.AddSingleton<ISyncTarget<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>, PictureparkSyncTargetImpl>();
+                        services.AddSingleton<ISyncTargetDataFactory<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>, PicuterparkDataFactory>();
 
                         services.AddSmintIoClapicIntegrationCore<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>();
 
