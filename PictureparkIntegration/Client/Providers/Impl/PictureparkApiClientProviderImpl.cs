@@ -538,8 +538,8 @@ namespace Client.Providers.Impl
                 {
                     var contentDetail = await _client.Content.GetAsync(updatedTargetAsset.TargetAssetUuid, new ContentResolveBehavior[] { ContentResolveBehavior.Metadata });
 
-                    var smintIoContentLayer = contentDetail.Metadata.Get("smintIoContentLayer");
-                    var binaryVersion = (long?)smintIoContentLayer.GetValueOrDefault("binaryVersion");
+                    var smintIoContentLayer = contentDetail.Layer<SmintIoContentLayer>("smintIoContentLayer");
+                    int? binaryVersion = smintIoContentLayer.BinaryVersion;
 
                     if (binaryVersion != updatedTargetAsset.BinaryVersion)
                     {

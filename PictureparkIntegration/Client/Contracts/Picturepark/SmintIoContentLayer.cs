@@ -91,20 +91,20 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Purchased At")]
         [PictureparkNameTranslation("en", "Purchased At")]
         [PictureparkNameTranslation("de", "Kaufdatum")]
-        public DateTimeOffset PurchasedAt { get; set; }
+        public DateTimeOffset? PurchasedAt { get; set; }
 
         [PictureparkRequired]
         [PictureparkDateTime]
         [PictureparkNameTranslation("x-default", "Created At")]
         [PictureparkNameTranslation("en", "Created At")]
         [PictureparkNameTranslation("de", "Erzeugt")]
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? CreatedAt { get; set; }
 
         [PictureparkDateTime]
         [PictureparkNameTranslation("x-default", "Last Updated At")]
         [PictureparkNameTranslation("en", "Last Updated At")]
         [PictureparkNameTranslation("de", "Aktualisiert")]
-        public DateTimeOffset LastUpdatedAt { get; set; }
+        public DateTimeOffset? LastUpdatedAt { get; set; }
 
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Transaction ID")]
@@ -128,13 +128,13 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Binary Culture")]
         [PictureparkNameTranslation("en", "Binary Culture")]
         [PictureparkNameTranslation("de", "Kultur der Datei")]
-        public int BinaryCulture { get; set; }
+        public string BinaryCulture { get; set; }
 
         // Not required for compound assets
         [PictureparkNameTranslation("x-default", "Binary Version")]
         [PictureparkNameTranslation("en", "Binary Version")]
         [PictureparkNameTranslation("de", "Version der Datei")]
-        public int BinaryVersion { get; set; }
+        public int? BinaryVersion { get; set; }
 
         [PictureparkNameTranslation("x-default", "For Editorial Use Only")]
         [PictureparkNameTranslation("en", "For Editorial Use Only")]
@@ -150,6 +150,6 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Has Been Cancelled")]
         [PictureparkNameTranslation("en", "Has Been Cancelled")]
         [PictureparkNameTranslation("de", "Wurde storniert")]
-        public bool HasBeenCancelled { get; set; }
+        public bool? HasBeenCancelled { get; set; }
     }
 }

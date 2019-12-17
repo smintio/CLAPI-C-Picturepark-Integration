@@ -70,6 +70,6 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Has Been Cancelled")]
         [PictureparkNameTranslation("en", "Has Been Cancelled")]
         [PictureparkNameTranslation("de", "Wurde storniert")]
-        public bool HasBeenCancelled { get; set; }
+        public bool? HasBeenCancelled { get; set; }
     }
 }
