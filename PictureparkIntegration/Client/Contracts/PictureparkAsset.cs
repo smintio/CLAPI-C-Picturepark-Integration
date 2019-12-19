@@ -158,10 +158,10 @@ namespace Client.Contracts
             _licenseMetadata.Add("isEditorialUse", isEditorialUse);
         }
 
-        public override void SetHasLicenseTerms(bool hasLicenseTerms)
+        public override void SetHasRestrictiveLicenseTerms(bool hasRestrictiveLicenseTerms)
         {
-            _contentMetadata.Add("hasLicenseTerms", hasLicenseTerms);
-            _licenseMetadata.Add("hasLicenseTerms", hasLicenseTerms);
+            _contentMetadata.Add("hasRestrictiveLicenseTerms", hasRestrictiveLicenseTerms);
+            _licenseMetadata.Add("hasRestrictiveLicenseTerms", hasRestrictiveLicenseTerms);
         }
 
         public override void SetLicenseType(string licenseTypeKey)

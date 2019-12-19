@@ -8,9 +8,9 @@ namespace Client.Contracts.Picturepark
     [PictureparkNameTranslation("x-default", "Smint.io Asset")]
     [PictureparkNameTranslation("en", "Smint.io Asset")]
     [PictureparkNameTranslation("de", "Smint.io Asset")]
-    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{% if data.smintIoContentLayer.isEditorialUse %} WARNING: This asset is for editorial use only! {% elsif data.smintIoContentLayer.hasLicenseTerms %} WARNING: This asset is subject to license terms! {% endif %}", "x-default")]
-    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{% if data.smintIoContentLayer.isEditorialUse %} WARNING: This asset is for editorial use only! {% elsif data.smintIoContentLayer.hasLicenseTerms %} WARNING: This asset is subject to license terms! {% endif %}", "en")]
-    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{% if data.smintIoContentLayer.isEditorialUse %} WARNUNG: Dieses Asset ist nur für redaktionelle Nutzung geeignet! {% elsif data.smintIoContentLayer.hasLicenseTerms %} WARNUNG: Die Nutzung dieses Assets ist durch Lizenz-Bedingungen eingeschränkt! {% endif %}", "de")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{% if data.smintIoContentLayer.isEditorialUse %} WARNING: This asset is for editorial use only! {% elsif data.smintIoContentLayer.hasRestrictiveLicenseTerms %} WARNING: This asset is subject to restrictive license terms! {% endif %}", "x-default")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{% if data.smintIoContentLayer.isEditorialUse %} WARNING: This asset is for editorial use only! {% elsif data.smintIoContentLayer.hasRestrictiveLicenseTerms %} WARNING: This asset is subject to restrictive license terms! {% endif %}", "en")]
+    [PictureparkDisplayPattern(DisplayPatternType.Name, TemplateEngine.DotLiquid, @"{% if data.smintIoContentLayer.isEditorialUse %} WARNUNG: Dieses Asset ist nur für redaktionelle Nutzung geeignet! {% elsif data.smintIoContentLayer.hasRestrictiveLicenseTerms %} WARNUNG: Die Nutzung dieses Assets ist durch Lizenz-Bedingungen eingeschränkt! {% endif %}", "de")]
     public class SmintIoContentLayer
     {
         [PictureparkNameTranslation("x-default", "Asset ID")]
@@ -141,10 +141,10 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("de", "Nur für redaktionelle Nutzung")]
         public bool? IsEditorialUse { get; set; }
 
-        [PictureparkNameTranslation("x-default", "Has License Terms")]
-        [PictureparkNameTranslation("en", "Has License Terms")]
-        [PictureparkNameTranslation("de", "Hat Lizenz-Bedingungen")]
-        public bool? HasLicenseTerms { get; set; }
+        [PictureparkNameTranslation("x-default", "Has Restrictive License Terms")]
+        [PictureparkNameTranslation("en", "Has Restrictive License Terms")]
+        [PictureparkNameTranslation("de", "Hat Lizenz-Einschränkungen")]
+        public bool? HasRestrictiveLicenseTerms { get; set; }
 
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Has Been Cancelled")]
