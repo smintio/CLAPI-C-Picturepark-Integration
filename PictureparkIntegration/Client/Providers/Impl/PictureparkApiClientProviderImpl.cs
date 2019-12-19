@@ -469,7 +469,7 @@ namespace Client.Providers.Impl
 
                 foreach (FileTransfer file in files.Results)
                 {
-                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.WorldwideUniqueBinaryUuid, file.Identifier));
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.Identifier));
 
                     var fileTransferCreateItem = new FileTransferCreateItem
                     {
@@ -497,7 +497,7 @@ namespace Client.Providers.Impl
 
                 foreach (FileTransfer file in files.Results)
                 {
-                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.WorldwideUniqueBinaryUuid, file.Identifier));
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.Identifier));
 
                     assetForCreation.TargetAssetUuid = file.ContentId;
                 }
@@ -916,7 +916,7 @@ namespace Client.Providers.Impl
 
                 var localFile = await asset.GetDownloadedFileAsync();
 
-                var filePath = new FileLocations(localFile.FullName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid);
+                var filePath = new FileLocations(localFile.FullName, asset.RecommendedFileName, asset.RecommendedFileName);
 
                 filePaths.Add(filePath);
             }
@@ -951,7 +951,7 @@ namespace Client.Providers.Impl
 
             var filePaths = new FileLocations[]
             {
-                new FileLocations(localFile.FullName, asset.RecommendedFileName, asset.WorldwideUniqueBinaryUuid)
+                new FileLocations(localFile.FullName, asset.RecommendedFileName, asset.RecommendedFileName)
             };
             
             var request = new CreateTransferRequest
