@@ -44,6 +44,7 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "Description")]
         [PictureparkNameTranslation("en", "Description")]
         [PictureparkNameTranslation("de", "Beschreibung")]
+        [PictureparkString(MultiLine = true)]
         public TranslatedStringDictionary Description { get; set; }
 
         [PictureparkNameTranslation("x-default", "Category")]

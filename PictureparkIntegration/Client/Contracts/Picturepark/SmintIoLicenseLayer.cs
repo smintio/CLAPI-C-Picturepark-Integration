@@ -14,16 +14,16 @@ namespace Client.Contracts.Picturepark
     public class SmintIoLicenseLayer
     {
         [PictureparkRequired]
-        [PictureparkNameTranslation("x-default", "Licensee Name")]
-        [PictureparkNameTranslation("en", "Licensee Name")]
-        [PictureparkNameTranslation("de", "Name des Lizenznehmers")]
-        public string LicenseeName { get; set; }
-
-        [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Licensee ID")]
         [PictureparkNameTranslation("en", "Licensee ID")]
         [PictureparkNameTranslation("de", "ID des Lizenznehmers")]
         public string LicenseeUuid { get; set; }
+
+        [PictureparkRequired]
+        [PictureparkNameTranslation("x-default", "Licensee Name")]
+        [PictureparkNameTranslation("en", "Licensee Name")]
+        [PictureparkNameTranslation("de", "Name des Lizenznehmers")]
+        public string LicenseeName { get; set; }
 
         [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "License Type")]
@@ -34,6 +34,7 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("x-default", "License Text")]
         [PictureparkNameTranslation("en", "License Text")]
         [PictureparkNameTranslation("de", "Lizenztext")]
+        [PictureparkString(MultiLine = true)]
         public TranslatedStringDictionary LicenseText { get; set; }
 
         [PictureparkNameTranslation("x-default", "License Terms")]

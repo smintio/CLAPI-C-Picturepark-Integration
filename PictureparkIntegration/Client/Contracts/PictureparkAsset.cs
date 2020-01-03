@@ -196,7 +196,7 @@ namespace Client.Contracts
 
         public override void SetLicenseTerms(IList<PictureparkLicenseTerm> licenseTerms)
         {
-            _licenseMetadata.Add("licenseTerms", licenseTerms.Select(licenseOption => licenseOption.Metadata).ToArray());
+            _licenseMetadata.Add("licenseTerms", licenseTerms.Select(licenseTerm => licenseTerm.Metadata).ToArray());
         }
 
         private IDictionary<string, string> JoinValues(IDictionary<string, string[]> dictionary)
