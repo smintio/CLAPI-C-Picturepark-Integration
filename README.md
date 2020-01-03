@@ -15,7 +15,7 @@ If you want to integrate Smint.io to your software system, you should provide a 
 - Live synchronization whenever an asset is being purchased on Smint.io
 - Regular synchronization
 - Exponential backoff API consumption pattern
-- Warning indicators whenever an asset is subject to editorial use or other license restrictions
+- Warning indicators whenever an asset is subject to editorial use or potentially restrictive license terms
 
 **Interesting topics**
 
@@ -141,7 +141,7 @@ Add this code to the Picturepark file type thumbnail display patterns to display
 {% endif %}
 
 {% if data.smintIoLicenseLayer.isEditorialUse or 
-   data.smintIoLicenseLayer.hasLicenseTerms %} 
+   data.smintIoLicenseLayer.hasRestrictiveLicenseTerms %} 
    &nbsp;<font color="#ff9800"><i class="material-icons icon-alert md-16"></i></font>
 {% endif %}
 ```

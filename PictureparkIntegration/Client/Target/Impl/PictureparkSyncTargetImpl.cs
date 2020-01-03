@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Client.Target.Impl
 {
-    public class PictureparkSyncTargetImpl : ISyncTarget<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
+    public class PictureparkSyncTargetImpl : ISyncTarget<PictureparkAsset, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
     {
         private static readonly BaseSyncTargetCapabilities Capabilities = new BaseSyncTargetCapabilities(
             SyncTargetCapabilitiesEnum.MultiLanguageEnum,
@@ -176,11 +176,6 @@ namespace Client.Target.Impl
         public PictureparkAsset CreateSyncAsset()
         {
             return new PictureparkAsset();
-        }
-
-        public PictureparkLicenseOption CreateSyncLicenseOption()
-        {
-            return new PictureparkLicenseOption();
         }
 
         public PictureparkLicenseTerm CreateSyncLicenseTerm()

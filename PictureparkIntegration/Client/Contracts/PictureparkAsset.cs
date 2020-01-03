@@ -7,7 +7,7 @@ using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
 
 namespace Client.Contracts
 {
-    public class PictureparkAsset : BaseSyncAsset<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
+    public class PictureparkAsset : BaseSyncAsset<PictureparkAsset, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
     {
         private DataDictionary _contentMetadata;
         private DataDictionary _licenseMetadata;
@@ -192,11 +192,6 @@ namespace Client.Contracts
         public override void SetReleaseDetails(PictureparkReleaseDetails releaseDetails)
         {
             _licenseMetadata.Add("releaseDetails", releaseDetails.Metadata);
-        }
-
-        public override void SetLicenseOptions(IList<PictureparkLicenseOption> licenseOptions)
-        {
-            _licenseMetadata.Add("licenseOptions", licenseOptions.Select(licenseOption => licenseOption.Metadata).ToArray());
         }
 
         public override void SetLicenseTerms(IList<PictureparkLicenseTerm> licenseTerms)

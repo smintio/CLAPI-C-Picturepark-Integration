@@ -65,10 +65,10 @@ namespace Client
                         services.AddSingleton<ITokenDatabaseProvider, TokenDatabaseProviderImpl>();
                         services.AddSingleton<ISyncDatabaseProvider, SyncDatabaseProviderImpl>();
 
-                        services.AddSingleton<ISyncTarget<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>, PictureparkSyncTargetImpl>();
-                        services.AddSingleton<ISyncTargetDataFactory<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>, PicuterparkDataFactory>();
+                        services.AddSingleton<ISyncTarget<PictureparkAsset, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>, PictureparkSyncTargetImpl>();
+                        services.AddSingleton<ISyncTargetDataFactory<PictureparkAsset, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>, PicuterparkDataFactory>();
 
-                        services.AddSmintIoClapicIntegrationCore<PictureparkAsset, PictureparkLicenseOption, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>();
+                        services.AddSmintIoClapicIntegrationCore<PictureparkAsset, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>();
 
                         var descriptor = new ServiceDescriptor(typeof(ISmintIoAuthenticator), typeof(SmintIoSystemBrowserAuthenticatorImpl), ServiceLifetime.Singleton);
 
