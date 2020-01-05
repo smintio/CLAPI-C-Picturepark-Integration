@@ -67,7 +67,6 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("de", "Hat Lizenz-Einschränkungen")]
         public bool? HasRestrictiveLicenseTerms { get; set; }
 
-        [PictureparkRequired]
         [PictureparkNameTranslation("x-default", "Has Been Cancelled")]
         [PictureparkNameTranslation("en", "Has Been Cancelled")]
         [PictureparkNameTranslation("de", "Wurde storniert")]
