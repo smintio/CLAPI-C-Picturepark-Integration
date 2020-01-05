@@ -37,6 +37,11 @@ namespace Client.Contracts.Picturepark
         [PictureparkString(MultiLine = true)]
         public TranslatedStringDictionary LicenseText { get; set; }
 
+        [PictureparkNameTranslation("x-default", "Further Information")]
+        [PictureparkNameTranslation("en", "Further Information")]
+        [PictureparkNameTranslation("de", "Weiterführende Informationen")]
+        public TranslatedStringDictionary LicenseUrls { get; set; }
+
         [PictureparkNameTranslation("x-default", "License Terms")]
         [PictureparkNameTranslation("en", "License Terms")]
         [PictureparkNameTranslation("de", "Lizenz-Bedingungen")]

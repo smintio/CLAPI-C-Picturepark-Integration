@@ -184,6 +184,13 @@ namespace Client.Contracts
             _licenseMetadata.Add("licenseText", licenseText);
         }
 
+        public override void SetLicenseUrls(IDictionary<string, string[]> licenseUrls)
+        {
+            var joinedLicenseUrls = JoinValues(licenseUrls);
+
+            _licenseMetadata.Add("licenseUrls", joinedLicenseUrls);
+        }
+
         public override void SetDownloadConstraints(PictureparkDownloadConstraints downloadConstraints)
         {
             _licenseMetadata.Add("downloadConstraints", downloadConstraints.Metadata);
