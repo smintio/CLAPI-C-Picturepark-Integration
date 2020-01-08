@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLAPI-C-Integration-Core", "..\..\CLAPI-C-Integration-Core\NetCore\CLAPI-C-Integration-Core.csproj", "{F6B90009-47A3-450D-A475-FA6F45AD73DB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PusherClient", "..\..\pusher-websocket-dotnet\PusherClient\PusherClient.csproj", "{09ED9262-E06C-4B93-8381-E3DC7FCD8605}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F6B90009-47A3-450D-A475-FA6F45AD73DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6B90009-47A3-450D-A475-FA6F45AD73DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6B90009-47A3-450D-A475-FA6F45AD73DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09ED9262-E06C-4B93-8381-E3DC7FCD8605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09ED9262-E06C-4B93-8381-E3DC7FCD8605}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09ED9262-E06C-4B93-8381-E3DC7FCD8605}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09ED9262-E06C-4B93-8381-E3DC7FCD8605}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
