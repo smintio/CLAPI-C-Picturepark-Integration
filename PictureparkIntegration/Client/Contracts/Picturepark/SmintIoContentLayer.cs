@@ -47,9 +47,9 @@ namespace Client.Contracts.Picturepark
         [PictureparkString(MultiLine = true)]
         public TranslatedStringDictionary Description { get; set; }
 
-        [PictureparkNameTranslation("x-default", "Category")]
-        [PictureparkNameTranslation("en", "Category")]
-        [PictureparkNameTranslation("de", "Kategorie")]
+        [PictureparkNameTranslation("x-default", "Content Category")]
+        [PictureparkNameTranslation("en", "Content Category")]
+        [PictureparkNameTranslation("de", "Content-Kategorie")]
         public SmintIoContentCategory Category { get; set; }
 
         [PictureparkNameTranslation("x-default", "Keywords")]
