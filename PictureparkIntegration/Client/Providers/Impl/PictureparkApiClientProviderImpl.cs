@@ -390,7 +390,7 @@ namespace Client.Providers.Impl
             }
         }
 
-        public async Task<string> GetExistingPictureparkCompoundAssetUuid(string licensePurchaseTransactionUuid)
+        public async Task<string> GetExistingPictureparkCompoundAssetUuidAsync(string licensePurchaseTransactionUuid)
         {
             var filters = new List<FilterBase>
             {
@@ -403,7 +403,7 @@ namespace Client.Providers.Impl
             return await GetFilterResultAsync(filters);
         }
 
-        public async Task<string> GetExistingPictureparkAssetBinaryUuid(string licensePurchaseTransactionUuid, string binaryUuid)
+        public async Task<string> GetExistingPictureparkAssetBinaryUuidAsync(string licensePurchaseTransactionUuid, string binaryUuid)
         {
             var filters = new List<FilterBase>
             {
@@ -831,11 +831,11 @@ namespace Client.Providers.Impl
                 {
                     if (schema.Id == nameof(SmintIoContentLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(SmintIoContentLayer));
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoContentLayer));
                     }
                     else if (schema.Id == nameof(SmintIoLicenseLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(SmintIoLicenseLayer));
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoLicenseLayer));
                     }
                 }
             }
@@ -848,17 +848,17 @@ namespace Client.Providers.Impl
 
                     if (schema.Id == nameof(SmintIoContentLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(SmintIoContentLayer));
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoContentLayer));
                     }
                     else if (schema.Id == nameof(SmintIoLicenseLayer))
                     {
-                        await AddSchemaToFileTypes(nameof(SmintIoLicenseLayer));
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoLicenseLayer));
                     }
                 }
             }
         }
 
-        private async Task AddSchemaToFileTypes(string schemaName)
+        private async Task AddSchemaToFileTypesAsync(string schemaName)
         {
             foreach (var type in _appOptions.PictureparkFileTypes)
             {

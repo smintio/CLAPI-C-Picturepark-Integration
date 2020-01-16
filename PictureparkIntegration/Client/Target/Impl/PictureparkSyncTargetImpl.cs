@@ -195,12 +195,12 @@ namespace Client.Target.Impl
 
         public async Task<string> GetTargetCompoundAssetUuidAsync(string smintIoAssetUuid)
         {
-            return await _pictureparkClient.GetExistingPictureparkCompoundAssetUuid(smintIoAssetUuid);
+            return await _pictureparkClient.GetExistingPictureparkCompoundAssetUuidAsync(smintIoAssetUuid);
         }
 
         public async Task<string> GetTargetAssetBinaryUuidAsync(string smintIoAssetUuid, string smintIoBinaryUuid)
         {
-            return await _pictureparkClient.GetExistingPictureparkAssetBinaryUuid(smintIoAssetUuid, smintIoBinaryUuid);
+            return await _pictureparkClient.GetExistingPictureparkAssetBinaryUuidAsync(smintIoAssetUuid, smintIoBinaryUuid);
         }
 
         public async Task ImportNewTargetAssetsAsync(IList<PictureparkAsset> newTargetAssets)
