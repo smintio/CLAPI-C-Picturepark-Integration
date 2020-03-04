@@ -467,7 +467,7 @@ namespace Client.Providers.Impl
 
                 var files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
 
-                foreach (FileTransfer file in files.Results)
+                foreach (FileTransfer file in files)
                 {
                     var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.Identifier));
 
@@ -495,7 +495,7 @@ namespace Client.Providers.Impl
 
                 files = await _client.Transfer.SearchFilesByTransferIdAsync(transferResult.Transfer.Id);
 
-                foreach (FileTransfer file in files.Results)
+                foreach (FileTransfer file in files)
                 {
                     var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.Identifier));
 
@@ -565,7 +565,7 @@ namespace Client.Providers.Impl
                         },
                         Metadata = assetForUpdate.GetMetadata(),
                         LayerSchemasUpdateOptions = UpdateOption.Merge,
-                        SchemaFieldsUpdateOptions = UpdateOption.Replace
+                        ContentFieldsUpdateOptions = UpdateOption.Replace
                     };
 
                     contentMetadataUpdateManyRequest.Items.Add(contentMetadataUpdateItem);
@@ -690,7 +690,7 @@ namespace Client.Providers.Impl
                         },
                         Metadata = targetAsset.GetMetadata(),
                         LayerSchemasUpdateOptions = UpdateOption.Merge,
-                        SchemaFieldsUpdateOptions = UpdateOption.Replace
+                        ContentFieldsUpdateOptions = UpdateOption.Replace
                     };
 
                     await _client.Content.UpdateMetadataAsync(targetAsset.TargetAssetUuid, contentUpdateRequest);
@@ -936,7 +936,7 @@ namespace Client.Providers.Impl
                 ChunkSize = 1024 * 1024,
                 ConcurrentUploads = 4,
                 SuccessDelegate = Console.WriteLine,
-                ErrorDelegate = Console.WriteLine,
+                ErrorDelegate = ErrorDelegate,
                 WaitForTransferCompletion = true
             };
 
@@ -971,11 +971,16 @@ namespace Client.Providers.Impl
                 ChunkSize = 1024 * 1024,
                 ConcurrentUploads = 4,
                 SuccessDelegate = Console.WriteLine,
-                ErrorDelegate = Console.WriteLine,
+                ErrorDelegate = ErrorDelegate,
                 WaitForTransferCompletion = true
             };
 
             return await _client.Transfer.UploadFilesAsync(transferIdentifier, filePaths, uploadOptions);
+        }
+
+        private void ErrorDelegate((FileLocations File, Exception Exception) exception)
+        {
+            _logger.LogError("Error during upload to PicturePark: {0}", exception);
         }
 
         private void InitPictureparkService()
