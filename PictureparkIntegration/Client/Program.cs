@@ -7,8 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SmintIo.CLAPI.Consumer.Integration.Core.Factory;
 using SmintIo.CLAPI.Consumer.Integration.Core.Services;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 
 namespace Client
 {

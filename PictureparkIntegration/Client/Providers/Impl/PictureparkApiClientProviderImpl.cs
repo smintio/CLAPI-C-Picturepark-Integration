@@ -15,6 +15,7 @@ using Client.Contracts;
 using Client.Contracts.Picturepark;
 using System.Net;
 using SmintIo.CLAPI.Consumer.Integration.Core.Authenticator;
+using SmintIo.CLAPI.Consumer.Integration.Core.Exceptions;
 
 namespace Client.Providers.Impl
 {
@@ -382,7 +383,7 @@ namespace Client.Providers.Impl
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error importing list items");
 
@@ -434,7 +435,7 @@ namespace Client.Providers.Impl
                 return null;
 
             if (count > 1)
-                throw new Exception($"Unexpected number of Picturepark asset search results ({searchResults.Results.Count} instead of 0 or 1)");
+                throw new SyncTargetException($"Unexpected number of Picturepark asset search results ({searchResults.Results.Count} instead of 0 or 1)");
 
             var searchResult = searchResults.Results.First();
 

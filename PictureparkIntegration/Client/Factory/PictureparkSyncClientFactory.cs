@@ -12,9 +12,9 @@ using SmintIo.CLAPI.Consumer.Integration.Core.Authenticator;
 using SmintIo.CLAPI.Consumer.Integration.Core.Database;
 using SmintIo.CLAPI.Consumer.Integration.Core.Database.Impl;
 using SmintIo.CLAPI.Consumer.Integration.Core.Database.Models;
-using SmintIo.CLAPI.Consumer.Integration.Core.Factory;
 using SmintIo.CLAPI.Consumer.Integration.Core.SyncClient;
 using SmintIo.CLAPI.Consumer.Integration.Core.Target;
+using SmintIo.CLAPI.Consumer.Integration.Core.Target.Impl;
 
 namespace Client.Factory
 {

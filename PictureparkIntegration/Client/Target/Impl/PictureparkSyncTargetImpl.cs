@@ -265,17 +265,17 @@ namespace Client.Target.Impl
         }
 
 #pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
-        public async Task HandleAuthenticatorExceptionAsync(SmintIoAuthenticatorException exception)
+        public async Task HandleAuthenticatorExceptionAsync(AuthenticatorException exception)
 #pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         {
-            _logger.LogError(exception, "Error in Smint.io authenticator");
+            _logger.LogError(exception, "Error in authenticator");
         }
 
 #pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
-        public async Task HandleSyncJobExceptionAsync(SmintIoSyncJobException exception)
+        public async Task HandleSyncJobExceptionAsync(SyncJobException exception)
 #pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         {
-            _logger.LogError(exception, "Error in Smint.io sync job");
+            _logger.LogError(exception, "Error in sync job");
         }
     }
 }
