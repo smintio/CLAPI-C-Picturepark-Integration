@@ -33,6 +33,8 @@ namespace Client.Providers.Impl
 
         private bool _disposed;
 
+        private bool _schemasInitialized = false;
+
         private readonly ILogger _logger;
 
         public PictureparkApiClientProviderImpl(
@@ -79,27 +81,32 @@ namespace Client.Providers.Impl
                 return;
             }
 
-            _logger.LogInformation("Initializing Picturpark schemas...");
+            if (!_schemasInitialized)
+            {
+                _logger.LogInformation("Initializing Picturpark schemas...");
 
-            _logger.LogInformation("Initializing Picturepark compound asset schema...");
+                _logger.LogInformation("Initializing Picturepark compound asset schema...");
 
-            await InitSchemaAsync(typeof(SmintIoCompoundAsset));
+                await InitSchemaAsync(typeof(SmintIoCompoundAsset));
 
-            _logger.LogInformation("Initialized Picturepark compound asset schema");
+                _logger.LogInformation("Initialized Picturepark compound asset schema");
 
-            _logger.LogInformation("Initializing Picturepark content layer schema...");
+                _logger.LogInformation("Initializing Picturepark content layer schema...");
 
-            await InitSchemaAsync(typeof(SmintIoContentLayer));
+                await InitSchemaAsync(typeof(SmintIoContentLayer));
 
-            _logger.LogInformation("Initialized Picturepark content layer schema");
+                _logger.LogInformation("Initialized Picturepark content layer schema");
 
-            _logger.LogInformation("Initializing Picturepark license layer schema...");
+                _logger.LogInformation("Initializing Picturepark license layer schema...");
 
-            await InitSchemaAsync(typeof(SmintIoLicenseLayer));
+                await InitSchemaAsync(typeof(SmintIoLicenseLayer));
 
-            _logger.LogInformation("Initialized Picturepark license layer schema");
+                _logger.LogInformation("Initialized Picturepark license layer schema");
 
-            _logger.LogInformation("Initialized Picturepark schemas");
+                _logger.LogInformation("Initialized Picturepark schemas");
+
+                _schemasInitialized = true;
+            }
         }
 
         private async Task InitSchemaAsync(Type type)
