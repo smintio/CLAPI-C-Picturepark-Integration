@@ -24,7 +24,7 @@ using SmintIo.CLAPI.Consumer.Integration.Core.Target;
 
 namespace Client.Target.Impl
 {
-    public class PicuterparkDataFactory : ISyncTargetDataFactory<PictureparkAsset, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
+    public class PictureparkDataFactory : ISyncTargetDataFactory<PictureparkAsset, PictureparkLicenseTerm, PictureparkReleaseDetails, PictureparkDownloadConstraints>
     {
         public PictureparkAsset CreateSyncBinaryAsset()
         {

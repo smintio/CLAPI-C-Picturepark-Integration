@@ -72,14 +72,14 @@ namespace Client.Contracts.Picturepark
         [PictureparkNameTranslation("de", "Projektname")]
         public TranslatedStringDictionary ProjectName { get; set; }
 
-        [PictureparkNameTranslation("x-default", "Collection ID")]
-        [PictureparkNameTranslation("en", "Collection ID")]
-        [PictureparkNameTranslation("de", "ID der Sammlung")]
+        [PictureparkNameTranslation("x-default", "Board ID")]
+        [PictureparkNameTranslation("en", "Board ID")]
+        [PictureparkNameTranslation("de", "ID des Leuchtkastens")]
         public string CollectionUuid { get; set; }
 
-        [PictureparkNameTranslation("x-default", "Collection Name")]
-        [PictureparkNameTranslation("en", "Collection Name")]
-        [PictureparkNameTranslation("de", "Name der Sammlung")]
+        [PictureparkNameTranslation("x-default", "Board Name")]
+        [PictureparkNameTranslation("en", "Board Name")]
+        [PictureparkNameTranslation("de", "Name des Leuchtkastens")]
         public TranslatedStringDictionary CollectionName { get; set; }
 
         [PictureparkNameTranslation("x-default", "Smint.io Link")]

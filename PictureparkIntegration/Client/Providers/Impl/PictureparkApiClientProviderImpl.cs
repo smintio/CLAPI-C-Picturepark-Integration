@@ -1,6 +1,5 @@
 ﻿using Client.Options;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Picturepark.SDK.V1;
 using Picturepark.SDK.V1.Authentication;
 using Picturepark.SDK.V1.Contract;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 using Client.Contracts;
 using Client.Contracts.Picturepark;
 using System.Net;
+using SmintIo.CLAPI.Consumer.Integration.Core.Authenticator;
 
 namespace Client.Providers.Impl
 {
@@ -23,7 +23,7 @@ namespace Client.Providers.Impl
         private const int MaxRetryAttempts = 5;
 
         private readonly PictureparkAppOptions _appOptions;
-        private readonly PictureparkAuthOptions _authOptions;
+        private readonly ISyncTargetAuthenticator _authenticator;
 
         private readonly AsyncRetryPolicy _retryPolicy;
 
@@ -35,12 +35,12 @@ namespace Client.Providers.Impl
         private readonly ILogger _logger;
 
         public PictureparkApiClientProviderImpl(
-            IOptionsMonitor<PictureparkAppOptions> appOptionsAccessor,
-            IOptionsMonitor<PictureparkAuthOptions> authOptionsAccessor,
+            PictureparkAppOptions appOptions,
+            ISyncTargetAuthenticator authenticator,
             ILogger<PictureparkApiClientProviderImpl> logger)
         {
-            _appOptions = appOptionsAccessor.CurrentValue;
-            _authOptions = authOptionsAccessor.CurrentValue;
+            _appOptions = appOptions;
+            _authenticator = authenticator;
 
             _disposed = false;
 
@@ -985,7 +985,13 @@ namespace Client.Providers.Impl
 
         private void InitPictureparkService()
         {
-            string accessToken = _authOptions.AccessToken;
+            var getAccessTokenTask = _authenticator.GetAccessTokenAsync();
+
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+            getAccessTokenTask.Wait();
+
+            string accessToken = getAccessTokenTask.Result;
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
 
             var authClient = new AccessTokenAuthClient(_appOptions.ApiBaseUrl, accessToken, _appOptions.CustomerAlias);
 
