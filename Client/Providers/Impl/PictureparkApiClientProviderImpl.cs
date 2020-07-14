@@ -1006,6 +1006,7 @@ namespace Client.Providers.Impl
 
                     _httpClient?.Dispose();
                 }
+
                 _disposed = true;
             }
         }
