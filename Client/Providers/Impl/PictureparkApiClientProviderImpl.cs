@@ -68,6 +68,124 @@ namespace Client.Providers.Impl
             }
         }
 
+        public async Task InitSchemasAsync()
+        {
+            bool updateSchemaOnStart = _appOptions.UpdateSchemaOnStart;
+
+            if (!updateSchemaOnStart)
+            {
+                _logger.LogInformation("Updating the Picturepark schema on start has been turned off");
+
+                return;
+            }
+
+            _logger.LogInformation("Initializing Picturpark schemas...");
+
+            _logger.LogInformation("Initializing Picturepark compound asset schema...");
+
+            await InitSchemaAsync(typeof(SmintIoCompoundAsset));
+
+            _logger.LogInformation("Initialized Picturepark compound asset schema");
+
+            _logger.LogInformation("Initializing Picturepark content layer schema...");
+
+            await InitSchemaAsync(typeof(SmintIoContentLayer));
+
+            _logger.LogInformation("Initialized Picturepark content layer schema");
+
+            _logger.LogInformation("Initializing Picturepark license layer schema...");
+
+            await InitSchemaAsync(typeof(SmintIoLicenseLayer));
+
+            _logger.LogInformation("Initialized Picturepark license layer schema");
+
+            _logger.LogInformation("Initialized Picturepark schemas");
+        }
+
+        private async Task InitSchemaAsync(Type type)
+        {
+            var schemas = await _client.Schema.GenerateSchemasAsync(type);
+
+            var schemasToCreate = new List<SchemaDetail>();
+            var schemasToUpdate = new List<SchemaDetail>();
+
+            foreach (var schema in schemas)
+            {
+                if (!await _client.Schema.ExistsAsync(schema.Id))
+                {
+                    schemasToCreate.Add(schema);
+                }
+                else
+                {
+                    schemasToUpdate.Add(schema);
+                }
+            }
+
+            if (schemasToCreate.Any())
+            {
+                var result = await _client.Schema.CreateManyAsync(schemasToCreate, false);
+
+                await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
+
+                foreach (var schema in schemasToCreate)
+                {
+                    if (schema.Id == nameof(SmintIoContentLayer))
+                    {
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoContentLayer));
+                    }
+                    else if (schema.Id == nameof(SmintIoLicenseLayer))
+                    {
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoLicenseLayer));
+                    }
+                }
+            }
+
+            if (schemasToUpdate.Any())
+            {
+                foreach (var schema in schemasToUpdate)
+                {
+                    await _client.Schema.UpdateAsync(schema, false);
+
+                    if (schema.Id == nameof(SmintIoContentLayer))
+                    {
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoContentLayer));
+                    }
+                    else if (schema.Id == nameof(SmintIoLicenseLayer))
+                    {
+                        await AddSchemaToFileTypesAsync(nameof(SmintIoLicenseLayer));
+                    }
+                }
+            }
+        }
+
+        private async Task AddSchemaToFileTypesAsync(string schemaName)
+        {
+            foreach (var type in _appOptions.PictureparkFileTypes)
+            {
+                var typeData = await _client.Schema.GetAsync(type);
+
+                if (typeData.LayerSchemaIds == null)
+                {
+                    typeData.LayerSchemaIds = new List<string>();
+                }
+
+                typeData.LayerSchemaIds.Add(schemaName);
+
+                await _client.Schema.UpdateAsync(typeData, false);
+            }
+
+            var compoundTypeData = await _client.Schema.GetAsync(nameof(SmintIoCompoundAsset));
+
+            if (compoundTypeData.LayerSchemaIds == null)
+            {
+                compoundTypeData.LayerSchemaIds = new List<string>();
+            }
+
+            compoundTypeData.LayerSchemaIds.Add(schemaName);
+
+            await _client.Schema.UpdateAsync(compoundTypeData, false);
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -779,124 +897,6 @@ namespace Client.Providers.Impl
             };
 
             return await _client.Transfer.SearchAsync(searchRequest);
-        }
-
-        public async Task InitSchemasAsync()
-        {
-            bool updateSchemaOnStart = _appOptions.UpdateSchemaOnStart;
-
-            if (!updateSchemaOnStart)
-            {
-                _logger.LogInformation("Updating the Picturepark schema on start has been turned off");
-
-                return;
-            }
-
-            _logger.LogInformation("Initializing Picturpark schemas...");
-
-            _logger.LogInformation("Initializing Picturepark compound asset schema...");
-
-            await InitSchemaAsync(typeof(SmintIoCompoundAsset));
-
-            _logger.LogInformation("Initialized Picturepark compound asset schema");
-
-            _logger.LogInformation("Initializing Picturepark content layer schema...");
-
-            await InitSchemaAsync(typeof(SmintIoContentLayer));
-
-            _logger.LogInformation("Initialized Picturepark content layer schema");
-
-            _logger.LogInformation("Initializing Picturepark license layer schema...");
-
-            await InitSchemaAsync(typeof(SmintIoLicenseLayer));
-
-            _logger.LogInformation("Initialized Picturepark license layer schema");
-
-            _logger.LogInformation("Initialized Picturepark schemas");
-        }
-
-        private async Task InitSchemaAsync(Type type)
-        {
-            var schemas = await _client.Schema.GenerateSchemasAsync(type);
-
-            var schemasToCreate = new List<SchemaDetail>();
-            var schemasToUpdate = new List<SchemaDetail>();
-
-            foreach (var schema in schemas)
-            {
-                if (!await _client.Schema.ExistsAsync(schema.Id))
-                {
-                    schemasToCreate.Add(schema);
-                } 
-                else
-                {
-                    schemasToUpdate.Add(schema);
-                }
-            }
-
-            if (schemasToCreate.Any())
-            {
-                var result = await _client.Schema.CreateManyAsync(schemasToCreate, false);
-
-                await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
-
-                foreach (var schema in schemasToCreate)
-                {
-                    if (schema.Id == nameof(SmintIoContentLayer))
-                    {
-                        await AddSchemaToFileTypesAsync(nameof(SmintIoContentLayer));
-                    }
-                    else if (schema.Id == nameof(SmintIoLicenseLayer))
-                    {
-                        await AddSchemaToFileTypesAsync(nameof(SmintIoLicenseLayer));
-                    }
-                }
-            }
-
-            if (schemasToUpdate.Any())
-            {
-                foreach (var schema in schemasToUpdate)
-                {
-                    await _client.Schema.UpdateAsync(schema, false);
-
-                    if (schema.Id == nameof(SmintIoContentLayer))
-                    {
-                        await AddSchemaToFileTypesAsync(nameof(SmintIoContentLayer));
-                    }
-                    else if (schema.Id == nameof(SmintIoLicenseLayer))
-                    {
-                        await AddSchemaToFileTypesAsync(nameof(SmintIoLicenseLayer));
-                    }
-                }
-            }
-        }
-
-        private async Task AddSchemaToFileTypesAsync(string schemaName)
-        {
-            foreach (var type in _appOptions.PictureparkFileTypes)
-            {
-                var typeData = await _client.Schema.GetAsync(type);
-
-                if (typeData.LayerSchemaIds == null)
-                {
-                    typeData.LayerSchemaIds = new List<string>();
-                }
-
-                typeData.LayerSchemaIds.Add(schemaName);
-
-                await _client.Schema.UpdateAsync(typeData, false);
-            }
-
-            var compoundTypeData = await _client.Schema.GetAsync(nameof(SmintIoCompoundAsset));
-
-            if (compoundTypeData.LayerSchemaIds == null)
-            {
-                compoundTypeData.LayerSchemaIds = new List<string>();
-            }
-
-            compoundTypeData.LayerSchemaIds.Add(schemaName);
-
-            await _client.Schema.UpdateAsync(compoundTypeData, false);
         }
 
         /*
