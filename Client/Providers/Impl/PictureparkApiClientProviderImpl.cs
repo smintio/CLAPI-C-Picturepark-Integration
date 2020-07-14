@@ -210,7 +210,7 @@ namespace Client.Providers.Impl
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (ex, timespan, context) =>
                     {
-                        _logger.LogError(ex, "Error communicating to Picturepark");
+                        _logger.LogError(ex, "Communication error");
 
                         if (ex is ApiException apiEx)
                         {
@@ -247,29 +247,29 @@ namespace Client.Providers.Impl
 
         public async Task ImportContentProvidersAsync(IList<PictureparkListItem> contentProviders)
         {
-            _logger.LogInformation("Importing content providers to Picturepark...");
+            _logger.LogInformation("Importing content providers...");
 
             await ImportListItemsAsync(nameof(SmintIoContentProvider), contentProviders);
 
-            _logger.LogInformation($"Imported {contentProviders.Count()} content providers to Picturepark");
+            _logger.LogInformation($"Imported {contentProviders.Count()} content providers");
         }
 
         public async Task ImportContentTypesAsync(IList<PictureparkListItem> contentTypes)
         {
-            _logger.LogInformation("Importing content types to Picturepark...");
+            _logger.LogInformation("Importing content types...");
 
             await ImportListItemsAsync(nameof(SmintIoContentType), contentTypes);
 
-            _logger.LogInformation($"Imported {contentTypes.Count()} content types to Picturepark");
+            _logger.LogInformation($"Imported {contentTypes.Count()} content types");
         }
 
         public async Task ImportBinaryTypesAsync(IList<PictureparkListItem> binaryTypes)
         {
-            _logger.LogInformation("Importing binary types to Picturepark...");
+            _logger.LogInformation("Importing binary types...");
 
             await ImportListItemsAsync(nameof(SmintIoBinaryType), binaryTypes);
 
-            _logger.LogInformation($"Imported {binaryTypes.Count()} binary types to Picturepark");
+            _logger.LogInformation($"Imported {binaryTypes.Count()} binary types");
         }
 
         public async Task<IList<PictureparkListItem>> GetContentCategoriesAsync()
@@ -279,11 +279,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportContentCategoriesAsync(IList<PictureparkListItem> contentCategories)
         {
-            _logger.LogInformation("Importing content categories to Picturepark...");
+            _logger.LogInformation("Importing content categories...");
 
             await ImportListItemsAsync(nameof(SmintIoContentCategory), contentCategories);
 
-            _logger.LogInformation($"Imported {contentCategories.Count()} content categories to Picturepark");
+            _logger.LogInformation($"Imported {contentCategories.Count()} content categories");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseTypesAsync()
@@ -293,11 +293,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseTypesAsync(IList<PictureparkListItem> licenseTypes)
         {
-            _logger.LogInformation("Importing license types to Picturepark...");
+            _logger.LogInformation("Importing license types...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseType), licenseTypes);
 
-            _logger.LogInformation($"Imported {licenseTypes.Count()} license types to Picturepark");
+            _logger.LogInformation($"Imported {licenseTypes.Count()} license types");
         }
 
         public async Task<IList<PictureparkListItem>> GetReleaseStatesAsync()
@@ -307,11 +307,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportReleaseStatesAsync(IList<PictureparkListItem> releaseStates)
         {
-            _logger.LogInformation("Importing release states to Picturepark...");
+            _logger.LogInformation("Importing release states...");
 
             await ImportListItemsAsync(nameof(SmintIoReleaseState), releaseStates);
 
-            _logger.LogInformation($"Imported {releaseStates.Count()} release states to Picturepark");
+            _logger.LogInformation($"Imported {releaseStates.Count()} release states");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseExclusivitiesAsync()
@@ -321,11 +321,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseExclusivitiesAsync(IList<PictureparkListItem> licenseExclusivities)
         {
-            _logger.LogInformation("Importing license exclusivities to Picturepark...");
+            _logger.LogInformation("Importing license exclusivities...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseExclusivity), licenseExclusivities);
 
-            _logger.LogInformation($"Imported {licenseExclusivities.Count()} license exclusivities to Picturepark");
+            _logger.LogInformation($"Imported {licenseExclusivities.Count()} license exclusivities");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseUsagesAsync()
@@ -335,11 +335,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseUsagesAsync(IList<PictureparkListItem> licenseUsages)
         {
-            _logger.LogInformation("Importing license usages to Picturepark...");
+            _logger.LogInformation("Importing license usages...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseUsage), licenseUsages);
 
-            _logger.LogInformation($"Imported {licenseUsages.Count()} license usages to Picturepark");
+            _logger.LogInformation($"Imported {licenseUsages.Count()} license usages");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseSizesAsync()
@@ -349,11 +349,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseSizesAsync(IList<PictureparkListItem> licenseSizes)
         {
-            _logger.LogInformation("Importing license sizes to Picturepark...");
+            _logger.LogInformation("Importing license sizes...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseSize), licenseSizes);
 
-            _logger.LogInformation($"Imported {licenseSizes.Count()} license sizes to Picturepark");
+            _logger.LogInformation($"Imported {licenseSizes.Count()} license sizes");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicensePlacementsAsync()
@@ -363,11 +363,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicensePlacementsAsync(IList<PictureparkListItem> licensePlacements)
         {
-            _logger.LogInformation("Importing license placements to Picturepark...");
+            _logger.LogInformation("Importing license placements...");
 
             await ImportListItemsAsync(nameof(SmintIoLicensePlacement), licensePlacements);
 
-            _logger.LogInformation($"Imported {licensePlacements.Count()} license placements to Picturepark");
+            _logger.LogInformation($"Imported {licensePlacements.Count()} license placements");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseDistributionsAsync()
@@ -377,11 +377,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseDistributionsAsync(IList<PictureparkListItem> licenseDistributions)
         {
-            _logger.LogInformation("Importing license distributions to Picturepark...");
+            _logger.LogInformation("Importing license distributions...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseDistribution), licenseDistributions);
 
-            _logger.LogInformation($"Imported {licenseDistributions.Count()} license distributions to Picturepark");
+            _logger.LogInformation($"Imported {licenseDistributions.Count()} license distributions");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseGeographiesAsync()
@@ -391,11 +391,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseGeographiesAsync(IList<PictureparkListItem> licenseGeographies)
         {
-            _logger.LogInformation("Importing license geographies to Picturepark...");
+            _logger.LogInformation("Importing license geographies...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseGeography), licenseGeographies);
 
-            _logger.LogInformation($"Imported {licenseGeographies.Count()} license geographies to Picturepark");
+            _logger.LogInformation($"Imported {licenseGeographies.Count()} license geographies");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseIndustriesAsync()
@@ -405,11 +405,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseIndustriesAsync(IList<PictureparkListItem> licenseIndustries)
         {
-            _logger.LogInformation("Importing license industries to Picturepark...");
+            _logger.LogInformation("Importing license industries...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseIndustry), licenseIndustries);
 
-            _logger.LogInformation($"Imported {licenseIndustries.Count()} license Industries to Picturepark");
+            _logger.LogInformation($"Imported {licenseIndustries.Count()} license Industries");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseLanguagesAsync()
@@ -419,11 +419,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseLanguagesAsync(IList<PictureparkListItem> licenseLanguages)
         {
-            _logger.LogInformation("Importing license languages to Picturepark...");
+            _logger.LogInformation("Importing license languages...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseLanguage), licenseLanguages);
 
-            _logger.LogInformation($"Imported {licenseLanguages.Count()} license languages to Picturepark");
+            _logger.LogInformation($"Imported {licenseLanguages.Count()} license languages");
         }
 
         public async Task<IList<PictureparkListItem>> GetLicenseUsageLimitsAsync()
@@ -433,11 +433,11 @@ namespace Client.Providers.Impl
 
         public async Task ImportLicenseUsageLimitsAsync(IList<PictureparkListItem> licenseUsageLimits)
         {
-            _logger.LogInformation("Importing license usage limits to Picturepark...");
+            _logger.LogInformation("Importing license usage limits...");
 
             await ImportListItemsAsync(nameof(SmintIoLicenseUsageLimit), licenseUsageLimits);
 
-            _logger.LogInformation($"Imported {licenseUsageLimits.Count()} license usage limits to Picturepark");
+            _logger.LogInformation($"Imported {licenseUsageLimits.Count()} license usage limits");
         }
 
         private async Task<IList<PictureparkListItem>> GetListItemsAsync(string schemaId)
@@ -581,7 +581,7 @@ namespace Client.Providers.Impl
 
         public async Task CreateAssetsAsync(IList<PictureparkAsset> newTargetAssets)
         {
-            _logger.LogInformation("Creating assets in Picturepark...");
+            _logger.LogInformation("Creating assets...");
 
             var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
 
@@ -590,7 +590,7 @@ namespace Client.Providers.Impl
                 await CreateAssetsByTransferAsync(transferIdentifier, newTargetAssets);
             });
 
-            _logger.LogInformation($"Created {newTargetAssets.Count()} assets in Picturepark");
+            _logger.LogInformation($"Created {newTargetAssets.Count()} assets");
         }
 
         private async Task CreateAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> newTargetAssets)
@@ -654,7 +654,7 @@ namespace Client.Providers.Impl
 
         public async Task UpdateAssetsAsync(IList<PictureparkAsset> updatedTargetAssets)
         {
-            _logger.LogInformation("Updating assets in Picturepark...");
+            _logger.LogInformation("Updating assets...");
 
             var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
 
@@ -663,7 +663,7 @@ namespace Client.Providers.Impl
                 await UpdateAssetsByTransferAsync(transferIdentifier, updatedTargetAssets);
             });
 
-            _logger.LogInformation($"Updated {updatedTargetAssets.Count()} assets in Picturepark");
+            _logger.LogInformation($"Updated {updatedTargetAssets.Count()} assets");
         }
 
         private async Task UpdateAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> updatedTargetAssets)
@@ -727,7 +727,7 @@ namespace Client.Providers.Impl
 
         public async Task CreateCompoundAssetsAsync(IList<PictureparkAsset> newTargetCompoundAssets)
         {
-            _logger.LogInformation("Creating compound assets in Picturepark...");
+            _logger.LogInformation("Creating compound assets...");
 
             var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
 
@@ -736,7 +736,7 @@ namespace Client.Providers.Impl
                 await CreateCompoundAssetsByTransferAsync(transferIdentifier, newTargetCompoundAssets);
             });
 
-            _logger.LogInformation($"Created {newTargetCompoundAssets.Count()} compound assets in Picturepark");
+            _logger.LogInformation($"Created {newTargetCompoundAssets.Count()} compound assets");
         }
 
         private async Task CreateCompoundAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> newTargetCompoundAssets)
@@ -761,7 +761,7 @@ namespace Client.Providers.Impl
 
         public async Task UpdateCompoundAssetsAsync(IList<PictureparkAsset> updatedTargetCompoundAssets)
         {
-            _logger.LogInformation("Updating compound assets in Picturepark...");
+            _logger.LogInformation("Updating compound assets...");
 
             var transferIdentifier = $"Smint.io Import {Guid.NewGuid().ToString()}";
 
@@ -770,7 +770,7 @@ namespace Client.Providers.Impl
                 await UpdateCompoundAssetsByTransferAsync(transferIdentifier, updatedTargetCompoundAssets);
             });
 
-            _logger.LogInformation($"Updated {updatedTargetCompoundAssets.Count()} compound assets in Picturepark");
+            _logger.LogInformation($"Updated {updatedTargetCompoundAssets.Count()} compound assets");
         }
 
         private async Task UpdateCompoundAssetsByTransferAsync(string transferIdentifier, IList<PictureparkAsset> updatedTargetCompoundAssets)
@@ -1000,7 +1000,7 @@ namespace Client.Providers.Impl
 
         private void ErrorDelegate((FileLocations File, Exception Exception) exception)
         {
-            _logger.LogError("Error during upload to PicturePark: {0}", exception);
+            _logger.LogError(exception.Exception, "Error during upload");
         }
 
         private void Dispose(bool disposing)

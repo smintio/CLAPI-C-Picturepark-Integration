@@ -15,23 +15,23 @@ namespace Client.Target.Impl
             _authOptions = authOptions;
         }
 
-        public Task InitializeAuthenticationAsync()
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task InitializeAuthenticationAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            // noop
-
-            return Task.CompletedTask;
         }
 
-        public Task RefreshAuthenticationAsync()
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task RefreshAuthenticationAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            // noop
-
-            return Task.CompletedTask;
         }
 
-        public Task<string> GetAccessTokenAsync()
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<string> GetAccessTokenAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            return Task.FromResult(_authOptions.AccessToken);
+            return _authOptions.AccessToken;
         }
     }
 }
