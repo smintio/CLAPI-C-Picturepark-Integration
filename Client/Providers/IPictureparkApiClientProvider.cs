@@ -6,6 +6,8 @@ namespace Client.Providers
 {
     public interface IPictureparkApiClientProvider
     {
+        Task InitAsync();
+
         Task InitSchemasAsync();
 
         Task<IList<PictureparkListItem>> GetContentProvidersAsync();

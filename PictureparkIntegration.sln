@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{F9A6059D-60DB-4E64-B44D-C8FD58CB2EBD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLAPI-C-Integration-Core", "..\..\CLAPI-C-Integration-Core\NetCore\CLAPI-C-Integration-Core.csproj", "{F6B90009-47A3-450D-A475-FA6F45AD73DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLAPI-C-Integration-Core", "..\CLAPI-C-Integration-Core\NetCore\CLAPI-C-Integration-Core.csproj", "{F6B90009-47A3-450D-A475-FA6F45AD73DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PusherClient", "..\..\pusher-websocket-dotnet\PusherClient\PusherClient.csproj", "{09ED9262-E06C-4B93-8381-E3DC7FCD8605}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PusherClient", "..\pusher-websocket-dotnet\PusherClient\PusherClient.csproj", "{09ED9262-E06C-4B93-8381-E3DC7FCD8605}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

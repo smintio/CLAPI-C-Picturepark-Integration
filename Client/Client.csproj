@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CLAPI-C-Integration-Core\NetCore\CLAPI-C-Integration-Core.csproj" />
+    <ProjectReference Include="..\..\CLAPI-C-Integration-Core\NetCore\CLAPI-C-Integration-Core.csproj" />
   </ItemGroup>
 
 </Project>

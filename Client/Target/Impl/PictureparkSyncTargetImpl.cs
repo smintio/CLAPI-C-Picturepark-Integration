@@ -41,6 +41,10 @@ namespace Client.Target.Impl
         public async Task<bool> BeforeSyncAsync()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            await _pictureparkClient.InitAsync();
+
+            await _pictureparkClient.InitSchemasAsync();
+
             return true;
         }
 

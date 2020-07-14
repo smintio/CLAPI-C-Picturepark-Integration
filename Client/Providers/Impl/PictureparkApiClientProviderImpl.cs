@@ -52,8 +52,17 @@ namespace Client.Providers.Impl
             _retryPolicy = GetRetryStrategy();
 
             _logger = logger;
+        }
 
-            InitPictureparkService();
+        public async Task InitAsync()
+        {
+            var accessToken = await _authenticator.GetAccessTokenAsync();
+
+            var authClient = new AccessTokenAuthClient(_appOptions.ApiBaseUrl, accessToken, _appOptions.CustomerAlias);
+
+            var settings = new PictureparkServiceSettings(authClient);
+
+            _client = new PictureparkService(settings, _httpClient);
         }
 
         public void Dispose()
@@ -982,23 +991,6 @@ namespace Client.Providers.Impl
         private void ErrorDelegate((FileLocations File, Exception Exception) exception)
         {
             _logger.LogError("Error during upload to PicturePark: {0}", exception);
-        }
-
-        private void InitPictureparkService()
-        {
-            var getAccessTokenTask = _authenticator.GetAccessTokenAsync();
-
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
-            getAccessTokenTask.Wait();
-
-            string accessToken = getAccessTokenTask.Result;
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
-
-            var authClient = new AccessTokenAuthClient(_appOptions.ApiBaseUrl, accessToken, _appOptions.CustomerAlias);
-
-            var settings = new PictureparkServiceSettings(authClient);
-
-            _client = new PictureparkService(settings, _httpClient);
         }
 
         private void Dispose(bool disposing)
