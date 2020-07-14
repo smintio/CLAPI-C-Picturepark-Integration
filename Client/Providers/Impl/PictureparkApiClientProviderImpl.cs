@@ -56,13 +56,16 @@ namespace Client.Providers.Impl
 
         public async Task InitAsync()
         {
-            var accessToken = await _authenticator.GetAccessTokenAsync();
+            if (_client == null)
+            {
+                var accessToken = await _authenticator.GetAccessTokenAsync();
 
-            var authClient = new AccessTokenAuthClient(_appOptions.ApiBaseUrl, accessToken, _appOptions.CustomerAlias);
+                var authClient = new AccessTokenAuthClient(_appOptions.ApiBaseUrl, accessToken, _appOptions.CustomerAlias);
 
-            var settings = new PictureparkServiceSettings(authClient);
+                var settings = new PictureparkServiceSettings(authClient);
 
-            _client = new PictureparkService(settings, _httpClient);
+                _client = new PictureparkService(settings, _httpClient);
+            }
         }
 
         public void Dispose()
