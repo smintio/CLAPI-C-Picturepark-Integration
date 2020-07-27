@@ -130,7 +130,7 @@ namespace Client.Providers.Impl
 
             if (schemasToCreate.Any())
             {
-                var result = await _client.Schema.CreateManyAsync(schemasToCreate, false);
+                var result = await _client.Schema.CreateManyAsync(schemasToCreate, enableForBinaryFiles: true);
 
                 await _client.BusinessProcess.WaitForCompletionAsync(result.BusinessProcessId);
 
@@ -151,7 +151,7 @@ namespace Client.Providers.Impl
             {
                 foreach (var schema in schemasToUpdate)
                 {
-                    await _client.Schema.UpdateAsync(schema, false);
+                    await _client.Schema.UpdateAsync(schema, enableForBinaryFiles: true);
 
                     if (schema.Id == nameof(SmintIoContentLayer))
                     {
