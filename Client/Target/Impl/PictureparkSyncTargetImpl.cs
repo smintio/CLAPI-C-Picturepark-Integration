@@ -55,6 +55,11 @@ namespace Client.Target.Impl
             return true;
         }
 
+        public void PrepareTargetAsset(PictureparkAsset targetAsset)
+        {
+            // nothing to do
+        }
+
         public async Task ImportContentProvidersAsync(IList<SmintIoMetadataElement> contentProviders)
         {
             var transformedContentProviders = TransformGenericMetadata(contentProviders);
@@ -174,26 +179,6 @@ namespace Client.Target.Impl
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             return true;
-        }
-
-        public PictureparkAsset CreateSyncAsset()
-        {
-            return new PictureparkAsset();
-        }
-
-        public PictureparkLicenseTerm CreateSyncLicenseTerm()
-        {
-            return new PictureparkLicenseTerm();
-        }
-
-        public PictureparkReleaseDetails CreateSyncReleaseDetails()
-        {
-            return new PictureparkReleaseDetails();
-        }
-
-        public PictureparkDownloadConstraints CreateSyncDownloadConstraints()
-        {
-            return new PictureparkDownloadConstraints();
         }
 
         public async Task<string> GetTargetCompoundAssetUuidAsync(string smintIoAssetUuid, string recommendedFileName)
