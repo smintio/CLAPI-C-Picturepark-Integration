@@ -607,7 +607,7 @@ namespace Client.Providers.Impl
 
                 foreach (FileTransfer file in files)
                 {
-                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.Identifier));
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.RequestId));
 
                     var fileTransferCreateItem = new FileTransferCreateItem
                     {
@@ -635,7 +635,7 @@ namespace Client.Providers.Impl
 
                 foreach (FileTransfer file in files)
                 {
-                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.Identifier));
+                    var assetForCreation = newTargetAssets.FirstOrDefault(assetForCreationInner => string.Equals(assetForCreationInner.RecommendedFileName, file.RequestId));
 
                     assetForCreation.TargetAssetUuid = file.ContentId;
                 }
@@ -953,7 +953,6 @@ namespace Client.Providers.Impl
 
             var uploadOptions = new UploadOptions
             {
-                ChunkSize = 1024 * 1024,
                 ConcurrentUploads = 4,
                 SuccessDelegate = Console.WriteLine,
                 ErrorDelegate = ErrorDelegate,
@@ -988,7 +987,6 @@ namespace Client.Providers.Impl
 
             var uploadOptions = new UploadOptions
             {
-                ChunkSize = 1024 * 1024,
                 ConcurrentUploads = 4,
                 SuccessDelegate = Console.WriteLine,
                 ErrorDelegate = ErrorDelegate,
