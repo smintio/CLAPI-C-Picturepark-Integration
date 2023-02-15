@@ -538,7 +538,7 @@ namespace Client.Providers.Impl
 
             filters.Add(FilterBase.FromExpression<Content>(i => i.ContentSchemaId, new string[] { nameof(SmintIoCompoundAsset) }));
 
-            return await GetFilterResultAsync(filters);
+            return await GetFilterResultAsync(licensePurchaseTransactionUuid, filters);
         }
 
         public async Task<string> GetExistingPictureparkAssetBinaryUuidAsync(string licensePurchaseTransactionUuid, string binaryUuid)
@@ -551,10 +551,10 @@ namespace Client.Providers.Impl
 
             filters.Add(FilterBase.FromExpression<SmintIoContentLayer>(i => i.BinaryUuid, new string[] { binaryUuid }));
 
-            return await GetFilterResultAsync(filters);
+            return await GetFilterResultAsync(licensePurchaseTransactionUuid, filters);
         }
 
-        private async Task<string> GetFilterResultAsync(List<FilterBase> filters)
+        private async Task<string> GetFilterResultAsync(string licensePurchaseTransactionUuid, List<FilterBase> filters)
         {
             var contentSearchRequest = new ContentSearchRequest()
             {
@@ -572,7 +572,7 @@ namespace Client.Providers.Impl
                 return null;
 
             if (count > 1)
-                throw new SyncTargetException($"Unexpected number of Picturepark asset search results ({searchResults.Results.Count} instead of 0 or 1)");
+                throw new SyncTargetException($"Unexpected number of Picturepark asset search results for LPT ID {licensePurchaseTransactionUuid} ({searchResults.Results.Count} instead of 0 or 1)");
 
             var searchResult = searchResults.Results.First();
 
