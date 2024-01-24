@@ -158,6 +158,11 @@ namespace Client.Contracts
             _licenseMetadata.Add("isEditorialUse", isEditorialUse);
         }
 
+        public override void SetIsAi(bool isAi)
+        {
+            _contentMetadata.Add("isAi", isAi);
+        }
+
         public override void SetHasRestrictiveLicenseTerms(bool hasRestrictiveLicenseTerms)
         {
             _contentMetadata.Add("hasRestrictiveLicenseTerms", hasRestrictiveLicenseTerms);
